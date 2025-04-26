@@ -26,7 +26,7 @@ export default function LoginPage(){
                 }
             });
 
-            const {token} = res.data.token;
+            const {token} = res.data;
 
             if (token){
                 login(token);
