@@ -3,6 +3,7 @@ import LoginPage from './features/auth/Login.page'
 import './App.css'
 import { AuthProvider } from './features/auth/Auth.context'
 import ProtectedRoute from './features/auth/ProtectedRoute'
+import AddItemPage from './features/items/AddItem.page'
 
 function App() {
 
@@ -17,6 +18,11 @@ function App() {
               <HomeTest/>
             </ProtectedRoute>
             }/>
+          <Route path='/items/add' element={
+            <ProtectedRoute>
+              <AddItemPage/>
+            </ProtectedRoute>
+          }/>
         </Routes>
         </BrowserRouter>
       </main>
