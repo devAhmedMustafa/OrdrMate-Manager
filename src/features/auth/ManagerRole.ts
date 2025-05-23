@@ -1,6 +1,7 @@
 const enum ManagerRole {
     TopLevel = "TopManager",
-    BranchManager = "BranchManager"
+    BranchManager = "BranchManager",
+    Admin = "Admin"
 }
 
 export default ManagerRole;

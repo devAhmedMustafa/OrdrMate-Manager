@@ -4,6 +4,7 @@ import axios from "axios";
 import useAuth from "./useAuth.hook";
 import { useNavigate } from "react-router-dom";
 import { useState } from "react";
+import ManagerRole from "./ManagerRole";
 
 export default function LoginPage(){
     const {login} = useAuth();
@@ -25,11 +26,17 @@ export default function LoginPage(){
                 }
             });
 
-            const {token, role, restaurantId} = res.data;
+            const {token, role, restaurantId, branchId} = res.data;
 
             if (token){
-                login(token, role, restaurantId);
-                navigate('/')
+                login(token, role, restaurantId, branchId);
+                
+                // Redirect based on role
+                if (role === ManagerRole.BranchManager) {
+                    navigate('/branch');
+                } else {
+                    navigate('/');
+                }
             }
         }
         catch(err: any){
