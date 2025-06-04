@@ -18,10 +18,8 @@ export const uploadService = {
 
   // Upload file using presigned URL
   uploadFile: async (uploadUrl: string, file: File) => {
-    const formData = new FormData();
-    formData.append('file', file);
     
-    await api.put(uploadUrl, formData, {
+    await api.put(uploadUrl, file, {
       headers: {
         'Content-Type': file.type
       }
