@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { KitchenQueue } from './components/KitchenQueue';
 import { OrderCard } from './components/OrderCard';
 import { UnpaidOrders } from './components/UnpaidOrders';
-import { Order, OrderItem, OrderStatus, UnpaidOrder } from './types';
+import { Order, OrderItem, OrderStatus, UnpaidOrder } from './services/orderService';
 import styles from './Orders.module.css';
 import useAuth from '../auth/useAuth.hook';
 import { orderService } from './services/orderService';
@@ -15,6 +15,7 @@ export function Orders() {
   const [unpaidOrders, setUnpaidOrders] = useState<UnpaidOrder[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('orders');
   const { branchId, token } = useAuth();
+  const [error, setError] = useState<string | null>(null);
 
   // Get unique kitchen units from all orders
   const kitchenUnits = Object.entries(kitchenQueues).reduce((acc, [kitchenName, orders]) => {
@@ -28,6 +29,18 @@ export function Orders() {
     });
     return [...acc, ...Array.from(units)];
   }, [] as string[]);
+
+  const fetchOrders = async () => {
+    if (!branchId || !token) return;
+    
+    try {
+      const data = await orderService.getUnpaidOrders(branchId, token);
+      setUnpaidOrders(data);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      setError('Failed to fetch orders');
+    }
+  };
 
   useEffect(() => {
     if (!branchId) return;
@@ -59,16 +72,10 @@ export function Orders() {
                 handleNewItem(message.Item);
                 break;
               case 'OrderPlaced':
-                handleOrderPlaced({
-                  OrderId: message.OrderId,
-                  IsBeingPrepared: message.IsBeingPrepared
-                });
+                handleOrderPlaced(message.OrderId, message.IsBeingPrepared);
                 break;
               case 'NextItem':
-                handleNextItem({
-                  OrderId: message.OrderId,
-                  NextItem: message.Item
-                });
+                handleNextItem(message.OrderId, message.Item);
                 break;
               case 'OrderReady':
                 handleOrderReady(message.OrderId);
@@ -129,7 +136,7 @@ export function Orders() {
           queues[item.KitchenName].push({
             OrderId: item.OrderId,
             Items: [item],
-            Status: status || OrderStatus.Queued,
+            Status: status || OrderStatus.Pending,
             IsBeingPrepared: false
           });
         }
@@ -139,6 +146,8 @@ export function Orders() {
     };
 
     const handleNewItem = (item: OrderItem) => {
+      if (!item.KitchenName) return;
+
       setKitchenQueues(prev => {
         const newQueues = { ...prev };
         if (!newQueues[item.KitchenName]) {
@@ -152,7 +161,7 @@ export function Orders() {
           newQueues[item.KitchenName].push({
             OrderId: item.OrderId,
             Items: [item],
-            Status: OrderStatus.Queued,
+            Status: OrderStatus.Pending,
             IsBeingPrepared: false
           });
         }
@@ -161,26 +170,26 @@ export function Orders() {
       });
     };
 
-    const handleOrderPlaced = (data: { OrderId: string; IsBeingPrepared: boolean }) => {
+    const handleOrderPlaced = (orderId: string, isBeingPrepared: boolean) => {
       setKitchenQueues(prev => {
         const newQueues = { ...prev };
         Object.keys(newQueues).forEach(kitchenName => {
-          const order = newQueues[kitchenName].find(o => o.OrderId === data.OrderId);
+          const order = newQueues[kitchenName].find(o => o.OrderId === orderId);
           if (order) {
-            order.IsBeingPrepared = data.IsBeingPrepared;
+            order.IsBeingPrepared = isBeingPrepared;
           }
         });
         return newQueues;
       });
     };
 
-    const handleNextItem = (data: { OrderId: string; NextItem: OrderItem }) => {
+    const handleNextItem = (orderId: string, nextItem: OrderItem) => {
       setKitchenQueues(prev => {
         const newQueues = { ...prev };
         Object.keys(newQueues).forEach(kitchenName => {
-          const order = newQueues[kitchenName].find(o => o.OrderId === data.OrderId);
+          const order = newQueues[kitchenName].find(o => o.OrderId === orderId);
           if (order) {
-            order.NextItem = data.NextItem;
+            order.NextItem = nextItem;
           }
         });
         return newQueues;
@@ -218,18 +227,8 @@ export function Orders() {
   useEffect(() => {
     if (!branchId || !token) return;
 
-    // Fetch unpaid orders
-    const fetchUnpaidOrders = async () => {
-      try {
-        const data = await orderService.getUnpaidOrders(branchId, token);
-        setUnpaidOrders(data);
-      } catch (error) {
-        console.error('Error fetching unpaid orders:', error);
-      }
-    };
-
-    fetchUnpaidOrders();
-    const interval = setInterval(fetchUnpaidOrders, 30000); // Refresh every 30 seconds
+    fetchOrders();
+    const interval = setInterval(fetchOrders, 30000); // Refresh every 30 seconds
 
     return () => clearInterval(interval);
   }, [branchId, token]);
@@ -245,6 +244,18 @@ export function Orders() {
       setUnpaidOrders(prev => prev.filter(order => order.orderId !== orderId));
     } catch (error) {
       console.error('Error marking order as paid:', error);
+    }
+  };
+
+  const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
+    if (!token) return;
+    
+    try {
+      await orderService.updateOrderStatus(orderId, newStatus, token);
+      fetchOrders();
+    } catch (err) {
+      setError('Failed to update order status');
+      console.error('Error updating order status:', err);
     }
   };
 
