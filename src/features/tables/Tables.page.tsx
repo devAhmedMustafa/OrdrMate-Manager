@@ -19,7 +19,7 @@ export default function TablesPage() {
 
   const fetchTables = async () => {
     try {
-      const data = await tableService.getBranchTables(branchId!, token!);
+      const data = await tableService.getBranchTables(branchId!);
       setTables(data);
       setError('');
     } catch (err) {
@@ -40,7 +40,7 @@ export default function TablesPage() {
         tableNumber: parseInt(newTable.tableNumber),
         seats: parseInt(newTable.seats),
         branchId
-      }, token);
+      });
       setNewTable({ tableNumber: '', seats: '' });
       fetchTables();
     } catch (err) {
@@ -55,7 +55,7 @@ export default function TablesPage() {
     if (!branchId || !token) return;
     
     try {
-      await tableService.deleteTable(branchId, tableNumber, token);
+      await tableService.deleteTable(branchId, tableNumber);
       fetchTables();
     } catch (err) {
       setError('Failed to delete table');

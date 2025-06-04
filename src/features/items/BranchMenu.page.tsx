@@ -20,12 +20,12 @@ export default function BranchMenuPage() {
       if (!restaurantId || !token) return;
 
       try {
-        const items = await itemService.getRestaurantItems(restaurantId, token);
+        const items = await itemService.getRestaurantItems(restaurantId);
         
         // Get presigned URLs for all items
         const itemsWithUrls = await Promise.all(
           items.map(async (item: MenuItem) => {
-            const presignedUrl = await uploadService.getViewPresignedUrl(item.imageUrl, token);
+            const presignedUrl = await uploadService.getViewPresignedUrl(item.imageUrl);
             return { ...item, presignedUrl };
           })
         );

@@ -51,7 +51,7 @@ export function UnpaidOrders({ orders, onMarkAsPaid, onStatusChange }: UnpaidOrd
               <span className={styles.label}>Status:</span>
               <select 
                 value={order.orderStatus}
-                onChange={(e) => onStatusChange(order.orderId, e.target.value as OrderStatus)}
+                onChange={(e) => onStatusChange(order.orderId, e.target.value as unknown as OrderStatus)}
                 className={styles.statusSelect}
               >
                 {Object.values(OrderStatus).map(status => (
