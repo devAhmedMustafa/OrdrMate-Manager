@@ -10,7 +10,7 @@ const ENV = {
 const API_CONFIG = {
   BASE_URL: {
     [ENV.DEV]: 'http://localhost:5126/api',
-    [ENV.PROD]: 'https://api.ordrmate.com/api'
+    [ENV.PROD]: 'https://ordrmate.starplusgames.com/api'
   },
   TIMEOUT: 10000, // 10 seconds
 };

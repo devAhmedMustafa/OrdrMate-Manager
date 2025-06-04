@@ -55,7 +55,7 @@ export default function AddItemPage() {
         try {
             // Get presigned URL and upload file
             const { uploadUrl, fileUrl } = await uploadService.getPresignedUrl(file.name, file.type, token);
-            await uploadService.uploadFile(uploadUrl, file);
+            await uploadService.uploadFile(uploadUrl, file, token);
 
             // Store the fileUrl for form submission
             setSelectedFile(prev => prev ? { ...prev, fileUrl } as any : null);

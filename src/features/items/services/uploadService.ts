@@ -30,13 +30,14 @@ export const uploadService = {
   },
 
   // Upload file using presigned URL
-  uploadFile: async (uploadUrl: string, file: File) => {
+  uploadFile: async (uploadUrl: string, file: File, token: string) => {
     const formData = new FormData();
     formData.append('file', file);
     
     await axios.post(uploadUrl, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': 'multipart/form-data',
+        'Authorization': `Bearer ${token}`
       }
     });
   }

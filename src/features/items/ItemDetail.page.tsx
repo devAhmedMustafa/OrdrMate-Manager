@@ -96,7 +96,7 @@ export default function ItemDetailPage() {
         const { uploadUrl, fileUrl } = await uploadService.getPresignedUrl(file.name, file.type, token);
 
         // Upload file
-        await uploadService.uploadFile(uploadUrl, file);
+        await uploadService.uploadFile(uploadUrl, file, token);
 
         // Update the item with the new file URL
         setEditedItem({
