@@ -24,7 +24,7 @@ export default function BranchRequestsPage() {
 
   const fetchRequests = async () => {
     try {
-      const data = await branchRequestService.getBranchRequests(token!);
+      const data = await branchRequestService.getBranchRequests();
       setRequests(data);
       setError('');
     } catch (err) {
@@ -39,7 +39,7 @@ export default function BranchRequestsPage() {
     
     setApprovingId(requestId);
     try {
-      const credentials = await branchRequestService.approveBranchRequest(requestId, token);
+      const credentials = await branchRequestService.approveBranchRequest(requestId);
       setCredentials(credentials);
       setShowCredentials(true);
 
