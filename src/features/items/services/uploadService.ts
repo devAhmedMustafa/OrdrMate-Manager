@@ -21,9 +21,9 @@ export const uploadService = {
     const formData = new FormData();
     formData.append('file', file);
     
-    await api.post(uploadUrl, formData, {
+    await api.put(uploadUrl, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data'
+        'Content-Type': file.type
       }
     });
   }
