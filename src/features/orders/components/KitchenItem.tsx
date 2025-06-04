@@ -18,7 +18,7 @@ export function KitchenItem({ item, isCurrent }: KitchenItemProps) {
       if (!item.ImageUrl || !token) return;
 
       try {
-        const presignedUrl = await uploadService.getViewPresignedUrl(item.ImageUrl, token);
+        const presignedUrl = await uploadService.getViewPresignedUrl(item.ImageUrl);
         setImageUrl(presignedUrl);
       } catch (err) {
         console.error('Error fetching presigned URL:', err);

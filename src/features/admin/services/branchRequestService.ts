@@ -15,12 +15,12 @@ export interface BranchCredentials {
 }
 
 export const branchRequestService = {
-  getBranchRequests: async (token: string): Promise<BranchRequest[]> => {
+  getBranchRequests: async (): Promise<BranchRequest[]> => {
     const response = await api.get('/Branch');
     return response.data;
   },
 
-  approveBranchRequest: async (requestId: string, token: string): Promise<BranchCredentials> => {
+  approveBranchRequest: async (requestId: string): Promise<BranchCredentials> => {
     const response = await api.post(`/Branch/${requestId}`);
     return {
       username: response.data.branchManagerUsername,

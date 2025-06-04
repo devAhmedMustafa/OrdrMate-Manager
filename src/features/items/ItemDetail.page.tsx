@@ -23,8 +23,8 @@ export default function ItemDetailPage() {
 
       try {
         const [itemData, kitchensData] = await Promise.all([
-          itemService.getItem(id, token),
-          itemService.getRestaurantKitchens(restaurantId, token)
+          itemService.getItem(id),
+          itemService.getRestaurantKitchens(restaurantId)
         ]);
         
         setItem(itemData);
@@ -33,7 +33,7 @@ export default function ItemDetailPage() {
 
         // Get presigned URL for the image
         if (itemData.imageUrl) {
-          const presignedUrl = await uploadService.getViewPresignedUrl(itemData.imageUrl, token);
+          const presignedUrl = await uploadService.getViewPresignedUrl(itemData.imageUrl);
           setImageUrl(presignedUrl);
         }
       } catch (err) {
@@ -55,7 +55,7 @@ export default function ItemDetailPage() {
     if (!editedItem || !id || !token) return;
 
     try {
-      const updatedItem = await itemService.updateItem(id, editedItem, token);
+      const updatedItem = await itemService.updateItem(id, editedItem);
       setItem(updatedItem);
       setIsEditing(false);
     } catch (err) {
@@ -68,7 +68,7 @@ export default function ItemDetailPage() {
     if (!id || !token || !window.confirm('Are you sure you want to delete this item?')) return;
 
     try {
-      await itemService.deleteItem(id, token);
+      await itemService.deleteItem(id);
       navigate('/menu');
     } catch (err) {
       setError('Failed to delete menu item');
@@ -93,10 +93,10 @@ export default function ItemDetailPage() {
     if (file) {
       try {
         // Get presigned URL
-        const { uploadUrl, fileUrl } = await uploadService.getPresignedUrl(file.name, file.type, token);
+        const { uploadUrl, fileUrl } = await uploadService.getPresignedUrl(file.name, file.type);
 
         // Upload file
-        await uploadService.uploadFile(uploadUrl, file, token);
+        await uploadService.uploadFile(uploadUrl, file);
 
         // Update the item with the new file URL
         setEditedItem({

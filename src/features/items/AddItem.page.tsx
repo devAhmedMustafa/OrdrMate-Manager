@@ -31,7 +31,7 @@ export default function AddItemPage() {
 
     const fetchKitchens = async () => {
         try {
-            const kitchensData = await itemService.getRestaurantKitchens(restaurantId!, token!);
+            const kitchensData = await itemService.getRestaurantKitchens(restaurantId!);
             setKitchens(kitchensData);
         } catch (err) {
             setError('Failed to load kitchens');
@@ -54,8 +54,8 @@ export default function AddItemPage() {
 
         try {
             // Get presigned URL and upload file
-            const { uploadUrl, fileUrl } = await uploadService.getPresignedUrl(file.name, file.type, token);
-            await uploadService.uploadFile(uploadUrl, file, token);
+            const { uploadUrl, fileUrl } = await uploadService.getPresignedUrl(file.name, file.type);
+            await uploadService.uploadFile(uploadUrl, file);
 
             // Store the fileUrl for form submission
             setSelectedFile(prev => prev ? { ...prev, fileUrl } as any : null);
@@ -85,7 +85,7 @@ export default function AddItemPage() {
         };
 
         try {
-            await itemService.createItem(formData, token);
+            await itemService.createItem(formData);
             navigate("/menu");
         } catch (err: any) {
             setError(err.response?.data?.message || "Failed to add item");

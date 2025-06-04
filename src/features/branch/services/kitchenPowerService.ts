@@ -27,12 +27,12 @@ export interface UpdateKitchenPowerData {
 }
 
 export const kitchenPowerService = {
-  getRestaurantKitchens: async (restaurantId: string, token: string): Promise<Kitchen[]> => {
+  getRestaurantKitchens: async (restaurantId: string): Promise<Kitchen[]> => {
     const response = await api.get(`/Kitchen/${restaurantId}`);
     return response.data;
   },
 
-  getKitchenPower: async (branchId: string, kitchenId: string, token: string): Promise<KitchenPower | null> => {
+  getKitchenPower: async (branchId: string, kitchenId: string): Promise<KitchenPower | null> => {
     try {
       const response = await api.get(`/Kitchen/power/${branchId}/${kitchenId}`);
       return {
@@ -50,8 +50,7 @@ export const kitchenPowerService = {
   updateKitchenPower: async (
     branchId: string,
     kitchenId: string,
-    data: UpdateKitchenPowerData,
-    token: string
+    data: UpdateKitchenPowerData
   ): Promise<KitchenPower> => {
     const response = await api.put(`/Kitchen/power/${branchId}/${kitchenId}`, data);
     return {

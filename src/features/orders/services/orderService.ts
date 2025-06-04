@@ -55,13 +55,13 @@ export const orderService = {
   },
 
   // Fetch unpaid orders
-  getUnpaidOrders: async (branchId: string, token: string): Promise<UnpaidOrder[]> => {
+  getUnpaidOrders: async (branchId: string): Promise<UnpaidOrder[]> => {
     const response = await api.get(`/Order/unpaid/${branchId}`);
     return response.data;
   },
 
   // Mark order as paid manually
-  markAsPaid: async (orderId: string, token: string): Promise<void> => {
+  markAsPaid: async (orderId: string): Promise<void> => {
     await api.post(`/Order/${orderId}/pay`);
   },
 
@@ -69,13 +69,12 @@ export const orderService = {
   markItemAsPrepared: async (
     branchId: string,
     kitchenName: string,
-    kitchenUnitId: string,
-    token: string
+    kitchenUnitId: string
   ): Promise<void> => {
     await api.post(`/Order/prepare/${branchId}/${kitchenName}/${kitchenUnitId}`);
   },
 
-  updateOrderStatus: async (orderId: string, status: OrderStatus, token: string): Promise<void> => {
+  updateOrderStatus: async (orderId: string, status: OrderStatus): Promise<void> => {
     await api.put(`/Order/${orderId}/status`, { status });
   }
 }; 

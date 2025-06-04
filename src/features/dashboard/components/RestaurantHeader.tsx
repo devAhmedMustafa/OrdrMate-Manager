@@ -13,7 +13,7 @@ export function RestaurantHeader() {
       if (!restaurantId || !token) return;
 
       try {
-        const data = await restaurantService.getRestaurant(restaurantId, token);
+        const data = await restaurantService.getRestaurant(restaurantId);
         setRestaurant(data);
       } catch (err) {
         setError('Failed to load restaurant information');

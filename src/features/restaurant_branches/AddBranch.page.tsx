@@ -40,7 +40,7 @@ export default function AddBranchPage() {
       await branchService.createBranch({
         ...formData,
         restaurantId
-      }, token);
+      });
 
       setSuccess(true);
       setTimeout(() => {
