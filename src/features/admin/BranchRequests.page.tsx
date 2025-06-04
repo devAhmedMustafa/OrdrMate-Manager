@@ -2,20 +2,11 @@ import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import useAuth from '../auth/useAuth.hook';
 import styles from './BranchRequests.module.css';
-
-interface BranchRequest {
-  branchRequestId: string;
-  lantitude: number;
-  longitude: number;
-  branchAddress: string;
-  branchPhoneNumber: string;
-  restaurantName: string;
-}
-
-interface BranchCredentials {
-  username: string;
-  password: string;
-}
+import {
+  branchRequestService,
+  BranchRequest,
+  BranchCredentials
+} from './services/branchRequestService';
 
 export default function BranchRequestsPage() {
   const { token } = useAuth();
@@ -27,21 +18,15 @@ export default function BranchRequestsPage() {
   const [showCredentials, setShowCredentials] = useState(false);
 
   useEffect(() => {
+    if (!token) return;
     fetchRequests();
-  }, []);
+  }, [token]);
 
   const fetchRequests = async () => {
     try {
-      const response = await fetch('http://localhost:5126/api/Branch/', {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      if (!response.ok) {
-        throw new Error('Failed to fetch branch requests');
-      }
-      const data = await response.json();
+      const data = await branchRequestService.getBranchRequests(token!);
       setRequests(data);
+      setError('');
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Failed to fetch requests');
     } finally {
@@ -50,34 +35,13 @@ export default function BranchRequestsPage() {
   };
 
   const handleApprove = async (requestId: string) => {
+    if (!token) return;
+    
     setApprovingId(requestId);
     try {
-      const response = await fetch(`http://localhost:5126/api/Branch/${requestId}`, {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to approve request');
-      }
-
-      const data = await response.json();
-      console.log('API Response:', data); // Debug log
-
-      // Check if the response contains the expected credentials
-      if (data && data.username && data.password) {
-        setCredentials({
-          username: data.branchManagerUsername,
-          password: data.branchManagerPassword
-        });
-        setShowCredentials(true);
-      } else {
-        console.error('Response does not contain expected credentials:', data);
-        throw new Error('Invalid response format: missing credentials');
-      }
+      const credentials = await branchRequestService.approveBranchRequest(requestId, token);
+      setCredentials(credentials);
+      setShowCredentials(true);
 
       // Remove the approved request from the list
       setRequests(prev => prev.filter(req => req.branchRequestId !== requestId));

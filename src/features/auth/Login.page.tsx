@@ -1,93 +1,124 @@
-import logo from "@/assets/OrdrMate.png"
-import styles from "./Login.module.css"
-import axios from "axios";
-import useAuth from "./useAuth.hook";
-import { useNavigate } from "react-router-dom";
-import { useState } from "react";
-import ManagerRole from "./ManagerRole";
+import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Icon } from '@iconify/react';
+import styles from './Login.module.css';
+import { authService, LoginCredentials } from './services/authService';
 
-export default function LoginPage(){
-    const {login} = useAuth();
-    const navigate = useNavigate()
-    const [error, setError] = useState("");
+export default function LoginPage() {
+  const navigate = useNavigate();
+  const [credentials, setCredentials] = useState<LoginCredentials>({
+    username: '',
+    password: ''
+  });
+  const [error, setError] = useState<string>('');
+  const [loading, setLoading] = useState(false);
 
-    async function handleSubmit(e: any){
-        e.preventDefault();
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setCredentials(prev => ({
+      ...prev,
+      [name]: value
+    }));
+  };
 
-        try {
-            const data = {
-                Username: e.currentTarget.username.value,
-                Password: e.currentTarget.password.value
-            }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
 
-            const res = await axios.post('http://localhost:5126/api/manager/login', data, {
-                headers: {
-                    'Content-Type': 'application/json',
-                }
-            });
+    try {
+      const response = await authService.login(credentials);
+      
+      // Store auth data
+      localStorage.setItem('token', response.token);
+      localStorage.setItem('role', response.role);
+      if (response.restaurantId) {
+        localStorage.setItem('restaurantId', response.restaurantId);
+      }
+      if (response.branchId) {
+        localStorage.setItem('branchId', response.branchId);
+      }
 
-            const {token, role, restaurantId, branchId} = res.data;
-
-            if (token){
-                login(token, role, restaurantId, branchId);
-                
-                // Redirect based on role
-                if (role === ManagerRole.BranchManager) {
-                    navigate('/branch');
-                } else {
-                    navigate('/');
-                }
-            }
-        }
-        catch(err: any){
-            setError(err.response.data.err)
-        }
+      // Redirect based on role
+      switch (response.role) {
+        case 'TopLevel':
+          navigate('/dashboard');
+          break;
+        case 'BranchManager':
+          navigate('/branch');
+          break;
+        case 'Admin':
+          navigate('/admin');
+          break;
+        default:
+          navigate('/');
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Login failed');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    return (
-        <div className="min-h-screen w-full flex flex-col items-center justify-center relative overflow-hidden bg-gradient-to-br from-orange-50 to-white">
-            {/* Background decorative elements */}
-            <div className="absolute inset-0 overflow-hidden">
-                <div className="absolute -top-40 -right-40 w-80 h-80 bg-orange-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob"></div>
-                <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-amber-300 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-2000"></div>
-                <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-80 h-80 bg-orange-200 rounded-full mix-blend-multiply filter blur-xl opacity-30 animate-blob animation-delay-4000"></div>
-            </div>
-
-            <div className="relative z-10 flex flex-col items-center gap-10 mb-8">
-                <img width={80} src={logo} alt="OrdrMate Logo" className="drop-shadow-lg" />
-                <div className="text-center">
-                    <h1 className="text-6xl font-bold text-black">Ordr Mate</h1>
-                    <h2 className="font-semibold text-neutral-600 mt-2">Restaurant Manager</h2>
-                </div>
-            </div>
-
-            <form onSubmit={handleSubmit} className={`relative z-10 ${styles.form}`}>
-                <label htmlFor="username">Username</label>
-                <input 
-                    id="username" 
-                    name="username" 
-                    type="text" 
-                    placeholder="Enter your username"
-                    className="w-full" 
-                />
-                <label htmlFor="password">Password</label>
-                <input 
-                    id="password" 
-                    name="password" 
-                    type="password" 
-                    placeholder="Enter your password"
-                    className="w-full" 
-                />
-                {error && (
-                    <p className="text-sm text-red-600 font-medium text-center mt-2">{error}</p>
-                )}
-                <button 
-                    type="submit"
-                    className="w-full mt-4"
-                >
-                    Sign In
-                </button>
-            </form>
+  return (
+    <div className={styles.container}>
+      <div className={styles.loginCard}>
+        <div className={styles.header}>
+          <Icon icon="mdi:account-circle" width={48} height={48} />
+          <h1>Welcome Back</h1>
+          <p>Please sign in to continue</p>
         </div>
-    )
+
+        <form onSubmit={handleSubmit} className={styles.form}>
+          <div className={styles.formGroup}>
+            <label htmlFor="username">Username</label>
+            <input
+              type="text"
+              id="username"
+              name="username"
+              value={credentials.username}
+              onChange={handleChange}
+              required
+              className={styles.input}
+            />
+          </div>
+
+          <div className={styles.formGroup}>
+            <label htmlFor="password">Password</label>
+            <input
+              type="password"
+              id="password"
+              name="password"
+              value={credentials.password}
+              onChange={handleChange}
+              required
+              className={styles.input}
+            />
+          </div>
+
+          {error && (
+            <div className={styles.error}>
+              <Icon icon="mdi:alert-circle" />
+              {error}
+            </div>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className={styles.submitButton}
+          >
+            {loading ? (
+              <>
+                <Icon icon="mdi:loading" className={styles.spinner} />
+                Signing in...
+              </>
+            ) : (
+              'Sign In'
+            )}
+          </button>
+        </form>
+      </div>
+    </div>
+  );
 }

@@ -3,22 +3,17 @@ import { useNavigate } from 'react-router-dom';
 import useAuth from '../auth/useAuth.hook';
 import { Icon } from '@iconify/react';
 import styles from './AddBranch.module.css';
-
-interface BranchFormData {
-  lantitude: number;
-  longitude: number;
-  branchAddress: string;
-  branchPhoneNumber: string;
-}
+import { branchService, CreateBranchData } from './services/branchService';
 
 export default function AddBranchPage() {
   const navigate = useNavigate();
   const { restaurantId, token } = useAuth();
-  const [formData, setFormData] = useState<BranchFormData>({
+  const [formData, setFormData] = useState<CreateBranchData>({
     lantitude: 0,
     longitude: 0,
     branchAddress: '',
     branchPhoneNumber: '',
+    restaurantId: ''
   });
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
@@ -36,27 +31,16 @@ export default function AddBranchPage() {
     setError('');
     setSuccess(false);
 
-    if (!restaurantId) {
-      setError('Restaurant ID is missing');
+    if (!restaurantId || !token) {
+      setError('Restaurant ID or token is missing');
       return;
     }
 
     try {
-      const response = await fetch('http://localhost:5126/api/Branch/', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        },
-        body: JSON.stringify({
-          ...formData,
-          restaurantId
-        })
-      });
-
-      if (!response.ok) {
-        throw new Error('Failed to add branch');
-      }
+      await branchService.createBranch({
+        ...formData,
+        restaurantId
+      }, token);
 
       setSuccess(true);
       setTimeout(() => {

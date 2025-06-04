@@ -1,74 +1,62 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useAuth from '../auth/useAuth.hook';
-import axios from 'axios';
 import styles from './ItemDetail.module.css';
-
-interface MenuItem {
-  id: string;
-  name: string;
-  description: string;
-  imageUrl: string;
-  price: number;
-  preparationTime: number;
-  category: string;
-}
+import { itemService, MenuItem, Kitchen } from './services/itemService';
+import { uploadService } from './services/uploadService';
 
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { token } = useAuth();
+  const { token, restaurantId } = useAuth();
   const [item, setItem] = useState<MenuItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
   const [editedItem, setEditedItem] = useState<MenuItem | null>(null);
+  const [kitchens, setKitchens] = useState<Kitchen[]>([]);
+  const [imageUrl, setImageUrl] = useState<string>('');
 
   useEffect(() => {
-    const fetchItem = async () => {
+    const fetchData = async () => {
+      if (!id || !token || !restaurantId) return;
+
       try {
-        const response = await axios.get(
-          `http://localhost:5126/api/Item/${id}`,
-          {
-            headers: {
-              'Authorization': `Bearer ${token}`
-            }
-          }
-        );
-        setItem(response.data);
-        setEditedItem(response.data);
+        const [itemData, kitchensData] = await Promise.all([
+          itemService.getItem(id, token),
+          itemService.getRestaurantKitchens(restaurantId, token)
+        ]);
+        
+        setItem(itemData);
+        setEditedItem(itemData);
+        setKitchens(kitchensData);
+
+        // Get presigned URL for the image
+        if (itemData.imageUrl) {
+          const presignedUrl = await uploadService.getViewPresignedUrl(itemData.imageUrl, token);
+          setImageUrl(presignedUrl);
+        }
       } catch (err) {
-        setError('Failed to load menu item');
-        console.error('Error fetching menu item:', err);
+        setError('Failed to load data');
+        console.error('Error fetching data:', err);
       } finally {
         setLoading(false);
       }
     };
 
-    if (id) {
-      fetchItem();
-    }
-  }, [id, token]);
+    fetchData();
+  }, [id, token, restaurantId]);
 
   const handleEdit = () => {
     setIsEditing(true);
   };
 
   const handleSave = async () => {
-    if (!editedItem) return;
+    if (!editedItem || !id || !token) return;
 
     try {
-      await axios.put(
-        `http://localhost:5126/api/Item/${id}`,
-        editedItem,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`,
-            'Content-Type': 'application/json'
-          }
-        }
-      );
-      setItem(editedItem);
+      const updatedItem = await itemService.updateItem(id, editedItem, token);
+      setItem(updatedItem);
       setIsEditing(false);
     } catch (err) {
       setError('Failed to update menu item');
@@ -77,17 +65,10 @@ export default function ItemDetailPage() {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm('Are you sure you want to delete this item?')) return;
+    if (!id || !token || !window.confirm('Are you sure you want to delete this item?')) return;
 
     try {
-      await axios.delete(
-        `http://localhost:5126/api/Item/${id}`,
-        {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        }
-      );
+      await itemService.deleteItem(id, token);
       navigate('/menu');
     } catch (err) {
       setError('Failed to delete menu item');
@@ -95,7 +76,7 @@ export default function ItemDetailPage() {
     }
   };
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     if (!editedItem) return;
     
     const { name, value } = e.target;
@@ -105,19 +86,27 @@ export default function ItemDetailPage() {
     });
   };
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (!editedItem) return;
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (!editedItem || !token) return;
     
     const file = e.target.files?.[0];
     if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
+      try {
+        // Get presigned URL
+        const { uploadUrl, fileUrl } = await uploadService.getPresignedUrl(file.name, file.type, token);
+
+        // Upload file
+        await uploadService.uploadFile(uploadUrl, file);
+
+        // Update the item with the new file URL
         setEditedItem({
           ...editedItem,
-          imageUrl: reader.result as string
+          imageUrl: fileUrl
         });
-      };
-      reader.readAsDataURL(file);
+      } catch (err) {
+        setError('Failed to upload image');
+        console.error('Error uploading image:', err);
+      }
     }
   };
 
@@ -132,6 +121,8 @@ export default function ItemDetailPage() {
   if (!item) {
     return <div className={styles.error}>Item not found</div>;
   }
+
+  const selectedKitchen = kitchens.find(k => k.id === item.kitchenId);
 
   return (
     <div className={styles.container}>
@@ -162,7 +153,7 @@ export default function ItemDetailPage() {
 
       <div className={styles.content}>
         <div className={styles.imageContainer}>
-          <img src={item.imageUrl} alt={item.name} className={styles.image} />
+          <img src={imageUrl} alt={item.name} className={styles.image} />
         </div>
 
         {isEditing ? (
@@ -206,6 +197,21 @@ export default function ItemDetailPage() {
                 value={editedItem?.category}
                 onChange={handleInputChange}
               />
+            </div>
+            <div className={styles.formGroup}>
+              <label htmlFor="kitchenId">Kitchen</label>
+              <select
+                id="kitchenId"
+                name="kitchenId"
+                value={editedItem?.kitchenId}
+                onChange={handleInputChange}
+              >
+                {kitchens.map(kitchen => (
+                  <option key={kitchen.id} value={kitchen.id}>
+                    {kitchen.name}
+                  </option>
+                ))}
+              </select>
             </div>
             <div className={styles.formGroup}>
               <label htmlFor="preparationTime">Preparation Time (minutes)</label>
@@ -253,6 +259,10 @@ export default function ItemDetailPage() {
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Preparation Time:</span>
                 <span className={styles.infoValue}>{item.preparationTime} minutes</span>
+              </div>
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Kitchen:</span>
+                <span className={styles.infoValue}>{selectedKitchen?.name || 'Not assigned'}</span>
               </div>
             </div>
           </div>

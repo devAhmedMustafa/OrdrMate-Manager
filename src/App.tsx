@@ -9,10 +9,14 @@ import AddItemPage from './features/items/AddItem.page'
 import { DashboardLayout } from './features/dashboard/DashboardLayout'
 import { BranchManagerLayout } from './features/dashboard/BranchManagerLayout'
 import MenuPage from './features/items/Menu.page'
+import BranchMenuPage from './features/items/BranchMenu.page'
 import ItemDetailPage from './features/items/ItemDetail.page'
 import SettingsPage from './features/dashboard/components/Settings.page'
 import BranchRequestsPage from './features/admin/BranchRequests.page'
 import TablesPage from './features/tables/Tables.page'
+import KitchensPage from './features/kitchens/Kitchens.page'
+import KitchenPowerPage from './features/branch/KitchenPower.page'
+import { Orders } from './features/orders/Orders.page'
 
 function App() {
 
@@ -34,6 +38,7 @@ function App() {
             <Route path="menu/:id" element={<ItemDetailPage />} />
             <Route path="orders" element={<div>Orders</div>} />
             <Route path="settings" element={<SettingsPage/>} />
+            <Route path="kitchens" element={<KitchensPage />} />
           </Route>
 
           <Route path='/branch' element={
@@ -42,10 +47,10 @@ function App() {
             </BranchManagerRoute>
           }>
             <Route index element={<div>Branch Dashboard Home</div>} />
-            <Route path="menu" element={<MenuPage />} />
-            <Route path="menu/:id" element={<ItemDetailPage />} />
-            <Route path="orders" element={<div>Branch Orders</div>} />
+            <Route path="menu" element={<BranchMenuPage />} />
+            <Route path="orders" element={<Orders />} />
             <Route path="tables" element={<TablesPage />} />
+            <Route path="kitchen-power" element={<KitchenPowerPage />} />
           </Route>
 
           <Route path='/items/add' element={

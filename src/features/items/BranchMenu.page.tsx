@@ -1,5 +1,4 @@
 import { useEffect, useState, useMemo } from 'react';
-import { Link, useNavigate } from 'react-router-dom';
 import useAuth from '../auth/useAuth.hook';
 import styles from './Menu.module.css';
 import { itemService, MenuItem } from './services/itemService';
@@ -9,9 +8,8 @@ interface MenuItemWithPresignedUrl extends MenuItem {
   presignedUrl: string;
 }
 
-export default function MenuPage() {
+export default function BranchMenuPage() {
   const { restaurantId, token } = useAuth();
-  const navigate = useNavigate();
   const [items, setItems] = useState<MenuItemWithPresignedUrl[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -66,12 +64,6 @@ export default function MenuPage() {
     <div className={styles.container}>
       <div className={styles.header}>
         <h1 className={styles.title}>Menu Items</h1>
-        <button 
-          onClick={() => navigate('/items/add')} 
-          className={styles.addButton}
-        >
-          Add Item
-        </button>
       </div>
       
       <div className={styles.categories}>
@@ -90,7 +82,7 @@ export default function MenuPage() {
 
       <div className={styles.grid}>
         {filteredItems.map((item) => (
-          <Link to={`/menu/${item.id}`} key={item.id} className={styles.card}>
+          <div key={item.id} className={styles.card}>
             <div className={styles.imageContainer}>
               <img 
                 src={item.presignedUrl} 
@@ -109,7 +101,7 @@ export default function MenuPage() {
                 )}
               </div>
             </div>
-          </Link>
+          </div>
         ))}
       </div>
     </div>

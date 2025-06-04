@@ -14,6 +14,7 @@ export function BranchManagerLayout() {
     { path: '/branch/orders', label: 'Orders', icon: 'lets-icons:order-duotone' },
     { path: '/branch/menu', label: 'Menu', icon: 'ic:twotone-menu-book' },
     { path: '/branch/tables', label: 'Tables', icon: 'mdi:table' },
+    { path: '/branch/kitchen-power', label: 'Kitchen Power', icon: 'mdi:power-socket' },
   ];
 
   return (

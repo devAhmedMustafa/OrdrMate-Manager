@@ -1,14 +1,8 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../auth/useAuth.hook';
-import axios from 'axios';
 import { Icon } from '@iconify/react';
 import styles from './Tables.module.css';
-
-interface Table {
-  tableNumber: number;
-  seats: number;
-  branchId: string;
-}
+import { tableService, Table } from './services/tableService';
 
 export default function TablesPage() {
   const { branchId, token } = useAuth();
@@ -19,17 +13,14 @@ export default function TablesPage() {
   const [isAdding, setIsAdding] = useState(false);
 
   useEffect(() => {
+    if (!branchId || !token) return;
     fetchTables();
-  }, [branchId]);
+  }, [branchId, token]);
 
   const fetchTables = async () => {
     try {
-      const response = await axios.get(`http://localhost:5126/api/Table/${branchId}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      setTables(response.data);
+      const data = await tableService.getBranchTables(branchId!, token!);
+      setTables(data);
       setError('');
     } catch (err) {
       setError('Failed to load tables');
@@ -41,18 +32,15 @@ export default function TablesPage() {
 
   const handleAddTable = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!branchId || !token) return;
+    
     setIsAdding(true);
     try {
-      await axios.post('http://localhost:5126/api/Table/', {
+      await tableService.createTable({
         tableNumber: parseInt(newTable.tableNumber),
         seats: parseInt(newTable.seats),
         branchId
-      }, {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      });
+      }, token);
       setNewTable({ tableNumber: '', seats: '' });
       fetchTables();
     } catch (err) {
@@ -64,12 +52,10 @@ export default function TablesPage() {
   };
 
   const handleDeleteTable = async (tableNumber: number) => {
+    if (!branchId || !token) return;
+    
     try {
-      await axios.delete(`http://localhost:5126/api/Table/${branchId}/${tableNumber}`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
+      await tableService.deleteTable(branchId, tableNumber, token);
       fetchTables();
     } catch (err) {
       setError('Failed to delete table');
@@ -107,7 +93,7 @@ export default function TablesPage() {
         </div>
       )}
 
-      {isAdding && (
+      {isAdding &&
         <form onSubmit={handleAddTable} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="tableNumber">Table Number</label>
@@ -144,7 +130,7 @@ export default function TablesPage() {
             </button>
           </div>
         </form>
-      )}
+      }
 
       <div className={styles.tablesGrid}>
         {tables.map((table) => (

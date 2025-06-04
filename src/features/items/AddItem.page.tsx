@@ -1,19 +1,14 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useAuth from "../auth/useAuth.hook";
-import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import ManagerRole from "../auth/ManagerRole";
 import styles from "./AddItem.module.css";
+import { itemService, Kitchen, MenuItem } from "./services/itemService";
+import { uploadService } from "./services/uploadService";
 
-interface AddItemFormData {
-    name: string;
-    description: string;
-    price: number;
-    category: string;
+type AddItemFormData = Omit<MenuItem, 'id'> & {
     restaurantId: string;
-    imageUrl?: string;
-    preparationTime: number;
-}
+};
 
 interface FileWithUrl extends File {
     fileUrl?: string;
@@ -26,6 +21,23 @@ export default function AddItemPage() {
     const [loading, setLoading] = useState(false);
     const [selectedFile, setSelectedFile] = useState<FileWithUrl | null>(null);
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [kitchens, setKitchens] = useState<Kitchen[]>([]);
+    const [selectedKitchenId, setSelectedKitchenId] = useState<string>("");
+
+    useEffect(() => {
+        if (!restaurantId || !token) return;
+        fetchKitchens();
+    }, [restaurantId, token]);
+
+    const fetchKitchens = async () => {
+        try {
+            const kitchensData = await itemService.getRestaurantKitchens(restaurantId!, token!);
+            setKitchens(kitchensData);
+        } catch (err) {
+            setError('Failed to load kitchens');
+            console.error('Error fetching kitchens:', err);
+        }
+    };
 
     if (role !== ManagerRole.TopLevel) {
         navigate("/");
@@ -34,40 +46,16 @@ export default function AddItemPage() {
 
     async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
-        if (!file) return;
+        if (!file || !token) return;
 
         setSelectedFile(file);
         setError("");
         setUploadProgress(0);
 
         try {
-            // Get presigned URL
-            const presignedResponse = await axios.post('http://localhost:5126/api/Upload/presigned-url', {
-                fileName: file.name,
-                fileType: file.type
-            }, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-
-            const { uploadUrl, fileUrl } = presignedResponse.data;
-
-            const formData = new FormData();
-            formData.append('file', file);
-
-            // Upload file to presigned URL
-            await axios.post(uploadUrl, formData, {
-                headers: {
-                    'Content-Type': 'multipart/form-data'
-                },
-                onUploadProgress: (progressEvent) => {
-                    const progress = progressEvent.total
-                        ? Math.round((progressEvent.loaded * 100) / progressEvent.total)
-                        : 0;
-                    setUploadProgress(progress);
-                }
-            });
+            // Get presigned URL and upload file
+            const { uploadUrl, fileUrl } = await uploadService.getPresignedUrl(file.name, file.type, token);
+            await uploadService.uploadFile(uploadUrl, file);
 
             // Store the fileUrl for form submission
             setSelectedFile(prev => prev ? { ...prev, fileUrl } as any : null);
@@ -79,6 +67,8 @@ export default function AddItemPage() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
+        if (!token || !restaurantId) return;
+        
         setError("");
         setLoading(true);
 
@@ -88,19 +78,15 @@ export default function AddItemPage() {
             description: (form.elements.namedItem('description') as HTMLTextAreaElement).value,
             price: Number((form.elements.namedItem('price') as HTMLInputElement).value),
             category: (form.elements.namedItem('category') as HTMLInputElement).value,
-            restaurantId: restaurantId || "",
-            imageUrl: selectedFile?.fileUrl,
-            preparationTime: Number((form.elements.namedItem('preparationTime') as HTMLInputElement).value)
+            restaurantId,
+            imageUrl: selectedFile?.fileUrl || '',
+            preparationTime: Number((form.elements.namedItem('preparationTime') as HTMLInputElement).value),
+            kitchenId: selectedKitchenId
         };
 
         try {
-            await axios.post('http://localhost:5126/api/Item', formData, {
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${token}`
-                }
-            });
-            navigate("/items");
+            await itemService.createItem(formData, token);
+            navigate("/menu");
         } catch (err: any) {
             setError(err.response?.data?.message || "Failed to add item");
         } finally {
@@ -160,6 +146,25 @@ export default function AddItemPage() {
                     </div>
 
                     <div className={styles.formGroup}>
+                        <label htmlFor="kitchen" className={styles.label}>Kitchen</label>
+                        <select
+                            id="kitchen"
+                            name="kitchen"
+                            required
+                            className={styles.input}
+                            value={selectedKitchenId}
+                            onChange={(e) => setSelectedKitchenId(e.target.value)}
+                        >
+                            <option value="">Select a kitchen</option>
+                            {kitchens.map(kitchen => (
+                                <option key={kitchen.id} value={kitchen.id}>
+                                    {kitchen.name}
+                                </option>
+                            ))}
+                        </select>
+                    </div>
+
+                    <div className={styles.formGroup}>
                         <label htmlFor="preparationTime" className={styles.label}>Preparation Time (minutes)</label>
                         <input
                             id="preparationTime"
@@ -172,7 +177,7 @@ export default function AddItemPage() {
                         />
                     </div>
 
-                    <div className={`${styles.formGroup} ${styles.image}`}>
+                    <div className={styles.formGroup}>
                         <label htmlFor="image" className={styles.label}>Image</label>
                         <input
                             id="image"

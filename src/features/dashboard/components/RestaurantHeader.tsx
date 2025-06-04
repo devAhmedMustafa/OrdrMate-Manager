@@ -1,12 +1,7 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../auth/useAuth.hook';
-import axios from 'axios';
 import styles from './RestaurantHeader.module.css';
-
-interface Restaurant {
-  id: string;
-  name: string;
-}
+import { restaurantService, Restaurant } from '../services/restaurantService';
 
 export function RestaurantHeader() {
   const { restaurantId, token } = useAuth();
@@ -15,15 +10,11 @@ export function RestaurantHeader() {
 
   useEffect(() => {
     const fetchRestaurant = async () => {
-      if (!restaurantId) return;
+      if (!restaurantId || !token) return;
 
       try {
-        const response = await axios.get(`http://localhost:5126/api/Restaurant/${restaurantId}`, {
-          headers: {
-            'Authorization': `Bearer ${token}`
-          }
-        });
-        setRestaurant(response.data);
+        const data = await restaurantService.getRestaurant(restaurantId, token);
+        setRestaurant(data);
       } catch (err) {
         setError('Failed to load restaurant information');
         console.error('Error fetching restaurant:', err);
