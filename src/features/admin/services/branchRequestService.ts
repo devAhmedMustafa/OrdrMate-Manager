@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = 'http://localhost:5126/api/Branch';
+import api from '../../../utils/api';
 
 export interface BranchRequest {
   branchRequestId: string;
@@ -18,25 +16,12 @@ export interface BranchCredentials {
 
 export const branchRequestService = {
   getBranchRequests: async (token: string): Promise<BranchRequest[]> => {
-    const response = await axios.get(BASE_URL, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    const response = await api.get('/Branch');
     return response.data;
   },
 
   approveBranchRequest: async (requestId: string, token: string): Promise<BranchCredentials> => {
-    const response = await axios.post(
-      `${BASE_URL}/${requestId}`,
-      {},
-      {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`
-        }
-      }
-    );
+    const response = await api.post(`/Branch/${requestId}`);
     return {
       username: response.data.branchManagerUsername,
       password: response.data.branchManagerPassword

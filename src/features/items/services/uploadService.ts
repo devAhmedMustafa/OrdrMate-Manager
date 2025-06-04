@@ -1,31 +1,18 @@
-import axios from 'axios';
-
-const BASE_URL = 'http://localhost:5126/api';
+import api from '../../../utils/api';
 
 export const uploadService = {
   // Get presigned URL for uploading
   getPresignedUrl: async (fileName: string, fileType: string, token: string) => {
-    const response = await axios.post(
-      `${BASE_URL}/Upload/presigned-url`,
-      {
-        fileName,
-        fileType
-      },
-      {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }
-    );
+    const response = await api.post('/Upload/presigned-url', {
+      fileName,
+      fileType
+    });
     return response.data;
   },
 
   // Get presigned URL for viewing
   getViewPresignedUrl: async (imageKey: string, token: string) => {
-    const response = await axios.get(
-      `${BASE_URL}/Upload/presigned-url/${imageKey}`,
-      {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }
-    );
+    const response = await api.get(`/Upload/presigned-url/${imageKey}`);
     return response.data.fileUrl;
   },
 
@@ -34,10 +21,9 @@ export const uploadService = {
     const formData = new FormData();
     formData.append('file', file);
     
-    await axios.post(uploadUrl, formData, {
+    await api.post(uploadUrl, formData, {
       headers: {
-        'Content-Type': 'multipart/form-data',
-        'Authorization': `Bearer ${token}`
+        'Content-Type': 'multipart/form-data'
       }
     });
   }
