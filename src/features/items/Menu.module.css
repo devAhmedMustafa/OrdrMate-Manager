@@ -1,0 +1,220 @@
+.container {
+  padding: 2rem;
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 2rem;
+}
+
+.title {
+  font-size: 2rem;
+  color: #333;
+  margin: 0;
+}
+
+.addButton {
+  background-color: #4CAF50;
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.addButton:hover {
+  background-color: #45a049;
+}
+
+.title {
+  font-size: 2.25rem;
+  font-weight: 700;
+  color: #3b2d68;
+  margin-bottom: 2rem;
+  position: relative;
+  padding-bottom: 0.75rem;
+}
+
+.title::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 60px;
+  height: 4px;
+  background: linear-gradient(to right, #482bb0, #e2dbfc);
+  border-radius: 2px;
+}
+
+.categories {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin-bottom: 2.5rem;
+  padding: 0.5rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.categoryButton {
+  background-color: #ffffff;
+  color: #4a5568;
+  border: 1px solid #e2e8f0;
+  padding: 0.625rem 1.25rem;
+  border-radius: 2rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+.categoryButton:hover {
+  background-color: #e2dbfc;
+  color: #3b2d68;
+  transform: translateY(-1px);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.categoryButtonActive {
+  background-color: #e2dbfc;
+  color: #482bb0;
+  font-weight: 600;
+  border-color: #482bb0;
+  box-shadow: 0 2px 4px rgba(72, 43, 176, 0.1);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 2rem;
+  padding: 0.5rem;
+}
+
+.card {
+  background: white;
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+  transition: all 0.3s ease;
+  border: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+.card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 12px rgba(0, 0, 0, 0.1);
+}
+
+.imageContainer {
+  position: relative;
+  width: 100%;
+  padding-top: 75%; /* 4:3 Aspect Ratio */
+  overflow: hidden;
+  background-color: #f7f7f7;
+}
+
+.image {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.card:hover .image {
+  transform: scale(1.05);
+}
+
+.content {
+  padding: 1.5rem;
+}
+
+.itemName {
+  font-size: 1.375rem;
+  font-weight: 600;
+  color: #3b2d68;
+  margin-bottom: 0.75rem;
+  line-height: 1.3;
+}
+
+.description {
+  color: #4a5568;
+  font-size: 0.9375rem;
+  margin-bottom: 1.25rem;
+  line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.details {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  align-items: center;
+  padding-top: 0.5rem;
+  border-top: 1px solid #f0f0f0;
+}
+
+.price {
+  font-weight: 700;
+  color: #482bb0;
+  font-size: 1.25rem;
+  background: linear-gradient(to right, #482bb0, #3b2d68);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.category {
+  background-color: #e2dbfc;
+  color: #3b2d68;
+  padding: 0.375rem 1rem;
+  border-radius: 1rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  letter-spacing: 0.3px;
+}
+
+.prepTime {
+  color: #4a5568;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.375rem;
+  background-color: #f7f7f7;
+  padding: 0.375rem 0.75rem;
+  border-radius: 1rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 3rem;
+  color: #4a5568;
+  font-size: 1.25rem;
+  background: rgba(255, 255, 255, 0.8);
+  border-radius: 1rem;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+}
+
+.error {
+  text-align: center;
+  padding: 2rem;
+  color: #e53e3e;
+  background-color: #fff5f5;
+  border-radius: 1rem;
+  margin: 1rem;
+  border: 1px solid rgba(229, 62, 62, 0.1);
+  box-shadow: 0 4px 6px rgba(229, 62, 62, 0.1);
+} 

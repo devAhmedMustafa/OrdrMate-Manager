@@ -1,0 +1,207 @@
+.container {
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    background: linear-gradient(135deg, #faf5ff 0%, #fff7ed 100%);
+    padding: 2rem;
+}
+
+.formContainer {
+    width: 100%;
+    max-width: 64rem;
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px rgba(124, 58, 237, 0.05);
+    padding: 2.5rem;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.formContainer:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 15px 30px rgba(124, 58, 237, 0.08);
+}
+
+.title {
+    font-size: 1.75rem;
+    font-weight: 700;
+    text-align: center;
+    margin-bottom: 2.5rem;
+    color: #4c1d95;
+    letter-spacing: -0.5px;
+}
+
+.form {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2rem;
+}
+
+.formGroup {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+}
+
+.formGroup.fullWidth {
+    grid-column: 1 / -1;
+}
+
+.formGroup.description {
+    grid-column: 2;
+    grid-row: 1 / span 3;
+}
+
+.formGroup.image {
+    grid-column: 2;
+    grid-row: 4 / span 2;
+}
+
+.label {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #4c1d95;
+    letter-spacing: -0.2px;
+}
+
+.input {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e9d5ff;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #4c1d95;
+    transition: all 0.2s ease;
+    background-color: #faf5ff;
+}
+
+.input:hover {
+    border-color: #c084fc;
+    background-color: #fff;
+}
+
+.input:focus {
+    outline: none;
+    border-color: #9333ea;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+}
+
+.textarea {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    border: 2px solid #e9d5ff;
+    border-radius: 12px;
+    font-size: 1rem;
+    color: #4c1d95;
+    min-height: 200px;
+    resize: vertical;
+    transition: all 0.2s ease;
+    background-color: #faf5ff;
+}
+
+.textarea:hover {
+    border-color: #c084fc;
+    background-color: #fff;
+}
+
+.textarea:focus {
+    outline: none;
+    border-color: #9333ea;
+    background-color: #fff;
+    box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+}
+
+.error {
+    font-size: 0.875rem;
+    color: #dc2626;
+    margin: 0;
+    font-weight: 500;
+    text-align: center;
+    padding: 0.75rem;
+    background-color: #fef2f2;
+    border-radius: 8px;
+    border: 1px solid #fee2e2;
+    grid-column: 1 / -1;
+}
+
+.submitButton {
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, #9333ea 0%, #f97316 100%);
+    color: white;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 0.5rem;
+    grid-column: 1 / -1;
+    max-width: 200px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.submitButton:hover {
+    background: linear-gradient(135deg, #7e22ce 0%, #ea580c 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
+}
+
+.submitButton:focus {
+    outline: none;
+    box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.2);
+}
+
+.submitButton:disabled {
+    background: linear-gradient(135deg, #c084fc 0%, #fdba74 100%);
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+.progressBar {
+    width: 100%;
+    height: 8px;
+    background-color: #e9d5ff;
+    border-radius: 4px;
+    overflow: hidden;
+    margin-top: 0.75rem;
+    position: relative;
+}
+
+.progressFill {
+    height: 100%;
+    background: linear-gradient(90deg, #9333ea 0%, #f97316 100%);
+    transition: width 0.3s ease;
+    border-radius: 4px;
+}
+
+.progressBar span {
+    position: absolute;
+    right: 0;
+    top: -1.5rem;
+    color: #6b21a8;
+    font-size: 0.75rem;
+    font-weight: 500;
+}
+
+.imagePreview {
+    width: 100%;
+    height: 200px;
+    margin-top: 1rem;
+    border-radius: 12px;
+    object-fit: cover;
+    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.05);
+    border: 2px solid #e9d5ff;
+    transition: all 0.2s ease;
+}
+
+.imagePreview:hover {
+    transform: scale(1.02);
+    box-shadow: 0 6px 16px rgba(124, 58, 237, 0.08);
+    border-color: #c084fc;
+} 
