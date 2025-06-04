@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = 'http://localhost:5126/api/Kitchen';
+import api from '../../../utils/api';
 
 export enum KitchenPowerStatus {
   ACTIVE = 0,
@@ -30,23 +28,19 @@ export interface UpdateKitchenPowerData {
 
 export const kitchenPowerService = {
   getRestaurantKitchens: async (restaurantId: string, token: string): Promise<Kitchen[]> => {
-    const response = await axios.get(`${BASE_URL}/${restaurantId}`, {
-      headers: { 'Authorization': `Bearer ${token}` }
-    });
+    const response = await api.get(`/Kitchen/${restaurantId}`);
     return response.data;
   },
 
   getKitchenPower: async (branchId: string, kitchenId: string, token: string): Promise<KitchenPower | null> => {
     try {
-      const response = await axios.get(`${BASE_URL}/power/${branchId}/${kitchenId}`, {
-        headers: { 'Authorization': `Bearer ${token}` }
-      });
+      const response = await api.get(`/Kitchen/power/${branchId}/${kitchenId}`);
       return {
         ...response.data,
         status: parseInt(response.data.status)
       };
-    } catch (error) {
-      if (axios.isAxiosError(error) && error.response?.status === 404) {
+    } catch (error: any) {
+      if (error.response?.status === 404) {
         return null;
       }
       throw error;
@@ -59,16 +53,7 @@ export const kitchenPowerService = {
     data: UpdateKitchenPowerData,
     token: string
   ): Promise<KitchenPower> => {
-    const response = await axios.put(
-      `${BASE_URL}/power/${branchId}/${kitchenId}`,
-      data,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    const response = await api.put(`/Kitchen/power/${branchId}/${kitchenId}`, data);
     return {
       ...response.data,
       status: parseInt(response.data.status)

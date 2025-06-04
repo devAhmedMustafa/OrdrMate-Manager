@@ -1,4 +1,4 @@
-import axios from 'axios';
+import api from '../../../utils/api';
 
 const BASE_URL = 'http://localhost:5126/api';
 
@@ -23,74 +23,36 @@ export interface Kitchen {
 export const itemService = {
   // Get all items for a restaurant
   getRestaurantItems: async (restaurantId: string, token: string) => {
-    const response = await axios.get(
-      `${BASE_URL}/Item/restaurant/${restaurantId}`,
-      {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }
-    );
+    const response = await api.get(`/Item/restaurant/${restaurantId}`);
     return response.data;
   },
 
   // Get a single item by ID
   getItem: async (id: string, token: string) => {
-    const response = await axios.get(
-      `${BASE_URL}/Item/${id}`,
-      {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }
-    );
+    const response = await api.get(`/Item/${id}`);
     return response.data;
   },
 
   // Create a new item
   createItem: async (item: Omit<MenuItem, 'id'>, token: string) => {
-    const response = await axios.post(
-      `${BASE_URL}/Item`,
-      item,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    const response = await api.post('/Item', item);
     return response.data;
   },
 
   // Update an existing item
   updateItem: async (id: string, item: MenuItem, token: string) => {
-    const response = await axios.put(
-      `${BASE_URL}/Item/${id}`,
-      item,
-      {
-        headers: {
-          'Authorization': `Bearer ${token}`,
-          'Content-Type': 'application/json'
-        }
-      }
-    );
+    const response = await api.put(`/Item/${id}`, item);
     return response.data;
   },
 
   // Delete an item
   deleteItem: async (id: string, token: string) => {
-    await axios.delete(
-      `${BASE_URL}/Item/${id}`,
-      {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }
-    );
+    await api.delete(`/Item/${id}`);
   },
 
   // Get all kitchens for a restaurant
   getRestaurantKitchens: async (restaurantId: string, token: string) => {
-    const response = await axios.get(
-      `${BASE_URL}/Kitchen/${restaurantId}`,
-      {
-        headers: { 'Authorization': `Bearer ${token}` }
-      }
-    );
+    const response = await api.get(`/Kitchen/${restaurantId}`);
     return response.data;
   }
 }; 

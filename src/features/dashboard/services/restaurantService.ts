@@ -1,6 +1,4 @@
-import axios from 'axios';
-
-const BASE_URL = 'http://localhost:5126/api/Restaurant';
+import api from '../../../utils/api';
 
 export interface Restaurant {
   id: string;
@@ -9,11 +7,7 @@ export interface Restaurant {
 
 export const restaurantService = {
   getRestaurant: async (restaurantId: string, token: string): Promise<Restaurant> => {
-    const response = await axios.get(`${BASE_URL}/${restaurantId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
+    const response = await api.get(`/Restaurant/${restaurantId}`);
     return response.data;
   }
 }; 
