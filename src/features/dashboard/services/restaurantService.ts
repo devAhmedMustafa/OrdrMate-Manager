@@ -6,7 +6,7 @@ export interface Restaurant {
 }
 
 export const restaurantService = {
-  getRestaurant: async (restaurantId: string, token: string): Promise<Restaurant> => {
+  getRestaurant: async (restaurantId: string): Promise<Restaurant> => {
     const response = await api.get(`/Restaurant/${restaurantId}`);
     return response.data;
   }

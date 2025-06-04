@@ -1,12 +1,13 @@
-import { UnpaidOrder } from '../types';
+import { UnpaidOrder, OrderStatus } from '../types';
 import styles from './UnpaidOrders.module.css';
 
 interface UnpaidOrdersProps {
   orders: UnpaidOrder[];
   onMarkAsPaid: (orderId: string) => void;
+  onStatusChange: (orderId: string, newStatus: OrderStatus) => void;
 }
 
-export function UnpaidOrders({ orders, onMarkAsPaid }: UnpaidOrdersProps) {
+export function UnpaidOrders({ orders, onMarkAsPaid, onStatusChange }: UnpaidOrdersProps) {
   if (orders.length === 0) {
     return (
       <div className={styles.emptyState}>
@@ -45,6 +46,20 @@ export function UnpaidOrders({ orders, onMarkAsPaid }: UnpaidOrdersProps) {
             <div className={styles.detailRow}>
               <span className={styles.label}>Date:</span>
               <span>{new Date(order.orderDate).toLocaleString()}</span>
+            </div>
+            <div className={styles.detailRow}>
+              <span className={styles.label}>Status:</span>
+              <select 
+                value={order.orderStatus}
+                onChange={(e) => onStatusChange(order.orderId, e.target.value as OrderStatus)}
+                className={styles.statusSelect}
+              >
+                {Object.values(OrderStatus).map(status => (
+                  <option key={status} value={status}>
+                    {status}
+                  </option>
+                ))}
+              </select>
             </div>
           </div>
 

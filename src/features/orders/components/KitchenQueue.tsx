@@ -39,7 +39,6 @@ export function KitchenQueue({ queue, kitchenUnitId }: KitchenQueueProps) {
         branchId,
         queue.KitchenName,
         currentItem.KitchenUnitId,
-        token
       );
       
       // Only update local items if there are remaining items

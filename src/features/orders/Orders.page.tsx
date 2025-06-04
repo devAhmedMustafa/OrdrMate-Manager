@@ -15,7 +15,6 @@ export function Orders() {
   const [unpaidOrders, setUnpaidOrders] = useState<UnpaidOrder[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('orders');
   const { branchId, token } = useAuth();
-  const [error, setError] = useState<string | null>(null);
 
   // Get unique kitchen units from all orders
   const kitchenUnits = Object.entries(kitchenQueues).reduce((acc, [kitchenName, orders]) => {
@@ -34,11 +33,10 @@ export function Orders() {
     if (!branchId || !token) return;
     
     try {
-      const data = await orderService.getUnpaidOrders(branchId, token);
+      const data = await orderService.getUnpaidOrders(branchId);
       setUnpaidOrders(data);
     } catch (error) {
       console.error('Error fetching orders:', error);
-      setError('Failed to fetch orders');
     }
   };
 
@@ -86,7 +84,7 @@ export function Orders() {
           }
         });
 
-        ws.addEventListener('close', (event) => {
+        ws.addEventListener('close', () => {
           setConnectionStatus('disconnected');
           
           reconnectTimeout = window.setTimeout(() => {
@@ -239,7 +237,7 @@ export function Orders() {
     if (!token) return;
     
     try {
-      await orderService.markAsPaid(orderId, token);
+      await orderService.markAsPaid(orderId);
       // Remove the paid order from the list
       setUnpaidOrders(prev => prev.filter(order => order.orderId !== orderId));
     } catch (error) {
@@ -251,11 +249,10 @@ export function Orders() {
     if (!token) return;
     
     try {
-      await orderService.updateOrderStatus(orderId, newStatus, token);
+      await orderService.updateOrderStatus(orderId, newStatus);
       fetchOrders();
-    } catch (err) {
-      setError('Failed to update order status');
-      console.error('Error updating order status:', err);
+    } catch (error) {
+      console.error('Error updating order status:', error);
     }
   };
 
@@ -314,6 +311,7 @@ export function Orders() {
           <UnpaidOrders 
             orders={unpaidOrders} 
             onMarkAsPaid={handleMarkAsPaid}
+            onStatusChange={handleStatusChange}
           />
         ) : (
           <div className={styles.kitchenQueue}>
