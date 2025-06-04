@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { Icon } from '@iconify/react';
 import styles from './Login.module.css';
 import { authService, LoginCredentials } from './services/authService';
+import logo from '@/assets/OrdrMate.png';
 
 export default function LoginPage() {
   const navigate = useNavigate();
@@ -64,9 +65,9 @@ export default function LoginPage() {
     <div className={styles.container}>
       <div className={styles.loginCard}>
         <div className={styles.header}>
-          <Icon icon="mdi:account-circle" width={48} height={48} />
-          <h1>Welcome Back</h1>
-          <p>Please sign in to continue</p>
+          <img src={logo} alt="Ordr Mate Logo" className={styles.logo} />
+          <h1 className={styles.appName}>Ordr Mate</h1>
+          <p className={styles.appSubtitle}>Restaurant Manager</p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>
