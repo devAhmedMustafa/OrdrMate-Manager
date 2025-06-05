@@ -18,14 +18,12 @@ import KitchensPage from './features/kitchens/Kitchens.page'
 import KitchenPowerPage from './features/branch/KitchenPower.page'
 import { Orders } from './features/orders/Orders.page'
 
-function App() {
+function AppContent() {
 
   return (
-    <AuthProvider>
-      <main>
-        <BrowserRouter>
+    <main>
+      <BrowserRouter>
         <Routes>
-
           <Route path='/login' element={<LoginPage/>}/>
 
           <Route path='/' element={
@@ -64,12 +62,18 @@ function App() {
               <BranchRequestsPage />
             </AdminRoute>
           }/>
-
         </Routes>
-        </BrowserRouter>
-      </main>
+      </BrowserRouter>
+    </main>
+  );
+}
+
+function App() {
+  return (
+    <AuthProvider>
+        <AppContent />
     </AuthProvider>
-  )
+  );
 }
 
 export default App
