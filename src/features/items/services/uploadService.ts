@@ -3,6 +3,7 @@ import api from '../../../utils/api';
 export const uploadService = {
   // Get presigned URL for uploading
   getPresignedUrl: async (fileName: string, fileType: string) => {
+    console.log(fileName, fileType);
     const response = await api.post('/Upload/presigned-url', {
       fileName,
       fileType
