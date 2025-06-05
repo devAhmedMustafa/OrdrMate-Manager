@@ -20,6 +20,7 @@ export default function AddItemPage() {
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [selectedFile, setSelectedFile] = useState<FileWithUrl | null>(null);
+    const [imageUrl, setImageUrl] = useState<string>("");
     const [uploadProgress, setUploadProgress] = useState(0);
     const [kitchens, setKitchens] = useState<Kitchen[]>([]);
     const [selectedKitchenId, setSelectedKitchenId] = useState<string>("");
@@ -93,6 +94,16 @@ export default function AddItemPage() {
             setLoading(false);
         }
     }
+
+    useEffect(() => {
+        const fetchImageUrl = async () => {
+            if (selectedFile?.fileUrl) {
+                const imageUrl = await uploadService.getViewPresignedUrl(selectedFile.fileUrl);
+                setImageUrl(imageUrl);
+            }
+        }
+        fetchImageUrl();
+    }, [selectedFile?.fileUrl]);
 
     return (
         <div className={styles.container}>
@@ -198,7 +209,7 @@ export default function AddItemPage() {
                         )}
                         {selectedFile?.fileUrl && (
                             <img 
-                                src={selectedFile.fileUrl} 
+                                src={imageUrl} 
                                 alt="Preview" 
                                 className={styles.imagePreview}
                             />
