@@ -3,7 +3,6 @@ import api from '../../../utils/api';
 export const uploadService = {
   // Get presigned URL for uploading
   getPresignedUrl: async (fileName: string, fileType: string) => {
-    console.log(fileName, fileType);
     const response = await api.post('/Upload/presigned-url', {
       fileName,
       fileType
@@ -19,10 +18,11 @@ export const uploadService = {
 
   // Upload file using presigned URL
   uploadFile: async (uploadUrl: string, file: File) => {
-    
-    await api.put(uploadUrl, file, {
+    await fetch(uploadUrl, {
+      method: 'PUT',
+      body: file,
       headers: {
-        'Content-Type': file.type
+        'Content-Type': file.type,
       }
     });
   }

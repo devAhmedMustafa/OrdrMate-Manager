@@ -42,8 +42,8 @@ export default function LoginPage() {
 
       // Redirect based on role
       switch (response.role) {
-        case 'TopLevel':
-          navigate('/dashboard');
+        case 'TopManager':
+          navigate('/');
           break;
         case 'BranchManager':
           navigate('/branch');
@@ -52,7 +52,7 @@ export default function LoginPage() {
           navigate('/admin');
           break;
         default:
-          navigate('/');
+          navigate('/error');
       }
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Login failed');
