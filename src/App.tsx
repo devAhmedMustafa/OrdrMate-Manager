@@ -17,9 +17,9 @@ import { Tables as TablesPage } from './features/tables/Tables.page'
 import KitchensPage from './features/kitchens/Kitchens.page'
 import KitchenPowerPage from './features/branch/KitchenPower.page'
 import Orders from './features/orders/Orders.page'
+import DashboardHome from './features/dashboard/components/DashboardHome.page'
 
 function AppContent() {
-
   return (
     <main>
       <BrowserRouter>
@@ -44,7 +44,7 @@ function AppContent() {
               <BranchManagerLayout />
             </BranchManagerRoute>
           }>
-            <Route index element={<div>Branch Dashboard Home</div>} />
+            <Route index element={<DashboardHome />} />
             <Route path="menu" element={<BranchMenuPage />} />
             <Route path="orders" element={<Orders />} />
             <Route path="tables" element={<TablesPage />} />
@@ -68,12 +68,10 @@ function AppContent() {
   );
 }
 
-function App() {
+export default function App() {
   return (
     <AuthProvider>
-        <AppContent />
+      <AppContent />
     </AuthProvider>
   );
 }
-
-export default App
