@@ -1,40 +1,108 @@
 import { useEffect, useState } from 'react';
+import { Table, TableReservation, OrderStatus, tableService } from './services/tableService';
+import { TableQueue } from './components/TableQueue';
+import styles from './Tables.module.css';
 import useAuth from '../auth/useAuth.hook';
 import { Icon } from '@iconify/react';
-import styles from './Tables.module.css';
-import { tableService, Table } from './services/tableService';
+import { websocketService } from '../dashboard/services/websocketService';
 
-export default function TablesPage() {
-  const { branchId, token } = useAuth();
+export function Tables() {
   const [tables, setTables] = useState<Table[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [newTable, setNewTable] = useState({ tableNumber: '', seats: '' });
+  const [selectedTable, setSelectedTable] = useState<number | null>(null);
+  const [tableQueues, setTableQueues] = useState<Record<number, TableReservation[]>>({});
   const [isAdding, setIsAdding] = useState(false);
+  const [newTable, setNewTable] = useState({ tableNumber: '', seats: '' });
+  const { branchId, token } = useAuth();
 
   useEffect(() => {
     if (!branchId || !token) return;
+
+    const fetchTables = async () => {
+      try {
+        const data = await tableService.getTables(branchId);
+        setTables(data);
+      } catch (error) {
+        console.error('Error fetching tables:', error);
+      }
+    };
+
     fetchTables();
   }, [branchId, token]);
 
-  const fetchTables = async () => {
-    try {
-      const data = await tableService.getBranchTables(branchId!);
-      setTables(data);
-      setError('');
-    } catch (err) {
-      setError('Failed to load tables');
-      console.error('Error fetching tables:', err);
-    } finally {
-      setLoading(false);
-    }
-  };
+  useEffect(() => {
+    if (!branchId || !token || !selectedTable) return;
+
+    const fetchTableQueue = async () => {
+      try {
+        const data = await tableService.getTableQueue(branchId, selectedTable);
+        setTableQueues(prev => ({
+          ...prev,
+          [selectedTable]: data
+        }));
+      } catch (error) {
+        console.error('Error fetching table queue:', error);
+      }
+    };
+
+    fetchTableQueue();
+    const interval = setInterval(fetchTableQueue, 30000); // Refresh every 30 seconds
+
+    return () => clearInterval(interval);
+  }, [branchId, token, selectedTable]);
+
+  useEffect(() => {
+    // Subscribe to WebSocket messages
+    const handleMessage = (message: any) => {
+      if (!message.Type) return;
+
+      if (message.Type === 'TableReserved') {
+        const reservation: TableReservation = {
+          tableNumber: message.Reservation.TableNumber,
+          customerName: message.Reservation.CustomerName,
+          reservationDate: message.Reservation.ReservationDate,
+          reservationStatus: message.Reservation.ReservationStatus,
+          orderId: message.Reservation.OrderId,
+          orderStatus: OrderStatus.Queued
+        };
+
+        setTableQueues(prev => ({
+          ...prev,
+          [reservation.tableNumber]: [
+            ...(prev[reservation.tableNumber] || []),
+            reservation
+          ]
+        }));
+      } else if (message.Type === 'OrderReady') {
+        const orderId = message.OrderId;
+        
+        setTableQueues(prev => {
+          const newQueues = { ...prev };
+          Object.keys(newQueues).forEach(tableNumber => {
+            const reservations = newQueues[parseInt(tableNumber)];
+            const reservationIndex = reservations.findIndex(r => r.orderId === orderId);
+            if (reservationIndex !== -1) {
+              newQueues[parseInt(tableNumber)][reservationIndex] = {
+                ...reservations[reservationIndex],
+                orderStatus: OrderStatus.Ready
+              };
+            }
+          });
+          return newQueues;
+        });
+      }
+    };
+
+    websocketService.on('message', handleMessage);
+
+    return () => {
+      websocketService.off('message', handleMessage);
+    };
+  }, []);
 
   const handleAddTable = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!branchId || !token) return;
     
-    setIsAdding(true);
     try {
       await tableService.createTable({
         tableNumber: parseInt(newTable.tableNumber),
@@ -42,36 +110,28 @@ export default function TablesPage() {
         branchId
       });
       setNewTable({ tableNumber: '', seats: '' });
-      fetchTables();
-    } catch (err) {
-      setError('Failed to add table');
-      console.error('Error adding table:', err);
-    } finally {
       setIsAdding(false);
+      // Refresh tables list
+      const data = await tableService.getTables(branchId);
+      setTables(data);
+    } catch (error) {
+      console.error('Error adding table:', error);
     }
   };
 
-  const handleDeleteTable = async (tableNumber: number) => {
-    if (!branchId || !token) return;
+  const handleDequeue = async () => {
+    if (!branchId || !token || !selectedTable) return;
     
     try {
-      await tableService.deleteTable(branchId, tableNumber);
-      fetchTables();
-    } catch (err) {
-      setError('Failed to delete table');
-      console.error('Error deleting table:', err);
+      const data = await tableService.getTableQueue(branchId, selectedTable);
+      setTableQueues(prev => ({
+        ...prev,
+        [selectedTable]: data
+      }));
+    } catch (error) {
+      console.error('Error refreshing table queue:', error);
     }
   };
-
-  if (loading) {
-    return (
-      <div className={styles.loading}>
-        <Icon icon="eos-icons:loading" className={styles.spinner} />
-        <h3>Loading Tables</h3>
-        <p>Please wait while we fetch your tables...</p>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.container}>
@@ -86,14 +146,7 @@ export default function TablesPage() {
         </button>
       </div>
 
-      {error && (
-        <div className={styles.error}>
-          <Icon icon="mdi:alert-circle" className={styles.icon} />
-          {error}
-        </div>
-      )}
-
-      {isAdding &&
+      {isAdding && (
         <form onSubmit={handleAddTable} className={styles.form}>
           <div className={styles.formGroup}>
             <label htmlFor="tableNumber">Table Number</label>
@@ -130,32 +183,36 @@ export default function TablesPage() {
             </button>
           </div>
         </form>
-      }
-
-      <div className={styles.tablesGrid}>
-        {tables.map((table) => (
-          <div key={table.tableNumber} className={styles.tableCard}>
-            <div className={styles.tableInfo}>
-              <h3>Table {table.tableNumber}</h3>
-              <p>{table.seats} Seats</p>
-            </div>
-            <button
-              className={styles.deleteButton}
-              onClick={() => handleDeleteTable(table.tableNumber)}
-            >
-              <Icon icon="mdi:delete" className={styles.icon} />
-            </button>
-          </div>
-        ))}
-      </div>
-
-      {tables.length === 0 && !isAdding && (
-        <div className={styles.empty}>
-          <Icon icon="mdi:table-off" className={styles.icon} />
-          <h3>No Tables Found</h3>
-          <p>Add your first table to get started</p>
-        </div>
       )}
+
+      <div className={styles.content}>
+        <div className={styles.tableList}>
+          {tables.map(table => (
+            <button
+              key={table.tableNumber}
+              className={`${styles.tableButton} ${selectedTable === table.tableNumber ? styles.selected : ''}`}
+              onClick={() => setSelectedTable(table.tableNumber)}
+            >
+              <span className={styles.tableNumber}>Table {table.tableNumber}</span>
+              <span className={styles.seats}>{table.seats} seats</span>
+            </button>
+          ))}
+        </div>
+
+        <div className={styles.queueSection}>
+          {selectedTable ? (
+            <TableQueue
+              tableNumber={selectedTable}
+              reservations={tableQueues[selectedTable] || []}
+              onDequeue={handleDequeue}
+            />
+          ) : (
+            <div className={styles.noTableSelected}>
+              <p>Select a table to view its reservation queue</p>
+            </div>
+          )}
+        </div>
+      </div>
     </div>
   );
 } 

@@ -4,10 +4,22 @@ import { Icon } from '@iconify/react';
 import styles from './DashboardLayout.module.css';
 import logo from '@/assets/OrdrMate.png';
 import { RestaurantHeader } from './components/RestaurantHeader';
+import { useEffect } from 'react';
+import { websocketService } from './services/websocketService';
 
 export function BranchManagerLayout() {
-  const { logout } = useAuth();
+  const { logout, branchId, token } = useAuth();
   const location = useLocation();
+
+  useEffect(() => {
+    if (branchId && token) {
+      websocketService.connect(branchId, token);
+    }
+
+    return () => {
+      websocketService.disconnect();
+    };
+  }, [branchId, token]);
 
   const navItems = [
     { path: '/branch', label: 'Home', icon: 'iconamoon:home-duotone' },

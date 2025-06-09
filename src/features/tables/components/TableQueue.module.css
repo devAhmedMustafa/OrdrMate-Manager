@@ -1,0 +1,208 @@
+.tableQueue {
+  background: rgba(255, 255, 255, 0.98);
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 12px rgba(59, 45, 104, 0.08);
+  backdrop-filter: blur(8px);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid rgba(106, 76, 147, 0.2);
+}
+
+.tableQueue h2 {
+  margin: 0;
+  color: #6a4c93;
+  font-size: 1.5rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dequeueButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 16px;
+  background: linear-gradient(135deg, #ef476f, #d64161);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 0.9rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(239, 71, 111, 0.2);
+}
+
+.dequeueButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(239, 71, 111, 0.3);
+}
+
+.dequeueButton:active {
+  transform: translateY(0);
+}
+
+.dequeueButton .icon {
+  font-size: 1.2rem;
+}
+
+.queueList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  padding: 10px;
+}
+
+.noReservations {
+  text-align: center;
+  color: #666;
+  padding: 32px;
+  background: rgba(248, 249, 250, 0.9);
+  border-radius: 12px;
+  backdrop-filter: blur(4px);
+  grid-column: 1 / -1;
+}
+
+.reservationCard {
+  background: white;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+}
+
+.reservationCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.reservationCard.seated {
+  background: linear-gradient(135deg, #8a63d2, #6a4c93);
+  color: white;
+  box-shadow: 0 4px 12px rgba(106, 76, 147, 0.2);
+}
+
+.customerInfo {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.customerInfo h3 {
+  margin: 0;
+  color: #6a4c93;
+  font-size: 1.1rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.reservationCard.seated .customerInfo h3 {
+  color: white;
+}
+
+.customerInfo p {
+  margin: 0;
+  color: #666;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.reservationCard.seated .customerInfo p {
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.statusInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.status {
+  padding: 8px 12px;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  transition: all 0.2s ease;
+  justify-content: center;
+}
+
+.pending {
+  background: linear-gradient(135deg, #ffd166, #ffc233);
+  color: #856404;
+}
+
+.confirmed {
+  background: linear-gradient(135deg, #06d6a0, #05bf8e);
+  color: white;
+}
+
+.cancelled {
+  background: linear-gradient(135deg, #ef476f, #d64161);
+  color: white;
+}
+
+.completed {
+  background: linear-gradient(135deg, #118ab2, #0d6efd);
+  color: white;
+}
+
+.seated {
+  background: linear-gradient(135deg, #8a63d2, #6a4c93);
+  color: white;
+  font-weight: 600;
+  padding: 10px 16px;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(106, 76, 147, 0.2);
+  letter-spacing: 0.5px;
+  font-size: 1rem;
+}
+
+.orderId {
+  font-size: 0.875rem;
+  color: #666;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: #f8f9fa;
+  padding: 6px 10px;
+  border-radius: 8px;
+  justify-content: center;
+}
+
+.reservationCard.seated .orderId {
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+}
+
+.orderStatus {
+  margin-left: 4px;
+  font-weight: 500;
+}
+
+.icon {
+  font-size: 1.1rem;
+  opacity: 0.8;
+}
+
+.reservationCard.seated .icon {
+  font-size: 1.3rem;
+  opacity: 1;
+  color: white;
+} 

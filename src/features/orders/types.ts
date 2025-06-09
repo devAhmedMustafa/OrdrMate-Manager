@@ -41,17 +41,14 @@ export interface KitchenQueue {
 
 export interface UnpaidOrder {
   orderId: string;
-  restaurantName: string;
-  customer: string;
+  orderNumber: string;
   orderType: string;
+  customer: string;
+  tableNumber?: number;
   paymentMethod: string;
   orderDate: string;
-  orderStatus: string;
   totalAmount: number;
-  branchId: string;
-  isPaid: boolean;
-  orderNumber: number;
-  tableNumber: number;
+  orderStatus: OrderStatus;
 }
 
 export type WebSocketMessage = {

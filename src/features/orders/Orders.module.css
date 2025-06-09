@@ -2,7 +2,7 @@
   padding: 24px;
   max-width: 1400px;
   margin: 0 auto;
-  height: 100%;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
   gap: 24px;
@@ -20,6 +20,15 @@
   color: #1a1a1a;
   font-size: 2rem;
   font-weight: 600;
+}
+
+.connectionStatus {
+  padding: 8px 16px;
+  border-radius: 4px;
+  color: white;
+  font-weight: 500;
+  font-size: 0.9rem;
+  background-color: #7B1FA2;
 }
 
 .status {
@@ -53,6 +62,7 @@
   border-bottom: 1px solid #e0e0e0;
   padding-bottom: 8px;
   margin-bottom: 24px;
+  flex-wrap: wrap;
 }
 
 .tab {
@@ -62,6 +72,8 @@
   color: #666;
   font-weight: 500;
   transition: all 0.2s ease;
+  border: none;
+  background: none;
 }
 
 .tab:hover {
@@ -74,24 +86,285 @@
   color: white;
 }
 
+.kitchenTabs {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.kitchenTabGroup {
+  position: relative;
+  display: inline-block;
+}
+
+.kitchenTab {
+  padding: 8px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  background: none;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.kitchenTab:hover {
+  background: #F3E5F5;
+  color: #7B1FA2;
+}
+
+.kitchenTab.active {
+  background: #7B1FA2;
+  color: white;
+}
+
+.kitchenTab::after {
+  content: '';
+  width: 0;
+  height: 0;
+  border-left: 4px solid transparent;
+  border-right: 4px solid transparent;
+  border-top: 4px solid currentColor;
+  transition: transform 0.2s ease;
+}
+
+.kitchenTabGroup:hover .unitButtons {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: all;
+}
+
+.unitButtons {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  opacity: 0;
+  transform: translateY(-10px);
+  pointer-events: none;
+  transition: all 0.2s ease;
+  z-index: 10;
+  min-width: 120px;
+}
+
+.unitButton {
+  padding: 6px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+  color: #666;
+  font-weight: 500;
+  transition: all 0.2s ease;
+  border: none;
+  background: none;
+  text-align: left;
+  white-space: nowrap;
+}
+
+.unitButton:hover {
+  background: #F3E5F5;
+  color: #7B1FA2;
+}
+
+.unitButton.active {
+  background: #7B1FA2;
+  color: white;
+}
+
 .content {
   flex: 1;
   background: white;
   border-radius: 16px;
   padding: 24px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  position: relative;
+  min-height: calc(100vh - 200px); /* Account for header and padding */
+}
+
+.ordersGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+  gap: 24px;
+}
+
+.kitchenSection {
+  background: #F3E5F5;
+  border-radius: 12px;
+  padding: 16px;
+}
+
+.kitchenSection h2 {
+  margin: 0 0 16px 0;
+  color: #7B1FA2;
+  font-size: 1.2rem;
+  font-weight: 600;
 }
 
 .ordersList {
   display: flex;
   flex-direction: column;
   gap: 16px;
+  padding-bottom: 16px; /* Add padding at bottom for better scrolling */
+}
+
+.orderCard {
+  background: white;
+  border-radius: 8px;
+  padding: 16px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  transition: all 0.2s ease;
+}
+
+.orderCard:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.orderHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.orderStatus {
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 500;
+  background: #E8F5E9;
+  color: #2E7D32;
+}
+
+.orderItems {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.orderItem {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px;
+  background: #F5F5F5;
+  border-radius: 4px;
+}
+
+.notes {
+  font-size: 0.9rem;
+  color: #666;
+  font-style: italic;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 48px;
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.unpaidOrders {
+  margin-top: 32px;
+  padding-top: 32px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.unpaidOrders h2 {
+  margin: 0 0 16px 0;
+  color: #1a1a1a;
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.orderDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.orderDetails p {
+  margin: 0;
+  color: #666;
+  font-size: 0.9rem;
 }
 
 .kitchenQueue {
-  display: flex;
-  flex-direction: column;
-  gap: 24px;
+  position: relative;
+  width: 100%;
+}
+
+.queueContent {
+  position: relative;
+  width: 100%;
+  opacity: 0;
+  transform: translateX(20px);
+  transition: opacity 0.3s ease, transform 0.3s ease;
+  pointer-events: none;
+  display: none;
+}
+
+.queueContent.active {
+  opacity: 1;
+  transform: translateX(0);
+  pointer-events: all;
+  display: block;
+}
+
+.queueContent.slideOut {
+  opacity: 0;
+  transform: translateX(-20px);
+}
+
+.queueContent::-webkit-scrollbar {
+  width: 6px;
+}
+
+.queueContent::-webkit-scrollbar-track {
+  background: #f1f1f1;
+  border-radius: 3px;
+}
+
+.queueContent::-webkit-scrollbar-thumb {
+  background: #7B1FA2;
+  border-radius: 3px;
+}
+
+.queueContent::-webkit-scrollbar-thumb:hover {
+  background: #9C27B0;
+}
+
+/* Animation keyframes */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideOut {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
 }
 
 .debugInfo {

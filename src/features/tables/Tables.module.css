@@ -1,119 +1,183 @@
 .container {
-  padding: 2rem;
-  max-width: 1200px;
-  margin: 0 auto;
+  padding: 20px;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 2rem;
+  margin-bottom: 20px;
 }
 
 .header h1 {
+  margin: 0;
+  color: #3b2d68;
   font-size: 2rem;
   font-weight: 600;
+}
+
+.content {
+  display: flex;
+  gap: 20px;
+  flex: 1;
+  min-height: 0;
+}
+
+.tableList {
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.tableButton {
+  background: white;
+  border: 1px solid #e2dbfc;
+  border-radius: 8px;
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tableButton:hover {
+  background: #f8f9fa;
+  border-color: #3b2d68;
+  transform: translateY(-1px);
+}
+
+.tableButton.selected {
+  background: #f0edff;
+  border-color: #3b2d68;
+}
+
+.tableNumber {
+  font-weight: 500;
   color: #3b2d68;
-  margin: 0;
+}
+
+.seats {
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.queueSection {
+  flex: 1;
+  overflow-y: auto;
+  padding-right: 10px;
+}
+
+.noTableSelected {
+  background: white;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  color: #666;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .addButton {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background-color: #3b2d68;
+  gap: 8px;
+  background: #3b2d68;
   color: white;
   border: none;
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  border-radius: 8px;
+  padding: 10px 20px;
   cursor: pointer;
+  font-weight: 500;
   transition: all 0.2s ease;
 }
 
 .addButton:hover {
-  background-color: #482bb0;
+  background: #482bb0;
   transform: translateY(-1px);
 }
 
 .icon {
-  font-size: 1.25rem;
+  font-size: 1.2rem;
 }
 
 .form {
-  background-color: white;
-  padding: 1.5rem;
-  border-radius: 0.5rem;
+  background: white;
+  border-radius: 8px;
+  padding: 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 2px 8px rgba(59, 45, 104, 0.1);
   border: 1px solid #e2dbfc;
-  margin-bottom: 2rem;
-  max-width: 500px;
 }
 
 .formGroup {
-  margin-bottom: 1rem;
+  margin-bottom: 20px;
 }
 
 .formGroup label {
   display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
+  margin-bottom: 8px;
   color: #3b2d68;
-  margin-bottom: 0.5rem;
+  font-weight: 500;
+  font-size: 0.9rem;
 }
 
 .formGroup input {
   width: 100%;
-  padding: 0.75rem;
+  padding: 10px;
   border: 1px solid #e2dbfc;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
+  border-radius: 6px;
+  font-size: 1rem;
   transition: all 0.2s ease;
 }
 
 .formGroup input:focus {
   outline: none;
   border-color: #3b2d68;
-  box-shadow: 0 0 0 2px rgba(59, 45, 104, 0.1);
+  box-shadow: 0 0 0 3px rgba(59, 45, 104, 0.1);
 }
 
 .formActions {
   display: flex;
-  gap: 1rem;
-  margin-top: 1.5rem;
+  gap: 12px;
+  justify-content: flex-end;
 }
 
 .submitButton {
-  padding: 0.75rem 1.5rem;
-  background-color: #3b2d68;
+  background: #3b2d68;
   color: white;
   border: none;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
+  border-radius: 6px;
+  padding: 10px 20px;
   cursor: pointer;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.cancelButton {
+  background: white;
+  color: #3b2d68;
+  border: 1px solid #e2dbfc;
+  border-radius: 6px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 500;
   transition: all 0.2s ease;
 }
 
 .submitButton:hover {
-  background-color: #482bb0;
-}
-
-.cancelButton {
-  padding: 0.75rem 1.5rem;
-  background-color: white;
-  color: #3b2d68;
-  border: 1px solid #e2dbfc;
-  border-radius: 0.375rem;
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.2s ease;
+  background: #482bb0;
+  transform: translateY(-1px);
 }
 
 .cancelButton:hover {
-  background-color: #f5f5f5;
+  background: #f8f9fa;
+  border-color: #3b2d68;
 }
 
 .tablesGrid {

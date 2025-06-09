@@ -13,10 +13,10 @@ import BranchMenuPage from './features/items/BranchMenu.page'
 import ItemDetailPage from './features/items/ItemDetail.page'
 import SettingsPage from './features/dashboard/components/Settings.page'
 import BranchRequestsPage from './features/admin/BranchRequests.page'
-import TablesPage from './features/tables/Tables.page'
+import { Tables as TablesPage } from './features/tables/Tables.page'
 import KitchensPage from './features/kitchens/Kitchens.page'
 import KitchenPowerPage from './features/branch/KitchenPower.page'
-import { Orders } from './features/orders/Orders.page'
+import Orders from './features/orders/Orders.page'
 
 function AppContent() {
 
