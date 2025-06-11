@@ -4,9 +4,11 @@ import { Icon } from '@iconify/react';
 import styles from './Login.module.css';
 import { authService, LoginCredentials } from './services/authService';
 import logo from '@/assets/OrdrMate.png';
+import useAuth from './useAuth.hook';
 
 export default function LoginPage() {
   const navigate = useNavigate();
+  const { login } = useAuth();
   const [credentials, setCredentials] = useState<LoginCredentials>({
     username: '',
     password: ''
@@ -30,15 +32,8 @@ export default function LoginPage() {
     try {
       const response = await authService.login(credentials);
       
-      // Store auth data
-      localStorage.setItem('token', response.token);
-      localStorage.setItem('role', response.role);
-      if (response.restaurantId) {
-        localStorage.setItem('restaurantId', response.restaurantId);
-      }
-      if (response.branchId) {
-        localStorage.setItem('branchId', response.branchId);
-      }
+      // Use auth context to store credentials
+      login(response.token, response.role, response.restaurantId || '', response.branchId);
 
       // Redirect based on role
       switch (response.role) {
