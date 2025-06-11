@@ -5,9 +5,24 @@ export interface Restaurant {
   name: string;
 }
 
+export interface RestaurantProfile {
+  description: string;
+  logoUrl: string;
+  coverImageUrl: string;
+}
+
 export const restaurantService = {
   getRestaurant: async (restaurantId: string): Promise<Restaurant> => {
     const response = await api.get(`/Restaurant/${restaurantId}`);
     return response.data;
+  },
+
+  getProfile: async (restaurantId: string): Promise<RestaurantProfile> => {
+    const response = await api.get(`/Restaurant/profile/${restaurantId}`);
+    return response.data;
+  },
+
+  updateProfile: async (restaurantId: string, profile: RestaurantProfile): Promise<void> => {
+    await api.put(`/Restaurant/profile/${restaurantId}`, profile);
   }
 }; 

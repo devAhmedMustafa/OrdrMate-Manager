@@ -2,6 +2,11 @@ import api from '../../../utils/api';
 import { websocketService } from '../../dashboard/services/websocketService';
 import { OrderStatus, Order, OrderItem, UnpaidOrder } from '../types';
 
+export interface CheckPreparedResponse {
+  dequedItemId: string;
+  nextItemId: string;
+}
+
 class OrderService {
   async getItemQueues(branchId: string): Promise<Record<string, Order[]>> {
     const response = await api.get(`/Order/item_queues/${branchId}`);
@@ -73,6 +78,20 @@ class OrderService {
 
   async markItemAsPrepared(branchId: string, kitchenName: string, kitchenUnitId: string): Promise<void> {
     await api.post(`/Order/check-prepared/${branchId}/${kitchenName}/${kitchenUnitId}`);
+  }
+
+  async checkItemAsPrepared(
+    branchId: string,
+    kitchenName: string,
+    kitchenUnitId: string,
+    token: string
+  ): Promise<CheckPreparedResponse> {
+    const response = await api.post(`/Order/check-prepared/${branchId}/${kitchenName}/${kitchenUnitId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
   }
 }
 

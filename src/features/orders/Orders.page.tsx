@@ -218,6 +218,19 @@ function Orders() {
     }, 300); // Match this with CSS transition duration
   };
 
+  const handleItemMarkedAsDone = (dequedItemId: string) => {
+    setKitchenQueues(prev => {
+      const newQueues = { ...prev };
+      Object.keys(newQueues).forEach(kitchenName => {
+        newQueues[kitchenName] = newQueues[kitchenName].map(order => ({
+          ...order,
+          Items: order.Items.filter(item => item.ItemId !== dequedItemId)
+        })).filter(order => order.Items.length > 0);
+      });
+      return newQueues;
+    });
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -318,6 +331,7 @@ function Orders() {
                     )?.NextItem
                   }}
                   kitchenUnitId={unitId}
+                  onItemMarkedAsDone={handleItemMarkedAsDone}
                 />
               );
             })()}

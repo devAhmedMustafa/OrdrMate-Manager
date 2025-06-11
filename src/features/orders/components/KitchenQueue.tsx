@@ -3,14 +3,15 @@ import { KitchenItem } from './KitchenItem';
 import styles from './KitchenQueue.module.css';
 import useAuth from '../../auth/useAuth.hook';
 import { useState, useEffect } from 'react';
-import { orderService } from '../services/orderService';
+import { orderService, CheckPreparedResponse } from '../services/orderService';
 
 interface KitchenQueueProps {
   queue: KitchenQueueType;
   kitchenUnitId: string;
+  onItemMarkedAsDone?: (dequedItemId: string) => void;
 }
 
-export function KitchenQueue({ queue, kitchenUnitId }: KitchenQueueProps) {
+export function KitchenQueue({ queue, kitchenUnitId, onItemMarkedAsDone }: KitchenQueueProps) {
   const { branchId, token } = useAuth();
   const [isAnimating, setIsAnimating] = useState(false);
   const [localItems, setLocalItems] = useState<Order['Items']>([]);
@@ -35,17 +36,19 @@ export function KitchenQueue({ queue, kitchenUnitId }: KitchenQueueProps) {
 
     setIsAnimating(true);
     try {
-      await orderService.markItemAsPrepared(
+      const response = await orderService.checkItemAsPrepared(
         branchId,
         queue.KitchenName,
         currentItem.KitchenUnitId,
+        token
       );
       
-      // Only update local items if there are remaining items
-      if (remainingItems.length > 0) {
-        setLocalItems(remainingItems);
-      } else {
-        setLocalItems([]);
+      // Wait for the response before updating the queue
+      if (response.dequedItemId === currentItem.ItemId) {
+        // Remove the current item from the queue
+        setLocalItems(prev => prev.filter(item => item.ItemId !== currentItem.ItemId));
+        // Notify parent component
+        onItemMarkedAsDone?.(response.dequedItemId);
       }
       
       // Reset animation state after a short delay
