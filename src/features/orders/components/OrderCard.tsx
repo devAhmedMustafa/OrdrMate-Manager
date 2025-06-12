@@ -9,13 +9,13 @@ interface OrderCardProps {
 export function OrderCard({ order, onClick }: OrderCardProps) {
   const getStatusColor = (status: OrderStatus): string => {
     switch (status) {
-      case 'Pending':
+      case OrderStatus.Pending:
         return '#FFA726';
-      case 'Preparing':
+      case OrderStatus.InProgress:
         return '#42A5F5';
-      case 'Ready':
+      case OrderStatus.Ready:
         return '#66BB6A';
-      case 'Completed':
+      case OrderStatus.Delivered:
         return '#66BB6A';
       default:
         return '#9E9E9E';
@@ -49,22 +49,23 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
           {order.OrderType && (
             <span className={styles.orderType}>{order.OrderType}</span>
           )}
+          <span className={styles.date}>{new Date(order.OrderDate || '').toLocaleString()}</span>
         </div>
-        <span 
+        <div 
           className={styles.status}
-          style={{ backgroundColor: getStatusColor(order.Status) }}
+          style={{ backgroundColor: getStatusColor(order.Status as unknown as OrderStatus) }}
         >
-          {order.Status}
-        </span>
+          {getStatusText(order.Status as unknown as OrderStatus)}
+        </div>
       </div>
       
       {order.Items.length > 0 && (
         <div className={styles.items}>
           {order.Items.map((item, index) => (
             <div key={index} className={styles.item}>
-              <span className={styles.itemName}>{item.ItemName}</span>
-              <span className={styles.quantity}>x{item.Quantity}</span>
-              <span className={styles.price}>${item.Price.toFixed(2)}</span>
+              <span className={styles.quantity}>{item.Quantity}x</span>
+              <span className={styles.name}>{item.ItemName}</span>
+              {item.Notes && <span className={styles.notes}>{item.Notes}</span>}
             </div>
           ))}
         </div>
