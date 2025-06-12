@@ -18,7 +18,9 @@ export function KitchenQueue({ queue, kitchenUnitId, onItemMarkedAsDone }: Kitch
   
   // Get all items for this kitchen unit
   const allItems = queue.Orders.reduce((items: any[], order) => {
-    const orderItems = order.Items.filter(item => item.KitchenUnitId === kitchenUnitId);
+    const orderItems = order.Items.filter(item => 
+      String(item.KitchenUnitId) === String(kitchenUnitId)
+    );
     return [...items, ...orderItems];
   }, []);
   

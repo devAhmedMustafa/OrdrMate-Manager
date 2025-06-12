@@ -1,6 +1,5 @@
 import api from '../../../utils/api';
-import { websocketService } from '../../dashboard/services/websocketService';
-import { OrderStatus, Order, OrderItem, UnpaidOrder } from '../types';
+import { OrderStatus, Order, UnpaidOrder } from '../types';
 
 export interface CheckPreparedResponse {
   dequedItemId: string;
@@ -92,6 +91,21 @@ class OrderService {
       }
     });
     return response.data;
+  }
+
+  async getAllOrders(branchId: string): Promise<Order[]> {
+    const response = await api.get(`/Order/list/${branchId}`);
+    return response.data.map((order: any) => ({
+      OrderId: order.orderId,
+      Items: [], // Items will be populated separately
+      Status: order.orderStatus,
+      IsBeingPrepared: false,
+      OrderType: order.orderType,
+      OrderDate: order.orderDate,
+      TotalAmount: order.totalAmount,
+      IsPaid: order.isPaid,
+      Customer: order.customer
+    }));
   }
 }
 

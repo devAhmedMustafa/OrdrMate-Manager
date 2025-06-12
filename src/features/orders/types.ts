@@ -28,9 +28,14 @@ export interface OrderStatusUpdate {
 export interface Order {
   OrderId: string;
   Items: OrderItem[];
-  Status: OrderStatus;
+  Status: string;
   IsBeingPrepared: boolean;
   NextItem?: OrderItem;
+  OrderType?: string;
+  OrderDate?: string;
+  TotalAmount?: number;
+  IsPaid?: boolean;
+  Customer?: string;
 }
 
 export interface KitchenQueue {

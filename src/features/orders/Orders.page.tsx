@@ -14,6 +14,7 @@ function Orders() {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
   const [kitchenQueues, setKitchenQueues] = useState<Record<string, Order[]>>({});
   const [unpaidOrders, setUnpaidOrders] = useState<UnpaidOrder[]>([]);
+  const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('orders');
   const [previousTab, setPreviousTab] = useState<Tab>('orders');
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -36,8 +37,12 @@ function Orders() {
     if (!branchId || !token) return;
     
     try {
-      const queues = await orderService.getItemQueues(branchId);
+      const [queues, orders] = await Promise.all([
+        orderService.getItemQueues(branchId),
+        orderService.getAllOrders(branchId)
+      ]);
       setKitchenQueues(queues);
+      setAllOrders(orders);
     } catch (error) {
       console.error('Error fetching initial data:', error);
     }
@@ -47,8 +52,12 @@ function Orders() {
     if (!branchId || !token) return;
     
     try {
-      const data = await orderService.getUnpaidOrders(branchId);
-      setUnpaidOrders(data);
+      const [unpaidData, ordersData] = await Promise.all([
+        orderService.getUnpaidOrders(branchId),
+        orderService.getAllOrders(branchId)
+      ]);
+      setUnpaidOrders(unpaidData);
+      setAllOrders(ordersData);
     } catch (error) {
       console.error('Error fetching orders:', error);
     }
@@ -105,7 +114,9 @@ function Orders() {
   }, [branchId, token]);
 
   const handleNewItem = (item: OrderItem) => {
-    if (!item.KitchenName) return;
+    if (!item.KitchenName) {
+      return;
+    }
 
     setKitchenQueues(prev => {
       const newQueues = { ...prev };
@@ -115,14 +126,21 @@ function Orders() {
 
       const existingOrder = newQueues[item.KitchenName].find(order => order.OrderId === item.OrderId);
       if (existingOrder) {
-        existingOrder.Items.push(item);
+        newQueues[item.KitchenName] = newQueues[item.KitchenName].map(order => 
+          order.OrderId === item.OrderId 
+            ? { ...order, Items: [...order.Items, item] }
+            : order
+        );
       } else {
-        newQueues[item.KitchenName].push({
-          OrderId: item.OrderId,
-          Items: [item],
-          Status: OrderStatus.Pending,
-          IsBeingPrepared: false
-        });
+        newQueues[item.KitchenName] = [
+          ...newQueues[item.KitchenName],
+          {
+            OrderId: item.OrderId,
+            Items: [item],
+            Status: 'Pending',
+            IsBeingPrepared: false
+          }
+        ];
       }
 
       return newQueues;
@@ -156,31 +174,30 @@ function Orders() {
   };
 
   const handleOrderReady = (orderId: string) => {
+    // Update kitchen queues
     setKitchenQueues(prev => {
       const newQueues = { ...prev };
       
       Object.keys(newQueues).forEach(kitchenName => {
         const orderIndex = newQueues[kitchenName].findIndex(o => o.OrderId === orderId);
         if (orderIndex !== -1) {
-          newQueues[kitchenName][orderIndex].Status = OrderStatus.Ready;
+          newQueues[kitchenName][orderIndex].Status = 'Ready';
           newQueues[kitchenName].splice(orderIndex, 1);
         }
       });
       
       return newQueues;
     });
-  };
 
-  // Create a Map to deduplicate orders
-  const orderMap = new Map<string, Order>();
-  Object.values(kitchenQueues).forEach(orders => {
-    orders.forEach(order => {
-      if (!orderMap.has(order.OrderId)) {
-        orderMap.set(order.OrderId, order);
-      }
-    });
-  });
-  const allOrders = Array.from(orderMap.values());
+    // Update all orders
+    setAllOrders(prev => 
+      prev.map(order => 
+        order.OrderId === orderId 
+          ? { ...order, Status: 'Ready' }
+          : order
+      )
+    );
+  };
 
   const handleMarkAsPaid = async (orderId: string) => {
     if (!token) return;
@@ -191,17 +208,6 @@ function Orders() {
       setUnpaidOrders(prev => prev.filter(order => order.orderId !== orderId));
     } catch (error) {
       console.error('Error marking order as paid:', error);
-    }
-  };
-
-  const handleStatusChange = async (orderId: string, newStatus: OrderStatus) => {
-    if (!token) return;
-    
-    try {
-      await orderService.updateOrderStatus(orderId, newStatus);
-      fetchOrders();
-    } catch (error) {
-      console.error('Error updating order status:', error);
     }
   };
 
@@ -263,22 +269,26 @@ function Orders() {
         </button>
         <div className={styles.kitchenTabs}>
           {Object.keys(kitchenQueues).map(kitchenName => {
-            const units = new Set<string>();
+            // Use a Map to ensure unique units per kitchen
+            const unitMap = new Map<string, boolean>();
             kitchenQueues[kitchenName].forEach(order => {
               order.Items.forEach(item => {
-                units.add(item.KitchenUnitId || '0');
+                const unitId = item.KitchenUnitId || '0';
+                unitMap.set(unitId, true);
               });
             });
+            const units = Array.from(unitMap.keys());
+            
             return (
               <div key={kitchenName} className={styles.kitchenTabGroup}>
                 <button
-                  className={`${styles.kitchenTab} ${Array.from(units).some(unitId => activeTab === `${kitchenName}-${unitId}`) ? styles.active : ''}`}
-                  onClick={() => handleTabChange(`${kitchenName}-${Array.from(units)[0]}`)}
+                  className={`${styles.kitchenTab} ${units.some(unitId => activeTab === `${kitchenName}-${unitId}`) ? styles.active : ''}`}
+                  onClick={() => handleTabChange(`${kitchenName}-${units[0]}`)}
                 >
                   {kitchenName}
                 </button>
                 <div className={styles.unitButtons}>
-                  {Array.from(units).map(unitId => (
+                  {units.map(unitId => (
                     <button
                       key={`${kitchenName}-${unitId}`}
                       className={`${styles.unitButton} ${activeTab === `${kitchenName}-${unitId}` ? styles.active : ''}`}
@@ -321,15 +331,16 @@ function Orders() {
           <div className={`${styles.queueContent} ${activeTab.startsWith(activeTab.split('-')[0]) ? styles.active : ''} ${isTransitioning && !previousTab.startsWith(activeTab.split('-')[0]) ? styles.slideOut : ''}`}>
             {(() => {
               const [kitchenName, unitId] = activeTab.split('-');
+              const queueData = {
+                KitchenName: kitchenName,
+                Orders: kitchenQueues[kitchenName] || [],
+                NextItem: kitchenQueues[kitchenName]?.find(o => 
+                  o.NextItem?.KitchenUnitId === unitId
+                )?.NextItem
+              };
               return (
                 <KitchenQueue
-                  queue={{
-                    KitchenName: kitchenName,
-                    Orders: kitchenQueues[kitchenName] || [],
-                    NextItem: kitchenQueues[kitchenName]?.find(o => 
-                      o.NextItem?.KitchenUnitId === unitId
-                    )?.NextItem
-                  }}
+                  queue={queueData}
                   kitchenUnitId={unitId}
                   onItemMarkedAsDone={handleItemMarkedAsDone}
                 />
