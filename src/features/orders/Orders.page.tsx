@@ -1,8 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { KitchenQueue } from './components/KitchenQueue';
 import { OrderCard } from './components/OrderCard';
 import { UnpaidOrders } from './components/UnpaidOrders';
-import { Order, OrderStatus, UnpaidOrder, OrderItem } from './types';
+import { Order, UnpaidOrder, OrderItem } from './types';
 import styles from './Orders.module.css';
 import useAuth from '../auth/useAuth.hook';
 import { orderService } from './services/orderService';
@@ -19,19 +19,6 @@ function Orders() {
   const [previousTab, setPreviousTab] = useState<Tab>('orders');
   const [isTransitioning, setIsTransitioning] = useState(false);
   const { branchId, token } = useAuth();
-
-  // Get unique kitchen units from all orders
-  const kitchenUnits = Object.entries(kitchenQueues).reduce((acc, [kitchenName, orders]) => {
-    const units = new Set<string>();
-    orders.forEach(order => {
-      order.Items.forEach(item => {
-        // Add a default unit if KitchenUnitId is not present
-        const unitId = item.KitchenUnitId || '0';
-        units.add(`${kitchenName}-${unitId}`);
-      });
-    });
-    return [...acc, ...Array.from(units)];
-  }, [] as string[]);
 
   const fetchInitialData = async () => {
     if (!branchId || !token) return;

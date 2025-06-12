@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Order, OrderStatus } from '../../orders/types';
+import { Order } from '../../orders/types';
 import { TableReservation, Table } from '../../tables/services/tableService';
 import { orderService } from '../../orders/services/orderService';
 import { tableService } from '../../tables/services/tableService';

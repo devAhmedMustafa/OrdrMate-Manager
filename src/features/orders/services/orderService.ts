@@ -53,7 +53,7 @@ class OrderService {
             Quantity: item.quantity,
             ImageUrl: item.imageUrl
           }],
-          Status: OrderStatus.Pending,
+          Status: 'Pending' as OrderStatus,
           IsBeingPrepared: false
         });
       }
@@ -72,7 +72,7 @@ class OrderService {
   }
 
   async updateOrderStatus(orderId: string, status: OrderStatus): Promise<void> {
-    await api.put(`/Order/${orderId}/status`, { status });
+    await api.put(`/Order/${orderId}/status`, { status: status.toString() });
   }
 
   async markItemAsPrepared(branchId: string, kitchenName: string, kitchenUnitId: string): Promise<void> {
@@ -98,7 +98,7 @@ class OrderService {
     return response.data.map((order: any) => ({
       OrderId: order.orderId,
       Items: [], // Items will be populated separately
-      Status: order.orderStatus,
+      Status: order.orderStatus as OrderStatus,
       IsBeingPrepared: false,
       OrderType: order.orderType,
       OrderDate: order.orderDate,

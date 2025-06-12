@@ -1,4 +1,4 @@
-import { UnpaidOrder, OrderStatus } from '../types';
+import { UnpaidOrder } from '../types';
 import styles from './UnpaidOrders.module.css';
 
 interface UnpaidOrdersProps {

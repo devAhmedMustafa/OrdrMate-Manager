@@ -7,21 +7,16 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, onClick }: OrderCardProps) {
-  const getStatusColor = (status: string) => {
-    switch (status.toLowerCase()) {
-      case 'pending':
-        return '#FFC107';
-      case 'queued':
-        return '#7B1FA2';
-      case 'inprogress':
-      case 'in progress':
-        return '#9C27B0';
-      case 'ready':
-        return '#4CAF50';
-      case 'delivered':
-        return '#607D8B';
-      case 'cancelled':
-        return '#F44336';
+  const getStatusColor = (status: OrderStatus): string => {
+    switch (status) {
+      case 'Pending':
+        return '#FFA726';
+      case 'Preparing':
+        return '#42A5F5';
+      case 'Ready':
+        return '#66BB6A';
+      case 'Completed':
+        return '#66BB6A';
       default:
         return '#9E9E9E';
     }

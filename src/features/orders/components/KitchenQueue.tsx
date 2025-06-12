@@ -3,7 +3,7 @@ import { KitchenItem } from './KitchenItem';
 import styles from './KitchenQueue.module.css';
 import useAuth from '../../auth/useAuth.hook';
 import { useState, useEffect } from 'react';
-import { orderService, CheckPreparedResponse } from '../services/orderService';
+import { orderService } from '../services/orderService';
 
 interface KitchenQueueProps {
   queue: KitchenQueueType;
