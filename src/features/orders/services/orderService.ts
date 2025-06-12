@@ -1,80 +1,112 @@
 import api from '../../../utils/api';
+import { OrderStatus, Order, UnpaidOrder } from '../types';
 
-export interface OrderItem {
-  OrderId: string;
-  OrderDate: string;
-  ItemName: string;
-  KitchenName: string;
-  ItemId: string;
-  KitchenUnitId: string;
-  Price: number;
-  Quantity: number;
-  ImageUrl?: string;
-  Notes?: string;
+export interface CheckPreparedResponse {
+  dequedItemId: string;
+  nextItemId: string;
 }
 
-export enum OrderStatus {
-  Pending = 0,
-  Queued = 1,
-  InProgress = 2,
-  Ready = 3,
-  Delivered = 4,
-  Cancelled = -1
-}
+class OrderService {
+  async getItemQueues(branchId: string): Promise<Record<string, Order[]>> {
+    const response = await api.get(`/Order/item_queues/${branchId}`);
+    const items: any[] = response.data;
+    
+    // Group items by kitchen name
+    const queues: Record<string, Order[]> = {};
+    
+    items.forEach(item => {
+      if (!item.kitchenName) return;
 
-export interface Order {
-  OrderId: string;
-  Items: OrderItem[];
-  Status: OrderStatus;
-  IsBeingPrepared: boolean;
-  NextItem?: OrderItem;
-}
+      // Ensure KitchenUnitId is set
+      if (!item.kitchenUnitId) {
+        item.kitchenUnitId = '0';
+      }
 
-export interface UnpaidOrder {
-  orderId: string;
-  restaurantName: string;
-  customer: string;
-  orderType: string;
-  paymentMethod: string;
-  orderDate: string;
-  orderStatus: string;
-  totalAmount: number;
-  branchId: string;
-  isPaid: boolean;
-  orderNumber: number;
-  tableNumber: number;
-}
+      if (!queues[item.kitchenName]) {
+        queues[item.kitchenName] = [];
+      }
 
-export const orderService = {
-  // WebSocket connection
-  getWebSocketUrl: (branchId: string): string => {
-    const isDevelopment = process.env.NODE_ENV === 'development';
-    const wsProtocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
-    const baseUrl = isDevelopment ? 'localhost:5126' : 'ordrmate.starplusgames.com';
-    return `${wsProtocol}//${baseUrl}/ws/orders/${branchId}`;
-  },
+      const existingOrder = queues[item.kitchenName].find(order => order.OrderId === item.orderId);
+      if (existingOrder) {
+        existingOrder.Items.push({
+          OrderId: item.orderId,
+          OrderDate: item.orderDate,
+          ItemName: item.itemName,
+          KitchenName: item.kitchenName,
+          ItemId: item.itemId,
+          KitchenUnitId: item.kitchenUnitId.toString(),
+          Price: item.price,
+          Quantity: item.quantity,
+          ImageUrl: item.imageUrl
+        });
+      } else {
+        queues[item.kitchenName].push({
+          OrderId: item.orderId,
+          Items: [{
+            OrderId: item.orderId,
+            OrderDate: item.orderDate,
+            ItemName: item.itemName,
+            KitchenName: item.kitchenName,
+            ItemId: item.itemId,
+            KitchenUnitId: item.kitchenUnitId.toString(),
+            Price: item.price,
+            Quantity: item.quantity,
+            ImageUrl: item.imageUrl
+          }],
+          Status: 'Pending' as OrderStatus,
+          IsBeingPrepared: false
+        });
+      }
+    });
 
-  // Fetch unpaid orders
-  getUnpaidOrders: async (branchId: string): Promise<UnpaidOrder[]> => {
+    return queues;
+  }
+
+  async getUnpaidOrders(branchId: string): Promise<UnpaidOrder[]> {
     const response = await api.get(`/Order/unpaid/${branchId}`);
     return response.data;
-  },
+  }
 
-  // Mark order as paid manually
-  markAsPaid: async (orderId: string): Promise<void> => {
-    await api.post(`/Order/${orderId}/pay`);
-  },
+  async markAsPaid(orderId: string): Promise<void> {
+    await api.post(`/Order/${orderId}/mark-as-paid`);
+  }
 
-  // Mark item as prepared
-  markItemAsPrepared: async (
+  async updateOrderStatus(orderId: string, status: OrderStatus): Promise<void> {
+    await api.put(`/Order/${orderId}/status`, { status: status.toString() });
+  }
+
+  async markItemAsPrepared(branchId: string, kitchenName: string, kitchenUnitId: string): Promise<void> {
+    await api.post(`/Order/check-prepared/${branchId}/${kitchenName}/${kitchenUnitId}`);
+  }
+
+  async checkItemAsPrepared(
     branchId: string,
     kitchenName: string,
-    kitchenUnitId: string
-  ): Promise<void> => {
-    await api.post(`/Order/prepare/${branchId}/${kitchenName}/${kitchenUnitId}`);
-  },
-
-  updateOrderStatus: async (orderId: string, status: OrderStatus): Promise<void> => {
-    await api.put(`/Order/${orderId}/status`, { status });
+    kitchenUnitId: string,
+    token: string
+  ): Promise<CheckPreparedResponse> {
+    const response = await api.post(`/Order/check-prepared/${branchId}/${kitchenName}/${kitchenUnitId}`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    return response.data;
   }
-}; 
+
+  async getAllOrders(branchId: string): Promise<Order[]> {
+    const response = await api.get(`/Order/list/${branchId}`);
+    return response.data.map((order: any) => ({
+      OrderId: order.orderId,
+      Items: [], // Items will be populated separately
+      Status: order.orderStatus as OrderStatus,
+      IsBeingPrepared: false,
+      OrderType: order.orderType,
+      OrderDate: order.orderDate,
+      TotalAmount: order.totalAmount,
+      IsPaid: order.isPaid,
+      Customer: order.customer
+    }));
+  }
+}
+
+export const orderService = new OrderService();

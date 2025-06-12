@@ -13,19 +13,17 @@ import BranchMenuPage from './features/items/BranchMenu.page'
 import ItemDetailPage from './features/items/ItemDetail.page'
 import SettingsPage from './features/dashboard/components/Settings.page'
 import BranchRequestsPage from './features/admin/BranchRequests.page'
-import TablesPage from './features/tables/Tables.page'
+import { Tables as TablesPage } from './features/tables/Tables.page'
 import KitchensPage from './features/kitchens/Kitchens.page'
 import KitchenPowerPage from './features/branch/KitchenPower.page'
-import { Orders } from './features/orders/Orders.page'
+import Orders from './features/orders/Orders.page'
+import DashboardHome from './features/dashboard/components/DashboardHome.page'
 
-function App() {
-
+function AppContent() {
   return (
-    <AuthProvider>
-      <main>
-        <BrowserRouter>
+    <main>
+      <BrowserRouter>
         <Routes>
-
           <Route path='/login' element={<LoginPage/>}/>
 
           <Route path='/' element={
@@ -46,7 +44,7 @@ function App() {
               <BranchManagerLayout />
             </BranchManagerRoute>
           }>
-            <Route index element={<div>Branch Dashboard Home</div>} />
+            <Route index element={<DashboardHome />} />
             <Route path="menu" element={<BranchMenuPage />} />
             <Route path="orders" element={<Orders />} />
             <Route path="tables" element={<TablesPage />} />
@@ -64,12 +62,16 @@ function App() {
               <BranchRequestsPage />
             </AdminRoute>
           }/>
-
         </Routes>
-        </BrowserRouter>
-      </main>
-    </AuthProvider>
-  )
+      </BrowserRouter>
+    </main>
+  );
 }
 
-export default App
+export default function App() {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
+  );
+}

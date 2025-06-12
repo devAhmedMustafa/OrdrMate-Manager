@@ -7,50 +7,68 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, onClick }: OrderCardProps) {
-  const getStatusColor = (status: OrderStatus) => {
+  const getStatusColor = (status: OrderStatus): string => {
     switch (status) {
-      case OrderStatus.Pending:
-        return '#FFC107';
-      case OrderStatus.Queued:
-        return '#7B1FA2';
-      case OrderStatus.InProgress:
-        return '#9C27B0';
-      case OrderStatus.Ready:
-        return '#4CAF50';
-      case OrderStatus.Delivered:
-        return '#607D8B';
-      case OrderStatus.Cancelled:
-        return '#F44336';
+      case 'Pending':
+        return '#FFA726';
+      case 'Preparing':
+        return '#42A5F5';
+      case 'Ready':
+        return '#66BB6A';
+      case 'Completed':
+        return '#66BB6A';
       default:
         return '#9E9E9E';
     }
   };
 
   const getStatusText = (status: OrderStatus) => {
-    return OrderStatus[status];
+    switch (status) {
+      case OrderStatus.Pending:
+        return 'Pending';
+      case OrderStatus.Queued:
+        return 'Queued';
+      case OrderStatus.InProgress:
+        return 'In Progress';
+      case OrderStatus.Ready:
+        return 'Ready';
+      case OrderStatus.Delivered:
+        return 'Delivered';
+      case OrderStatus.Cancelled:
+        return 'Cancelled';
+      default:
+        return 'Unknown';
+    }
   };
 
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.header}>
-        <h3>Order #{order.OrderId}</h3>
+        <div className={styles.orderInfo}>
+          <h3>Order #{order.OrderId}</h3>
+          {order.OrderType && (
+            <span className={styles.orderType}>{order.OrderType}</span>
+          )}
+        </div>
         <span 
           className={styles.status}
           style={{ backgroundColor: getStatusColor(order.Status) }}
         >
-          {getStatusText(order.Status)}
+          {order.Status}
         </span>
       </div>
       
-      <div className={styles.items}>
-        {order.Items.map((item, index) => (
-          <div key={index} className={styles.item}>
-            <span className={styles.itemName}>{item.ItemName}</span>
-            <span className={styles.quantity}>x{item.Quantity}</span>
-            <span className={styles.price}>${item.Price.toFixed(2)}</span>
-          </div>
-        ))}
-      </div>
+      {order.Items.length > 0 && (
+        <div className={styles.items}>
+          {order.Items.map((item, index) => (
+            <div key={index} className={styles.item}>
+              <span className={styles.itemName}>{item.ItemName}</span>
+              <span className={styles.quantity}>x{item.Quantity}</span>
+              <span className={styles.price}>${item.Price.toFixed(2)}</span>
+            </div>
+          ))}
+        </div>
+      )}
 
       {order.NextItem && (
         <div className={styles.nextItem}>
@@ -60,9 +78,28 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
       )}
 
       <div className={styles.footer}>
-        <span className={styles.total}>
-          Total: ${order.Items.reduce((sum, item) => sum + (item.Price * item.Quantity), 0).toFixed(2)}
-        </span>
+        <div className={styles.orderDetails}>
+          {order.Customer && (
+            <div className={styles.detail}>
+              <span className={styles.label}>Customer:</span>
+              <span className={styles.value}>{order.Customer}</span>
+            </div>
+          )}
+          {order.OrderDate && (
+            <div className={styles.detail}>
+              <span className={styles.label}>Date:</span>
+              <span className={styles.value}>
+                {new Date(order.OrderDate).toLocaleString()}
+              </span>
+            </div>
+          )}
+          <div className={styles.detail}>
+            <span className={styles.label}>Total:</span>
+            <span className={styles.total}>
+              ${order.TotalAmount?.toFixed(2) || order.Items.reduce((sum, item) => sum + (item.Price * item.Quantity), 0).toFixed(2)}
+            </span>
+          </div>
+        </div>
         {order.IsBeingPrepared && (
           <span className={styles.preparing}>Preparing...</span>
         )}

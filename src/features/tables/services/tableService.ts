@@ -6,21 +6,47 @@ export interface Table {
   branchId: string;
 }
 
-export const tableService = {
-  // Get all tables for a branch
-  getBranchTables: async (branchId: string): Promise<Table[]> => {
+export enum OrderStatus {
+  Queued = 'Queued',
+  Ready = 'Ready',
+  Delivered = 'Delivered'
+}
+
+export interface TableReservation {
+  tableNumber: number;
+  customerName: string;
+  reservationDate: string;
+  reservationStatus: string;
+  orderId: string;
+  orderStatus: OrderStatus;
+}
+
+class TableService {
+  async getTables(branchId: string): Promise<Table[]> {
     const response = await api.get(`/Table/${branchId}`);
     return response.data;
-  },
+  }
+
+  async getTableQueue(branchId: string, tableNumber: number): Promise<TableReservation[]> {
+    const response = await api.get(`/Table/queue/${branchId}/${tableNumber}`);
+    return response.data;
+  }
 
   // Create a new table
-  createTable: async (table: Table): Promise<Table> => {
+  async createTable(table: Table): Promise<Table> {
     const response = await api.post('/Table', table);
     return response.data;
-  },
+  }
 
   // Delete a table
-  deleteTable: async (branchId: string, tableNumber: number): Promise<void> => {
+  async deleteTable(branchId: string, tableNumber: number): Promise<void> {
     await api.delete(`/Table/${branchId}/${tableNumber}`);
   }
-}; 
+
+  // Dequeue a table
+  async dequeueTable(branchId: string, tableNumber: number): Promise<void> {
+    await api.post(`/Table/deque/${branchId}/${tableNumber}`);
+  }
+}
+
+export const tableService = new TableService(); 
