@@ -58,6 +58,23 @@ export default function BranchRequestsPage() {
     setCredentials(null);
   };
 
+  if (showCredentials && credentials) {
+    return (
+      <div className={styles.credentialsPopup}>
+        <div className={styles.credentialsContent}>
+          <h3>Branch Manager Credentials</h3>
+          <div className={styles.credentialsInfo}>
+            <p><strong>Username:</strong> {credentials.username}</p>
+            <p><strong>Password:</strong> {credentials.password}</p>
+          </div>
+          <button onClick={handleCloseCredentials} className={styles.closeButton}>
+            Close
+          </button>
+        </div>
+      </div>
+    );
+  }
+
   if (loading) {
     return (
       <div className={styles.loading}>
@@ -91,21 +108,6 @@ export default function BranchRequestsPage() {
 
   return (
     <div className={styles.container}>
-      {showCredentials && credentials && (
-        <div className={styles.credentialsPopup}>
-          <div className={styles.credentialsContent}>
-            <h3>Branch Manager Credentials</h3>
-            <div className={styles.credentialsInfo}>
-              <p><strong>Username:</strong> {credentials.username}</p>
-              <p><strong>Password:</strong> {credentials.password}</p>
-            </div>
-            <button onClick={handleCloseCredentials} className={styles.closeButton}>
-              Close
-            </button>
-          </div>
-        </div>
-      )}
-      
       <div className={styles.header}>
         <h1>Branch Requests</h1>
         <p>Review and approve new branch requests</p>
