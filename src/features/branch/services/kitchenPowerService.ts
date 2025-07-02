@@ -27,14 +27,18 @@ export interface UpdateKitchenPowerData {
 }
 
 export const kitchenPowerService = {
-  getRestaurantKitchens: async (restaurantId: string): Promise<Kitchen[]> => {
-    const response = await api.get(`/Kitchen/${restaurantId}`);
+  getRestaurantKitchens: async (restaurantId: string, token: string): Promise<Kitchen[]> => {
+    const response = await api.get(`/Kitchen/${restaurantId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
     return response.data;
   },
 
-  getKitchenPower: async (branchId: string, kitchenId: string): Promise<KitchenPower | null> => {
+  getKitchenPower: async (branchId: string, kitchenId: string, token: string): Promise<KitchenPower | null> => {
     try {
-      const response = await api.get(`/Kitchen/power/${branchId}/${kitchenId}`);
+      const response = await api.get(`/Kitchen/power/${branchId}/${kitchenId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
       return {
         ...response.data,
         status: parseInt(response.data.status)
@@ -50,9 +54,12 @@ export const kitchenPowerService = {
   updateKitchenPower: async (
     branchId: string,
     kitchenId: string,
-    data: UpdateKitchenPowerData
+    data: UpdateKitchenPowerData,
+    token: string
   ): Promise<KitchenPower> => {
-    const response = await api.put(`/Kitchen/power/${branchId}/${kitchenId}`, data);
+    const response = await api.put(`/Kitchen/power/${branchId}/${kitchenId}`, data, {
+      headers: { Authorization: `Bearer ${token}` }
+    });
     return {
       ...response.data,
       status: parseInt(response.data.status)
@@ -62,12 +69,15 @@ export const kitchenPowerService = {
   createKitchenPower: async (
     branchId: string,
     kitchenId: string,
-    units: number = 1
+    units: number = 1,
+    token: string
   ): Promise<KitchenPower> => {
     const response = await api.post('/Kitchen/power/', {
       branchId,
       kitchenId,
       Units: units
+    }, {
+      headers: { Authorization: `Bearer ${token}` }
     });
     return {
       ...response.data,

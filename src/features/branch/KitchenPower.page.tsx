@@ -46,15 +46,15 @@ export default function KitchenPowerPage() {
   const fetchData = async () => {
     try {
       // First fetch all kitchens
-      const kitchensData = await kitchenPowerService.getRestaurantKitchens(restaurantId!);
+      const kitchensData = await kitchenPowerService.getRestaurantKitchens(restaurantId!, token!);
       setKitchens(kitchensData);
 
       // Then fetch power data for each kitchen
       const powerPromises = kitchensData.map(async kitchen => {
-        let power = await kitchenPowerService.getKitchenPower(branchId!, kitchen.id);
+        let power = await kitchenPowerService.getKitchenPower(branchId!, kitchen.id, token!);
         if (!power) {
           try {
-            power = await kitchenPowerService.createKitchenPower(branchId!, kitchen.id, 1);
+            power = await kitchenPowerService.createKitchenPower(branchId!, kitchen.id, 1, token!);
           } catch (createErr) {
             console.error(`Failed to create kitchen power for kitchen ${kitchen.id}:`, createErr);
             return null;
@@ -96,7 +96,8 @@ export default function KitchenPowerPage() {
         {
           units,
           status: currentStatus
-        }
+        },
+        token!
       );
       
       setKitchenPowers(prev => ({
