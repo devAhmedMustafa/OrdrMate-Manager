@@ -50,9 +50,18 @@ export default function KitchenPowerPage() {
       setKitchens(kitchensData);
 
       // Then fetch power data for each kitchen
-      const powerPromises = kitchensData.map(kitchen =>
-        kitchenPowerService.getKitchenPower(branchId!, kitchen.id)
-      );
+      const powerPromises = kitchensData.map(async kitchen => {
+        let power = await kitchenPowerService.getKitchenPower(branchId!, kitchen.id);
+        if (!power) {
+          try {
+            power = await kitchenPowerService.createKitchenPower(branchId!, kitchen.id, 1);
+          } catch (createErr) {
+            console.error(`Failed to create kitchen power for kitchen ${kitchen.id}:`, createErr);
+            return null;
+          }
+        }
+        return power;
+      });
 
       const powerResponses = await Promise.all(powerPromises);
       const powersMap = powerResponses.reduce((acc, power) => {

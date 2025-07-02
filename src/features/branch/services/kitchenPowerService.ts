@@ -57,5 +57,21 @@ export const kitchenPowerService = {
       ...response.data,
       status: parseInt(response.data.status)
     };
+  },
+
+  createKitchenPower: async (
+    branchId: string,
+    kitchenId: string,
+    units: number = 1
+  ): Promise<KitchenPower> => {
+    const response = await api.post('/Kitchen/power/', {
+      branchId,
+      kitchenId,
+      Units: units
+    });
+    return {
+      ...response.data,
+      status: parseInt(response.data.status)
+    };
   }
 }; 
