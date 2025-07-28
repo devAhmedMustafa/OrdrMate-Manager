@@ -27,6 +27,7 @@ export function BranchManagerLayout() {
     { path: '/branch/menu', label: 'Menu', icon: 'ic:twotone-menu-book' },
     { path: '/branch/tables', label: 'Tables', icon: 'mdi:table' },
     { path: '/branch/kitchen-power', label: 'Kitchen Power', icon: 'mdi:power-socket' },
+    { path: '/branch/settings', label: 'Settings', icon: 'mdi:cog' },
   ];
 
   return (
