@@ -12,6 +12,7 @@ import MenuPage from './features/items/Menu.page'
 import BranchMenuPage from './features/items/BranchMenu.page'
 import ItemDetailPage from './features/items/ItemDetail.page'
 import SettingsPage from './features/dashboard/components/Settings.page'
+import BranchSettingsPage from './features/branch-settings/BranchSettings.page'
 import BranchRequestsPage from './features/admin/BranchRequests.page'
 import { Tables as TablesPage } from './features/tables/Tables.page'
 import KitchensPage from './features/kitchens/Kitchens.page'
@@ -49,6 +50,7 @@ function AppContent() {
             <Route path="orders" element={<Orders />} />
             <Route path="tables" element={<TablesPage />} />
             <Route path="kitchen-power" element={<KitchenPowerPage />} />
+            <Route path="settings" element={<BranchSettingsPage />} />
           </Route>
 
           <Route path='/items/add' element={

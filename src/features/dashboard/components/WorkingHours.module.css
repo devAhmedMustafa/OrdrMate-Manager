@@ -1,0 +1,274 @@
+.container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 24px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 32px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid rgba(123, 31, 162, 0.1);
+}
+
+.headerIcon {
+  font-size: 2.5rem;
+  color: #7B1FA2;
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 1.8rem;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.header p {
+  margin: 4px 0 0 0;
+  color: #666;
+  font-size: 0.95rem;
+}
+
+.loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 60px 20px;
+  gap: 16px;
+}
+
+.loading p {
+  color: #666;
+  font-size: 1.1rem;
+}
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+.timeSection,
+.daysSection {
+  background: white;
+  border-radius: 12px;
+  padding: 24px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+}
+
+.timeSection h3,
+.daysSection h3 {
+  margin: 0 0 16px 0;
+  font-size: 1.3rem;
+  color: #1a1a1a;
+  font-weight: 600;
+}
+
+.sectionDescription {
+  margin: 0 0 20px 0;
+  color: #666;
+  font-size: 0.9rem;
+}
+
+.timeInputs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 16px;
+}
+
+.timeInput {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.timeInput label {
+  font-weight: 500;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.input {
+  padding: 12px 16px;
+  border: 2px solid #e0e0e0;
+  border-radius: 8px;
+  font-size: 1rem;
+  transition: all 0.2s ease;
+  background: white;
+}
+
+.input:focus {
+  outline: none;
+  border-color: #7B1FA2;
+  box-shadow: 0 0 0 3px rgba(123, 31, 162, 0.1);
+}
+
+.daysGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+
+.dayItem {
+  display: flex;
+}
+
+.dayLabel {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 2px solid #e0e0e0;
+  background: white;
+  transition: all 0.2s ease;
+  width: 100%;
+  user-select: none;
+}
+
+.dayLabel:hover {
+  border-color: #7B1FA2;
+  background: rgba(123, 31, 162, 0.05);
+}
+
+.checkbox {
+  margin: 0;
+  width: 18px;
+  height: 18px;
+  accent-color: #7B1FA2;
+}
+
+.dayName {
+  font-weight: 500;
+  color: #666;
+  transition: color 0.2s ease;
+}
+
+.dayName.active {
+  color: #7B1FA2;
+  font-weight: 600;
+}
+
+.error,
+.success {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border-radius: 8px;
+  font-weight: 500;
+}
+
+.error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ffcdd2;
+}
+
+.success {
+  background: #e8f5e9;
+  color: #2e7d32;
+  border: 1px solid #c8e6c9;
+}
+
+.actions {
+  display: flex;
+  gap: 16px;
+  justify-content: flex-end;
+  padding-top: 16px;
+  border-top: 1px solid #e0e0e0;
+}
+
+.resetButton,
+.saveButton {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 24px;
+  border-radius: 8px;
+  font-weight: 500;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border: none;
+}
+
+.resetButton {
+  background: #f5f5f5;
+  color: #666;
+  border: 1px solid #e0e0e0;
+}
+
+.resetButton:hover:not(:disabled) {
+  background: #eeeeee;
+  color: #333;
+}
+
+.saveButton {
+  background: #7B1FA2;
+  color: white;
+}
+
+.saveButton:hover:not(:disabled) {
+  background: #9C27B0;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(123, 31, 162, 0.2);
+}
+
+.resetButton:disabled,
+.saveButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.spinner {
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+/* Mobile Responsiveness */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+  
+  .header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .timeInputs {
+    grid-template-columns: 1fr;
+    gap: 16px;
+  }
+  
+  .daysGrid {
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  
+  .actions {
+    flex-direction: column-reverse;
+    gap: 12px;
+  }
+  
+  .resetButton,
+  .saveButton {
+    width: 100%;
+    justify-content: center;
+  }
+}
