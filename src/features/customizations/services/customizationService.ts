@@ -78,7 +78,6 @@ export const customizationService = {
   // Get all customization categories
   getCategories: async (restaurantId: string): Promise<CustomizationCategory[]> => {
     const response = await api.get(`/Customization/restaurant/categories/${restaurantId}`);
-    console.log('Fetched categories:', response.data);
     return response.data;
   },
 
@@ -143,12 +142,12 @@ export const customizationService = {
 
   // Get customization categories assigned to an item
   getItemCustomizations: async (itemId: string): Promise<CustomizationCategory[]> => {
-    const response = await api.get(`/Customization/item/${itemId}/categories`);
+    const response = await api.get(`/Customization/item/${itemId}/customizations`);
     return response.data;
   },
 
   // Remove a customization category from an item
   removeCategoryFromItem: async (itemId: string, categoryId: string): Promise<void> => {
-    await api.delete(`/Customization/item/${itemId}/category/${categoryId}`);
+    await api.delete(`/Customization/item/${itemId}/customization/${categoryId}`);
   },
 };
