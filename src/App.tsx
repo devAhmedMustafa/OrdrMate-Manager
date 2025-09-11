@@ -20,6 +20,7 @@ import KitchensPage from './features/kitchens/Kitchens.page'
 import KitchenPowerPage from './features/branch/KitchenPower.page'
 import Orders from './features/orders/Orders.page'
 import DashboardHome from './features/dashboard/components/DashboardHome.page'
+import AttendanceCodePage from './features/branch/AttendanceCode.page'
 
 function AppContent() {
   return (
@@ -53,6 +54,7 @@ function AppContent() {
             <Route path="tables" element={<TablesPage />} />
             <Route path="kitchen-power" element={<KitchenPowerPage />} />
             <Route path="settings" element={<BranchSettingsPage />} />
+            <Route path="attendance" element={<AttendanceCodePage />} />
           </Route>
 
           <Route path='/items/add' element={
