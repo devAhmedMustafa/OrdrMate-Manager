@@ -9,6 +9,7 @@ export interface MenuItem {
   preparationTime: number;
   category: string;
   kitchenId: string;
+  kitchenName?: string;
 }
 
 export interface Kitchen {
