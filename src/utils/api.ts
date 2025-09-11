@@ -12,11 +12,11 @@ const API_CONFIG = {
     [ENV.DEV]: 'http://localhost:5126/api',
     [ENV.PROD]: 'https://ordrmate.starplusgames.com/api'
   },
-  TIMEOUT: 10000, // 10 seconds
+  TIMEOUT: 10000,
 };
 
 // Determine current environment
-const isDevelopment = process.env.NODE_ENV === ENV.DEV;
+const isDevelopment = import.meta.env.VITE_ENV === ENV.DEV;
 const currentEnv = isDevelopment ? ENV.DEV : ENV.PROD;
 
 // Create axios instance with default config

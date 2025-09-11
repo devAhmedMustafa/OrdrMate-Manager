@@ -13,12 +13,14 @@ import BranchMenuPage from './features/items/BranchMenu.page'
 import ItemDetailPage from './features/items/ItemDetail.page'
 import SettingsPage from './features/dashboard/components/Settings.page'
 import BranchSettingsPage from './features/branch-settings/BranchSettings.page'
+import CustomizationsPage from './features/customizations/Customizations.page'
 import BranchRequestsPage from './features/admin/BranchRequests.page'
 import { Tables as TablesPage } from './features/tables/Tables.page'
 import KitchensPage from './features/kitchens/Kitchens.page'
 import KitchenPowerPage from './features/branch/KitchenPower.page'
 import Orders from './features/orders/Orders.page'
 import DashboardHome from './features/dashboard/components/DashboardHome.page'
+import AttendanceCodePage from './features/branch/AttendanceCode.page'
 
 function AppContent() {
   return (
@@ -36,6 +38,7 @@ function AppContent() {
             <Route path="menu" element={<MenuPage />} />
             <Route path="menu/:id" element={<ItemDetailPage />} />
             <Route path="orders" element={<div>Orders</div>} />
+            <Route path="customizations" element={<CustomizationsPage />} />
             <Route path="settings" element={<SettingsPage/>} />
             <Route path="kitchens" element={<KitchensPage />} />
           </Route>
@@ -51,6 +54,7 @@ function AppContent() {
             <Route path="tables" element={<TablesPage />} />
             <Route path="kitchen-power" element={<KitchenPowerPage />} />
             <Route path="settings" element={<BranchSettingsPage />} />
+            <Route path="attendance" element={<AttendanceCodePage />} />
           </Route>
 
           <Route path='/items/add' element={

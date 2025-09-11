@@ -4,6 +4,7 @@ import useAuth from '../auth/useAuth.hook';
 import styles from './ItemDetail.module.css';
 import { itemService, MenuItem, Kitchen } from './services/itemService';
 import { uploadService } from './services/uploadService';
+import ItemCustomizations from './components/ItemCustomizations';
 
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -268,6 +269,14 @@ export default function ItemDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Customizations Section */}
+      {!isEditing && (
+        <ItemCustomizations
+          restaurantId={restaurantId!}
+          itemId={item.id}
+        />
+      )}
     </div>
   );
 } 
