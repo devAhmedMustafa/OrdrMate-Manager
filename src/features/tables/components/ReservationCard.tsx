@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { OrderStatus, ReservationOrder, TableReservation, tableService } from "../services/tableService";
-import styles from './TableQueue.module.css';
+import { ReservationOrder, TableReservation, tableService } from "../services/tableService";
+// import styles from './TableQueue.module.css';
 import { Icon } from '@iconify/react';
 
 export default function ReservationCard({index, reservation}: {index: number, reservation: TableReservation}) {
@@ -35,18 +35,18 @@ export default function ReservationCard({index, reservation}: {index: number, re
       }
   };
 
-  const getOrderStatusColor = (status: OrderStatus) => {
-      switch (status) {
-      case OrderStatus.Queued:
-          return '#FFA726'; // Orange
-      case OrderStatus.Ready:
-          return '#66BB6A'; // Green
-      case OrderStatus.Delivered:
-          return '#42A5F5'; // Blue
-      default:
-          return '#9E9E9E'; // Grey
-      }
-  };
+  // const getOrderStatusColor = (status: OrderStatus) => {
+  //     switch (status) {
+  //     case OrderStatus.Queued:
+  //         return '#FFA726'; // Orange
+  //     case OrderStatus.Ready:
+  //         return '#66BB6A'; // Green
+  //     case OrderStatus.Delivered:
+  //         return '#42A5F5'; // Blue
+  //     default:
+  //         return '#9E9E9E'; // Grey
+  //     }
+  // };
 
   return (
     <div
