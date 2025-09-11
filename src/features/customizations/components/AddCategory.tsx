@@ -156,7 +156,7 @@ export default function AddCategory({ onCategoryCreated, onCancel }: AddCategory
         description: description.trim(),
         restaurantId: restaurantId!,
         metadata
-      });
+      }, categoryType);
       
       onCategoryCreated();
       

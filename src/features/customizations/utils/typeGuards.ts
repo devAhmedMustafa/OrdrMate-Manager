@@ -1,10 +1,10 @@
 import { 
-  CustomizationMetadata, 
-  SingleSelectMetadata, 
-  MultiSelectMetadata, 
-  TextMetadata, 
-  NumberMetadata, 
-  BooleanMetadata, 
+  // CustomizationMetadata, 
+  // SingleSelectMetadata, 
+  // MultiSelectMetadata, 
+  // TextMetadata, 
+  // NumberMetadata, 
+  // BooleanMetadata, 
   CustomizationCategory
 } from '../services/customizationService';
 
