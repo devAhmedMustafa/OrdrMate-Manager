@@ -57,6 +57,7 @@ export function Tables() {
 
       if (message.Type === 'TableReserved') {
         const reservation: TableReservation = {
+          reservationId: message.Reservation.ReservationId,
           tableNumber: message.Reservation.TableNumber,
           customerName: message.Reservation.CustomerName,
           reservationDate: message.Reservation.ReservationDate,
