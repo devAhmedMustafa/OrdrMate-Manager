@@ -1,4 +1,5 @@
 import api from '../../../utils/api';
+import { MenuItem } from '../../items/services/itemService';
 
 export interface Table {
   tableNumber: number;
@@ -13,12 +14,19 @@ export enum OrderStatus {
 }
 
 export interface TableReservation {
+  reservationId: string;
   tableNumber: number;
   customerName: string;
   reservationDate: string;
   reservationStatus: string;
   orderId: string;
   orderStatus: OrderStatus;
+}
+
+export interface ReservationOrder {
+  orderId: string;
+  orderStatus: OrderStatus;
+  orderItems: { item: MenuItem, quantity: number }[];
 }
 
 class TableService {
@@ -47,6 +55,12 @@ class TableService {
   async dequeueTable(branchId: string, tableNumber: number): Promise<void> {
     await api.post(`/Table/deque/${branchId}/${tableNumber}`);
   }
+
+  async getReservationOrder(reservationId: string): Promise<ReservationOrder> {
+    const response = await api.get(`/Table/order/${reservationId}`);
+    return response.data;
+  }
+
 }
 
 export const tableService = new TableService(); 

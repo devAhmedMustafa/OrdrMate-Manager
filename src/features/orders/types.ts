@@ -36,6 +36,8 @@ export interface Order {
   TotalAmount?: number;
   IsPaid?: boolean;
   Customer?: string;
+  orderNumber?: number | null;
+  tableNumber?: number | null;
 }
 
 export interface KitchenQueue {

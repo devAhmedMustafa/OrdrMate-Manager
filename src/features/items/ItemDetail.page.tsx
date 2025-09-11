@@ -29,7 +29,8 @@ export default function ItemDetailPage() {
         ]);
         
         setItem(itemData);
-        setEditedItem(itemData);
+        const {kitchenName, ...rest} = itemData;
+        setEditedItem(rest);
         setKitchens(kitchensData);
 
         // Get presigned URL for the image
@@ -79,12 +80,15 @@ export default function ItemDetailPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     if (!editedItem) return;
+
     
     const { name, value } = e.target;
+    console.log(name, value)
     setEditedItem({
       ...editedItem,
       [name]: name === 'price' || name === 'preparationTime' ? Number(value) : value
     });
+
   };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -44,6 +44,7 @@ export function KitchenItem({ item, isCurrent }: KitchenItemProps) {
             />
           </div>
         )}
+
         <div className={styles.details}>
           <div className={styles.header}>
             <h3 className={styles.name}>{item.ItemName}</h3>
