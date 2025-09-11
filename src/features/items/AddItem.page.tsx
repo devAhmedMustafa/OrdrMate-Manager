@@ -5,6 +5,8 @@ import ManagerRole from "../auth/ManagerRole";
 import styles from "./AddItem.module.css";
 import { itemService, Kitchen, MenuItem } from "./services/itemService";
 import { uploadService } from "./services/uploadService";
+import { customizationService } from "../customizations/services/customizationService";
+import ItemCustomizations from "./components/ItemCustomizations";
 
 type AddItemFormData = Omit<MenuItem, 'id'> & {
     restaurantId: string;
@@ -24,6 +26,7 @@ export default function AddItemPage() {
     const [uploadProgress, setUploadProgress] = useState(0);
     const [kitchens, setKitchens] = useState<Kitchen[]>([]);
     const [selectedKitchenId, setSelectedKitchenId] = useState<string>("");
+    const [selectedCustomizationIds, setSelectedCustomizationIds] = useState<string[]>([]);
 
     useEffect(() => {
         if (!restaurantId || !token) return;
@@ -86,7 +89,20 @@ export default function AddItemPage() {
         };
 
         try {
-            await itemService.createItem(formData);
+            // First create the item
+            const createdItem = await itemService.createItem(formData);
+
+            // Then assign selected customizations to the item
+            if (selectedCustomizationIds.length > 0) {
+                const assignmentPromises = selectedCustomizationIds.map(categoryId =>
+                    customizationService.assignCategoryToItem({
+                        itemId: createdItem.id,
+                        categoryId
+                    })
+                );
+                await Promise.all(assignmentPromises);
+            }
+
             navigate("/menu");
         } catch (err: any) {
             setError(err.response?.data?.message || "Failed to add item");
@@ -214,6 +230,14 @@ export default function AddItemPage() {
                                 className={styles.imagePreview}
                             />
                         )}
+                    </div>
+
+                    {/* Customizations Section */}
+                    <div className={styles.customizationsSection}>
+                        <ItemCustomizations
+                            restaurantId={restaurantId!}
+                            onAssignmentsChange={setSelectedCustomizationIds}
+                        />
                     </div>
 
                     {error && (
