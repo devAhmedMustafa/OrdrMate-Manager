@@ -9,6 +9,7 @@ export interface MenuItem {
   preparationTime: number;
   category: string;
   kitchenId: string;
+  isAvailable?: boolean;
   kitchenName?: string;
 }
 
@@ -23,6 +24,11 @@ export const itemService = {
   // Get all items for a restaurant
   getRestaurantItems: async (restaurantId: string): Promise<MenuItem[]> => {
     const response = await api.get(`/Item/restaurant/${restaurantId}`);
+    return response.data;
+  },
+
+  getBranchAvailableItems: async (branchId: string): Promise<MenuItem[]> => {
+    const response = await api.get(`/Item/branch/${branchId}`);
     return response.data;
   },
 
@@ -53,5 +59,10 @@ export const itemService = {
   getRestaurantKitchens: async (restaurantId: string): Promise<Kitchen[]> => {
     const response = await api.get(`/Kitchen/${restaurantId}`);
     return response.data;
+  },
+
+  toggleItemAvailability: async (itemId: string, branchId: string): Promise<void> => {
+    await api.put(`/ItemAvailability/toggle`, { branchId, itemId });
   }
+
 }; 
