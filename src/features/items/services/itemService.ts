@@ -7,6 +7,8 @@ export interface MenuItem {
   imageUrl: string;
   price: number;
   preparationTime: number;
+  priority: number;
+  tags: string;
   category: string;
   kitchenId: string;
   isAvailable?: boolean;
