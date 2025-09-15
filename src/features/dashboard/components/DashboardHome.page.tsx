@@ -20,31 +20,10 @@ export default function DashboardHome() {
   useEffect(() => {
     if (!branchId || !token) return;
 
-    const fetchData = async () => {
+    const fetchKitchenQueues = async () => {
       try {
-        // Fetch kitchen queues and tables in parallel
-        const [queues, tablesData] = await Promise.all([
-          orderService.getItemQueues(branchId),
-          tableService.getTables(branchId)
-        ]);
-        
+        const queues = await orderService.getItemQueues(branchId);
         setKitchenQueues(queues);
-        setTables(tablesData);
-        
-        // Fetch queue for each table
-        const tableQueuesData: Record<number, TableReservation[]> = {};
-        for (const table of tablesData) {
-          try {
-            const queue = await tableService.getTableQueue(branchId, table.tableNumber);
-            tableQueuesData[table.tableNumber] = queue;
-          } catch (error) {
-            console.error(`Error fetching queue for table ${table.tableNumber}:`, error);
-            tableQueuesData[table.tableNumber] = [];
-          }
-        }
-        setTableQueues(tableQueuesData);
-
-        // Get presigned URLs for all item images
         const urls: Record<string, string> = {};
         for (const orders of Object.values(queues)) {
           for (const order of orders) {
@@ -61,21 +40,51 @@ export default function DashboardHome() {
           }
         }
         setImageUrls(urls);
-
-        // Fetch balance separately to not block other data
-        try {
-          const balanceData = await balanceService.getBalance(branchId, token);
-          setBalance(balanceData);
-        } catch (error) {
-          console.error('Error fetching balance:', error);
-        }
       } catch (error) {
-        console.error('Error fetching dashboard data:', error);
+        console.error('Error fetching kitchen queues:', error);
       }
     };
 
-    fetchData();
-    const interval = setInterval(fetchData, 30000); // Refresh every 30 seconds
+    const fetchTablesAndQueues = async () => {
+      try {
+        const tablesData = await tableService.getTables(branchId);
+        setTables(tablesData);
+        const tableQueuesData: Record<number, TableReservation[]> = {};
+        for (const table of tablesData) {
+          try {
+            const queue = await tableService.getTableQueue(branchId, table.tableNumber);
+            tableQueuesData[table.tableNumber] = queue;
+          } catch (error) {
+            console.error(`Error fetching queue for table ${table.tableNumber}:`, error);
+            tableQueuesData[table.tableNumber] = [];
+          }
+        }
+        setTableQueues(tableQueuesData);
+      } catch (error) {
+        console.error('Error fetching tables:', error);
+      }
+    };
+
+    const fetchBalance = async () => {
+      try {
+        const balanceData = await balanceService.getBalance(branchId, token);
+        setBalance(balanceData);
+      } catch (error) {
+        console.error('Error fetching balance:', error);
+      }
+    };
+
+    // Initial fetch
+    fetchKitchenQueues();
+    fetchTablesAndQueues();
+    fetchBalance();
+
+    // Set up interval for periodic refresh
+    const interval = setInterval(() => {
+      fetchKitchenQueues();
+      fetchTablesAndQueues();
+      fetchBalance();
+    }, 30000);
 
     return () => clearInterval(interval);
   }, [branchId, token]);
