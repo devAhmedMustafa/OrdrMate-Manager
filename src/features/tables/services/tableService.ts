@@ -8,6 +8,7 @@ export interface Table {
 }
 
 export enum OrderStatus {
+  Pending = 'Pending',
   Queued = 'Queued',
   Ready = 'Ready',
   Delivered = 'Delivered'

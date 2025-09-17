@@ -187,15 +187,18 @@ export function Tables() {
       )}
 
       <div className={styles.content}>
-        <div className={styles.tableList}>
+        <div className={styles.tableGrid}>
           {tables.map(table => (
             <button
               key={table.tableNumber}
-              className={`${styles.tableButton} ${selectedTable === table.tableNumber ? styles.selected : ''}`}
+              className={`${styles.tableCircle} ${selectedTable === table.tableNumber ? styles.selected : ''}`}
               onClick={() => setSelectedTable(table.tableNumber)}
+              title={`Table ${table.tableNumber} (${table.seats} seats)`}
             >
-              <span className={styles.tableNumber}>Table {table.tableNumber}</span>
-              <span className={styles.seats}>{table.seats} seats</span>
+              <span style={{ fontSize: '1.15rem', fontWeight: 600 }}>{table.tableNumber}</span>
+              <span className={styles.seatSubCircle}>
+                <sub className={styles.seatSubNumber}>{table.seats}</sub>
+              </span>
             </button>
           ))}
         </div>

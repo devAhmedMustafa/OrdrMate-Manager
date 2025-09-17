@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
 import { ReservationOrder, TableReservation, tableService } from "../services/tableService";
-// import styles from './TableQueue.module.css';
 import { Icon } from '@iconify/react';
 
 export default function ReservationCard({index, reservation}: {index: number, reservation: TableReservation}) {
@@ -11,7 +10,6 @@ export default function ReservationCard({index, reservation}: {index: number, re
     const fetchReservationOrder = async () => {
       if (reservation.reservationId) {
         const order = await tableService.getReservationOrder(reservation.reservationId);
-        console.log(order);
         setReservationOrder(order);
       }
     };
@@ -35,18 +33,18 @@ export default function ReservationCard({index, reservation}: {index: number, re
       }
   };
 
-  // const getOrderStatusColor = (status: OrderStatus) => {
-  //     switch (status) {
-  //     case OrderStatus.Queued:
-  //         return '#FFA726'; // Orange
-  //     case OrderStatus.Ready:
-  //         return '#66BB6A'; // Green
-  //     case OrderStatus.Delivered:
-  //         return '#42A5F5'; // Blue
-  //     default:
-  //         return '#9E9E9E'; // Grey
-  //     }
-  // };
+  const getReservationStatusColor = (status: string) => {
+      switch (status) {
+      case 'Pending':
+          return '#FF7043'; // Red-Orange
+      case 'Queued':
+          return '#FFA726'; // Orange
+      case 'Seated':
+          return '#66BB6A'; // Green
+      default:
+          return '#9E9E9E'; // Grey
+      }
+  };
 
   return (
     <div
@@ -64,6 +62,9 @@ export default function ReservationCard({index, reservation}: {index: number, re
         overflow: 'hidden',
         fontFamily: 'inherit',
         transition: 'box-shadow 0.18s',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
       }}
     >
       {/* Top section: Customer and details */}
@@ -93,10 +94,11 @@ export default function ReservationCard({index, reservation}: {index: number, re
         alignItems: 'center',
         padding: '10px 0 0 0',
         background: '#faf9fc',
+        flexGrow: 1,
       }}>
         <span style={{
-          background: '#f3e5f5',
-          color: '#7B1FA2',
+          background: getReservationStatusColor(reservation.reservationStatus),
+          color: '#fff',
           fontWeight: 600,
           fontSize: 13,
           borderRadius: 8,
@@ -113,7 +115,7 @@ export default function ReservationCard({index, reservation}: {index: number, re
 
       {/* Order Preview */}
       {reservationOrder && reservationOrder.orderItems.length > 0 && (
-        <div style={{ padding: '14px 20px 16px 20px', background: '#fcfbfe', borderRadius: '0 0 14px 14px' }}>
+        <div style={{ padding: '14px 20px 16px 20px', background: '#fcfbfe', borderRadius: '0 0 14px 14px', height: "100%" }}>
           <div style={{ fontWeight: 600, color: '#6a4c93', fontSize: 14, marginBottom: 7, letterSpacing: 0.1 }}>Order Items</div>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
             {reservationOrder.orderItems.map((orderItem, idx) => (
