@@ -9,7 +9,7 @@ interface MenuItemWithPresignedUrl extends MenuItem {
 }
 
 export default function BranchMenuPage() {
-  const { restaurantId, token } = useAuth();
+  const { restaurantId, token, branchId } = useAuth();
   const [items, setItems] = useState<MenuItemWithPresignedUrl[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -17,11 +17,11 @@ export default function BranchMenuPage() {
 
   useEffect(() => {
     const fetchItems = async () => {
-      if (!restaurantId || !token) return;
+      if (!branchId || !token) return;
 
       try {
-        const items = await itemService.getRestaurantItems(restaurantId);
-        
+        const items = await itemService.getBranchAvailableItems(branchId);
+
         // Get presigned URLs for all items
         const itemsWithUrls = await Promise.all(
           items.map(async (item: MenuItem) => {
@@ -41,6 +41,19 @@ export default function BranchMenuPage() {
 
     fetchItems();
   }, [restaurantId, token]);
+
+  async function toggleAvailability(itemId: string) {
+    if (!branchId) return;
+    try {
+      await itemService.toggleItemAvailability(itemId, branchId);
+      setItems(prevItems => prevItems.map(item => 
+        item.id === itemId ? { ...item, isAvailable: !item.isAvailable } : item
+      ));
+    }
+    catch (err) {
+      console.error('Error toggling availability:', err);
+    }
+  }
 
   const categories = useMemo(() => {
     const uniqueCategories = new Set(items.map(item => item.category));
@@ -89,6 +102,42 @@ export default function BranchMenuPage() {
                 alt={item.name}
                 className={styles.image}
               />
+              {/* Toggle availability icon button */}
+              <button
+                title={item.isAvailable ? "Set unavailable" : "Set available"}
+                onClick={() => toggleAvailability(item.id)}
+                style={{
+                  position: 'absolute',
+                  top: 8,
+                  right: 8,
+                  background: 'rgba(255,255,255,0.85)',
+                  border: 'none',
+                  borderRadius: '50%',
+                  width: 32,
+                  height: 32,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
+                  cursor: 'pointer',
+                  zIndex: 2
+                }}
+              >
+                {item.isAvailable ? (
+                  // Green check icon
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="10" r="10" fill="#4CAF50"/>
+                    <path d="M6 10.5L9 13.5L14 8.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                  </svg>
+                ) : (
+                  // Red cross icon
+                  <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="10" cy="10" r="10" fill="#F44336"/>
+                    <path d="M7 7L13 13" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                    <path d="M13 7L7 13" stroke="white" strokeWidth="2" strokeLinecap="round"/>
+                  </svg>
+                )}
+              </button>
             </div>
             <div className={styles.content}>
               <h2 className={styles.itemName}>{item.name}</h2>
