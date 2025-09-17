@@ -1,4 +1,4 @@
-import { createContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 import useAuth from "../auth/useAuth.hook";
 import CartItem from "./CartItem";
 import { orderService } from "../orders/services/orderService";
@@ -25,7 +25,7 @@ export const VirtualCartProvider = ({ children }: { children: React.ReactNode })
         throw new Error("Branch ID is required for VirtualCartProvider");
     }
 
-    const [items, setItems] = useState<CartItem[]>([]);
+    const [items, setItems] = useState<CartItem[]>(localStorage.getItem('virtualCartItems') ? JSON.parse(localStorage.getItem('virtualCartItems')!) : []);
     
     const placeOrder = async () => {
         orderService.placeOrder({
@@ -52,6 +52,10 @@ export const VirtualCartProvider = ({ children }: { children: React.ReactNode })
         );
     };
 
+    useEffect(() => {
+        localStorage.setItem('virtualCartItems', JSON.stringify(items));
+    }, [items]);
+
     const clearCart = () => {
         setItems([]);
     };
@@ -72,4 +76,12 @@ export const VirtualCartProvider = ({ children }: { children: React.ReactNode })
             {children}
         </VirtualCartContext.Provider>
     );
+};
+
+export const useVirtualCart = () => {
+    const context =  useContext(VirtualCartContext);
+    if (!context) {
+        throw new Error("useVirtualCart must be used within a VirtualCartProvider");
+    }
+    return context;
 };
