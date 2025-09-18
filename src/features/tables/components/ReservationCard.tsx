@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { ReservationOrder, TableReservation, tableService } from "../services/tableService";
+import { OrderStatus, ReservationOrder, TableReservation, tableService } from "../services/tableService";
 import { Icon } from '@iconify/react';
+import { orderService } from "../../orders/services/orderService";
 
 export default function ReservationCard({index, reservation}: {index: number, reservation: TableReservation}) {
 
@@ -15,6 +16,13 @@ export default function ReservationCard({index, reservation}: {index: number, re
     };
     fetchReservationOrder();
   }, [reservation]);
+
+  async function handleSetOrderReady(){
+    if(reservationOrder && reservationOrder.orderId){
+      await orderService.setOrderAsReady(reservationOrder.orderId);
+      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
+    }
+  }
 
   const getStatusIcon = (status: string) => {
       switch (status.toLowerCase()) {
@@ -40,7 +48,7 @@ export default function ReservationCard({index, reservation}: {index: number, re
       case 'Queued':
           return '#FFA726'; // Orange
       case 'Seated':
-          return '#66BB6A'; // Green
+          return '#66bb82'; // Green
       default:
           return '#9E9E9E'; // Grey
       }
@@ -125,6 +133,15 @@ export default function ReservationCard({index, reservation}: {index: number, re
               </li>
             ))}
           </ul>
+        </div>
+      )}
+
+      {/* Confirm Button */}
+      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
+        <div className="bg-emerald-400 text-white p-3 rounded-b-lg cursor-pointer hover:bg-emerald-600 transition">
+          <button onClick={handleSetOrderReady}>
+            <Icon icon="mdi:check" style={{ fontSize: 15, marginLeft: 5 }} />
+          </button>
         </div>
       )}
     </div>
