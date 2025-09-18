@@ -1,11 +1,7 @@
 import api from '../../../utils/api';
 import { MenuItem } from '../../items/services/itemService';
-
-export interface Table {
-  tableNumber: number;
-  seats: number;
-  branchId: string;
-}
+import CreateTableRequest from '../dtos/CreateTableRequest.dto';
+import TableResponse from '../dtos/TableResponse.dto';
 
 export enum OrderStatus {
   Pending = 'Pending',
@@ -31,7 +27,7 @@ export interface ReservationOrder {
 }
 
 class TableService {
-  async getTables(branchId: string): Promise<Table[]> {
+  async getTables(branchId: string): Promise<TableResponse[]> {
     const response = await api.get(`/Table/${branchId}`);
     return response.data;
   }
@@ -42,7 +38,7 @@ class TableService {
   }
 
   // Create a new table
-  async createTable(table: Table): Promise<Table> {
+  async createTable(table: CreateTableRequest): Promise<TableResponse> {
     const response = await api.post('/Table', table);
     return response.data;
   }

@@ -76,15 +76,16 @@
   transition: all 0.18s;
   box-shadow: 0 1px 4px rgba(72,43,176,0.04);
   outline: none;
+  overflow: visible;
 }
 .tableCircle:hover {
   background: #e2dbfc;
   border-color: #482bb0;
 }
 .tableCircle.selected {
-  background: #482bb0;
+  background: #9810fa;
   color: #fff;
-  border-color: #482bb0;
+  border-color: #9810fa;
   box-shadow: 0 2px 8px rgba(72,43,176,0.10);
 }
 
