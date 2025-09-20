@@ -2,10 +2,12 @@ import { useEffect, useState } from "react";
 import { OrderStatus, ReservationOrder, TableReservation, tableService } from "../services/tableService";
 import { Icon } from '@iconify/react';
 import { orderService } from "../../orders/services/orderService";
+import useAuth from "../../auth/useAuth.hook";
 
 export default function ReservationCard({index, reservation}: {index: number, reservation: TableReservation}) {
 
   const [reservationOrder, setReservationOrder] = useState<ReservationOrder | null>(null);
+  const {branchId} = useAuth();
 
   useEffect(()=>{
     const fetchReservationOrder = async () => {
@@ -119,6 +121,18 @@ export default function ReservationCard({index, reservation}: {index: number, re
           <Icon icon={getStatusIcon(reservation.reservationStatus)} style={{ fontSize: 15, opacity: 0.8 }} />
           {reservation.reservationStatus}
         </span>
+
+        {/* Confirm table if status is waiting  */}
+        {(reservation.reservationStatus.toLowerCase() === 'waiting') && (
+          <div className="bg-emerald-400 text-white size-10 flex justify-center items-center rounded-full cursor-pointer hover:bg-emerald-600 transition ml-3" title="Confirm Reservation">
+            <button className="w-full" onClick={async()=> {
+              await tableService.confirmTableReservation(branchId!, reservation.tableNumber);
+              window.location.reload();
+            }}>
+              <Icon icon="mdi:check" style={{ fontSize: 15, marginLeft: 5 }} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Order Preview */}
@@ -139,7 +153,7 @@ export default function ReservationCard({index, reservation}: {index: number, re
       {/* Confirm Button */}
       {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
         <div className="bg-emerald-400 text-white p-3 rounded-b-lg cursor-pointer hover:bg-emerald-600 transition">
-          <button onClick={handleSetOrderReady}>
+          <button className="w-full" onClick={handleSetOrderReady}>
             <Icon icon="mdi:check" style={{ fontSize: 15, marginLeft: 5 }} />
           </button>
         </div>
