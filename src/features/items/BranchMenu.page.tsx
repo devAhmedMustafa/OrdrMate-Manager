@@ -24,11 +24,11 @@ export default function BranchMenuPage() {
         const availableItems = await itemService.getBranchAvailableItems(branchId);
 
         items.forEach((item: any) => {
-          if (availableItems[item.id]) {
-            item.isAvailable = availableItems[item.id].isAvailable;
-          }
-          else {
-            item.isAvailable = availableItems[item.id]?.isAvailable || false;
+          const availableItem = availableItems.find((i) => i.id === item.id);
+          if (availableItem) {
+            item.isAvailable = availableItem.isAvailable;
+          } else {
+            item.isAvailable = false;
           }
         });
 
