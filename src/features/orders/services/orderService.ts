@@ -123,7 +123,7 @@ class OrderService {
   }
 
   async setOrderAsReady(orderId: string): Promise<void> {
-    await api.put(`/OrderUpdate/set-ready/${orderId}`);
+    await api.put(`/UdpdateOrder/set-ready/${orderId}`);
   }
 
 }
