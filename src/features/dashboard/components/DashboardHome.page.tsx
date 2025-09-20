@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Order } from '../../orders/types';
-import { TableReservation, Table } from '../../tables/services/tableService';
+import { TableReservation } from '../../tables/services/tableService';
 import { orderService } from '../../orders/services/orderService';
 import { tableService } from '../../tables/services/tableService';
 import { uploadService } from '../../items/services/uploadService';
@@ -8,6 +8,7 @@ import { balanceService, Balance } from '../services/balanceService';
 import useAuth from '../../auth/useAuth.hook';
 import styles from './DashboardHome.module.css';
 import { Icon } from '@iconify/react';
+import Table from '../../tables/models/Table';
 
 export default function DashboardHome() {
   const [kitchenQueues, setKitchenQueues] = useState<Record<string, Order[]>>({});
