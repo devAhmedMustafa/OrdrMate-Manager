@@ -20,7 +20,17 @@ export default function BranchMenuPage() {
       if (!branchId || !token) return;
 
       try {
-        const items = await itemService.getBranchAvailableItems(branchId);
+        const items = await itemService.getRestaurantItems(restaurantId!);
+        const availableItems = await itemService.getBranchAvailableItems(branchId);
+
+        items.forEach((item: any) => {
+          if (availableItems[item.id]) {
+            item.isAvailable = availableItems[item.id].isAvailable;
+          }
+          else {
+            item.isAvailable = availableItems[item.id]?.isAvailable || false;
+          }
+        });
 
         // Get presigned URLs for all items
         const itemsWithUrls = await Promise.all(
