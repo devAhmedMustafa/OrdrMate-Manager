@@ -85,7 +85,9 @@ export default function AddItemPage() {
             restaurantId,
             imageUrl: selectedFile?.fileUrl || '',
             preparationTime: Number((form.elements.namedItem('preparationTime') as HTMLInputElement).value),
-            kitchenId: selectedKitchenId
+            kitchenId: selectedKitchenId,
+            priority: 0,
+            tags: ""
         };
 
         try {

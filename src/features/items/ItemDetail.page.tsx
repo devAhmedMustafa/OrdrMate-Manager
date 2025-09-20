@@ -218,6 +218,29 @@ export default function ItemDetailPage() {
                 ))}
               </select>
             </div>
+
+            <div>
+              <label htmlFor='priority'>Priority</label>
+              <input
+                type="number"
+                id="priority"
+                name="priority"
+                value={editedItem?.priority}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="tags">Tags</label>
+              <input
+                type="text"
+                id="tags"
+                name="tags"
+                value={editedItem?.tags}
+                onChange={handleInputChange}
+              />
+            </div>
+
             <div className={styles.formGroup}>
               <label htmlFor="preparationTime">Preparation Time (minutes)</label>
               <input
@@ -261,6 +284,17 @@ export default function ItemDetailPage() {
                 <span className={styles.infoLabel}>Category:</span>
                 <span className={styles.infoValue}>{item.category}</span>
               </div>
+
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Priority:</span>
+                <span className={styles.infoValue}>{item.priority}</span>
+              </div>
+
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Tags:</span>
+                <span className={styles.infoValue}>{item.tags}</span>
+              </div>
+
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Preparation Time:</span>
                 <span className={styles.infoValue}>{item.preparationTime} minutes</span>
