@@ -1,10 +1,12 @@
 import { useEffect, useState } from 'react';
-import { Table, TableReservation, OrderStatus, tableService } from './services/tableService';
+import { TableReservation, OrderStatus, tableService } from './services/tableService';
 import { TableQueue } from './components/TableQueue';
 import styles from './Tables.module.css';
 import useAuth from '../auth/useAuth.hook';
 import { Icon } from '@iconify/react';
 import { websocketService } from '../dashboard/services/websocketService';
+import Table from './models/Table';
+import ReservationNotification from './dtos/ReservationNotification';
 
 export function Tables() {
   const [tables, setTables] = useState<Table[]>([]);
@@ -56,14 +58,17 @@ export function Tables() {
       if (!message.Type) return;
 
       if (message.Type === 'TableReserved') {
+
+        const msg = message as ReservationNotification;
+
         const reservation: TableReservation = {
-          reservationId: message.Reservation.ReservationId,
-          tableNumber: message.Reservation.TableNumber,
-          customerName: message.Reservation.CustomerName,
-          reservationDate: message.Reservation.ReservationDate,
-          reservationStatus: message.Reservation.ReservationStatus,
-          orderId: message.Reservation.OrderId,
-          orderStatus: OrderStatus.Queued
+          reservationId: msg.Reservation.ReservationId,
+          tableNumber: msg.Reservation.TableNumber,
+          customerName: msg.Reservation.CustomerName,
+          reservationDate: msg.Reservation.ReservationDate,
+          reservationStatus: msg.Reservation.ReservationStatus,
+          orderId: msg.Reservation.OrderId,
+          orderStatus: msg.Reservation.OrderStatus
         };
 
         setTableQueues(prev => ({
@@ -73,6 +78,12 @@ export function Tables() {
             reservation
           ]
         }));
+
+        setTables(prevTables => prevTables.map(t => 
+          t.tableNumber === reservation.tableNumber 
+            ? { ...t, reservationCount: (t.reservationCount || 0) + 1 } 
+            : t
+        ));
       } else if (message.Type === 'OrderReady') {
         const orderId = message.OrderId;
         
@@ -187,15 +198,22 @@ export function Tables() {
       )}
 
       <div className={styles.content}>
-        <div className={styles.tableList}>
+        <div className={styles.tableGrid} style={{ overflow: "visible"}}>
           {tables.map(table => (
             <button
               key={table.tableNumber}
-              className={`${styles.tableButton} ${selectedTable === table.tableNumber ? styles.selected : ''}`}
+              className={`${styles.tableCircle} ${selectedTable === table.tableNumber ? styles.selected : ''}`}
               onClick={() => setSelectedTable(table.tableNumber)}
+              title={`Table ${table.tableNumber} (${table.seats} seats)`}
             >
-              <span className={styles.tableNumber}>Table {table.tableNumber}</span>
-              <span className={styles.seats}>{table.seats} seats</span>
+              <span style={{ fontSize: '1.15rem', fontWeight: 600 }}>{table.tableNumber}</span>
+              <span className="absolute -left-1 -bottom-2 text-xs bg-purple-600 border-2 size-5 text-white font-bold rounded-full flex justify-center items-center">
+                <sub>{table.seats}</sub>
+              </span>
+
+              <span className="absolute -top-2 -right-1 bg-accent size-5 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                {table.reservationCount}
+              </span>
             </button>
           ))}
         </div>

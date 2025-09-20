@@ -1,3 +1,27 @@
+.seatSubNumber {
+  font-size: 0.7em;
+  vertical-align: sub;
+  font-weight: 500;
+  letter-spacing: -0.5px;
+}
+.tableCircle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f0edff;
+  border: 2px solid #e2dbfc;
+  color: #3b2d68;
+  font-size: 1.15rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: 0 1px 4px rgba(72,43,176,0.04);
+  outline: none;
+  position: relative;
+}
 .container {
   padding: 20px;
   height: 100%;
@@ -26,13 +50,43 @@
   min-height: 0;
 }
 
-.tableList {
-  width: 300px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
+
+.tableGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(54px, 1fr));
+  max-height: 70vh;
   overflow-y: auto;
-  padding-right: 10px;
+  padding-right: 8px;
+  width: 220px;
+}
+
+.tableCircle {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+  background: #f0edff;
+  border: 2px solid #e2dbfc;
+  color: #3b2d68;
+  font-size: 1.15rem;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.18s;
+  box-shadow: 0 1px 4px rgba(72,43,176,0.04);
+  outline: none;
+  overflow: visible;
+}
+.tableCircle:hover {
+  background: #e2dbfc;
+  border-color: #482bb0;
+}
+.tableCircle.selected {
+  background: #9810fa;
+  color: #fff;
+  border-color: #9810fa;
+  box-shadow: 0 2px 8px rgba(72,43,176,0.10);
 }
 
 .tableButton {
