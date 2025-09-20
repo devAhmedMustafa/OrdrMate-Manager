@@ -4,6 +4,7 @@ import useAuth from '../auth/useAuth.hook';
 import styles from './ItemDetail.module.css';
 import { itemService, MenuItem, Kitchen } from './services/itemService';
 import { uploadService } from './services/uploadService';
+import ItemCustomizations from './components/ItemCustomizations';
 
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>();
@@ -28,7 +29,8 @@ export default function ItemDetailPage() {
         ]);
         
         setItem(itemData);
-        setEditedItem(itemData);
+        const {kitchenName, ...rest} = itemData;
+        setEditedItem(rest);
         setKitchens(kitchensData);
 
         // Get presigned URL for the image
@@ -78,12 +80,15 @@ export default function ItemDetailPage() {
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     if (!editedItem) return;
+
     
     const { name, value } = e.target;
+    console.log(name, value)
     setEditedItem({
       ...editedItem,
       [name]: name === 'price' || name === 'preparationTime' ? Number(value) : value
     });
+
   };
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -213,6 +218,29 @@ export default function ItemDetailPage() {
                 ))}
               </select>
             </div>
+
+            <div>
+              <label htmlFor='priority'>Priority</label>
+              <input
+                type="number"
+                id="priority"
+                name="priority"
+                value={editedItem?.priority}
+                onChange={handleInputChange}
+              />
+            </div>
+
+            <div className={styles.formGroup}>
+              <label htmlFor="tags">Tags</label>
+              <input
+                type="text"
+                id="tags"
+                name="tags"
+                value={editedItem?.tags}
+                onChange={handleInputChange}
+              />
+            </div>
+
             <div className={styles.formGroup}>
               <label htmlFor="preparationTime">Preparation Time (minutes)</label>
               <input
@@ -256,6 +284,17 @@ export default function ItemDetailPage() {
                 <span className={styles.infoLabel}>Category:</span>
                 <span className={styles.infoValue}>{item.category}</span>
               </div>
+
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Priority:</span>
+                <span className={styles.infoValue}>{item.priority}</span>
+              </div>
+
+              <div className={styles.infoItem}>
+                <span className={styles.infoLabel}>Tags:</span>
+                <span className={styles.infoValue}>{item.tags}</span>
+              </div>
+
               <div className={styles.infoItem}>
                 <span className={styles.infoLabel}>Preparation Time:</span>
                 <span className={styles.infoValue}>{item.preparationTime} minutes</span>
@@ -268,6 +307,14 @@ export default function ItemDetailPage() {
           </div>
         )}
       </div>
+
+      {/* Customizations Section */}
+      {!isEditing && (
+        <ItemCustomizations
+          restaurantId={restaurantId!}
+          itemId={item.id}
+        />
+      )}
     </div>
   );
 } 

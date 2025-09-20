@@ -204,4 +204,9 @@
     transform: scale(1.02);
     box-shadow: 0 6px 16px rgba(124, 58, 237, 0.08);
     border-color: #c084fc;
+}
+
+.customizationsSection {
+    margin: 2rem 0;
+    padding: 0;
 } 

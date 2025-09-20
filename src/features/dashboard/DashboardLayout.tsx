@@ -14,6 +14,7 @@ export function DashboardLayout() {
     { path: '/menu', label: 'Menu Items', icon: 'ic:twotone-menu-book' },
     { path: '/orders', label: 'Orders', icon: 'lets-icons:order-duotone' },
     { path: '/kitchens', label: 'Kitchens', icon: 'mdi:kitchen' },
+    { path: '/customizations', label: 'Customizations', icon: 'mdi:palette' },
     { path: '/settings', label: 'Settings', icon: 'solar:settings-bold-duotone' },
   ];
 

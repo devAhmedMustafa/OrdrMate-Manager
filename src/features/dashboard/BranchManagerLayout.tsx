@@ -6,6 +6,7 @@ import logo from '@/assets/OrdrMate.png';
 import { RestaurantHeader } from './components/RestaurantHeader';
 import { useEffect } from 'react';
 import { websocketService } from './services/websocketService';
+import { AttendanceTokenProvider } from '../branch/contexts/attemdanceToken.context';
 
 export function BranchManagerLayout() {
   const { logout, branchId, token } = useAuth();
@@ -27,43 +28,50 @@ export function BranchManagerLayout() {
     { path: '/branch/menu', label: 'Menu', icon: 'ic:twotone-menu-book' },
     { path: '/branch/tables', label: 'Tables', icon: 'mdi:table' },
     { path: '/branch/kitchen-power', label: 'Kitchen Power', icon: 'mdi:power-socket' },
+    { path: '/branch/settings', label: 'Settings', icon: 'mdi:cog' },
+    { path: '/branch/attendance', label: 'Attendance Code', icon: 'mdi:barcode' },
   ];
 
   return (
-    <div className={styles.dashboardContainer}>
-      <nav className={styles.sidebar}>
-        <div className={styles.logo}>
-          <img src={logo} width={40} alt="OrdrMate Logo" />
+    <AttendanceTokenProvider>
+
+      <div className={styles.dashboardContainer}>
+        <nav className={styles.sidebar}>
+          <div className={styles.logo}>
+            <img src={logo} width={40} alt="OrdrMate Logo" />
+          </div>
+          
+          <ul className={styles.navList}>
+            {navItems.map((item) => (
+              <li key={item.path}>
+                <Link
+                  to={item.path}
+                  className={`${styles.navItem} ${
+                    location.pathname === item.path ? styles.active : ''
+                  }`}
+                >
+                  <Icon icon={item.icon} className={styles.icon} />
+                  {item.label}
+                </Link>
+              </li>
+            ))}
+          </ul>
+
+          <button onClick={logout} className={styles.logoutButton}>
+            <Icon icon="solar:logout-3-bold-duotone" className={styles.icon} />
+            Logout
+          </button>
+        </nav>
+
+        <div className={styles.contentWrapper}>
+          <RestaurantHeader />
+          <main className={styles.mainContent}>
+            <Outlet />
+          </main>
         </div>
-        
-        <ul className={styles.navList}>
-          {navItems.map((item) => (
-            <li key={item.path}>
-              <Link
-                to={item.path}
-                className={`${styles.navItem} ${
-                  location.pathname === item.path ? styles.active : ''
-                }`}
-              >
-                <Icon icon={item.icon} className={styles.icon} />
-                {item.label}
-              </Link>
-            </li>
-          ))}
-        </ul>
-
-        <button onClick={logout} className={styles.logoutButton}>
-          <Icon icon="solar:logout-3-bold-duotone" className={styles.icon} />
-          Logout
-        </button>
-      </nav>
-
-      <div className={styles.contentWrapper}>
-        <RestaurantHeader />
-        <main className={styles.mainContent}>
-          <Outlet />
-        </main>
       </div>
-    </div>
+      
+    </AttendanceTokenProvider>
+
   );
 } 

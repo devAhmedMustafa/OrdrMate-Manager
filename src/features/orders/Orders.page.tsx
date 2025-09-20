@@ -7,8 +7,9 @@ import styles from './Orders.module.css';
 import useAuth from '../auth/useAuth.hook';
 import { orderService } from './services/orderService';
 import { websocketService } from '../dashboard/services/websocketService';
+import TakeawayOrders from './components/TakeawayOrders';
 
-type Tab = 'orders' | 'unpaid' | string;
+type Tab = 'orders' | 'unpaid' | 'takeaway' | string;
 
 function Orders() {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
@@ -18,6 +19,9 @@ function Orders() {
   const [activeTab, setActiveTab] = useState<Tab>('orders');
   const [previousTab, setPreviousTab] = useState<Tab>('orders');
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [takeawayOrders, setTakeawayOrders] = useState<any[]>([]);
+  const [takeawaySearch, setTakeawaySearch] = useState('');
+  const [isTakeawayLoading, setIsTakeawayLoading] = useState(false);
   const { branchId, token } = useAuth();
 
   const fetchInitialData = async () => {
@@ -47,6 +51,21 @@ function Orders() {
       setAllOrders(ordersData);
     } catch (error) {
       console.error('Error fetching orders:', error);
+    }
+  };
+
+  const fetchTakeawayOrders = async () => {
+    if (!branchId || !token) return;
+    
+    setIsTakeawayLoading(true);
+    try {
+      const data = await orderService.getTakeawayOrders(branchId);
+      setTakeawayOrders(data || []); // Ensure it's always an array
+    } catch (error) {
+      console.error('Error fetching takeaway orders:', error);
+      setTakeawayOrders([]); // Set empty array on error
+    } finally {
+      setIsTakeawayLoading(false);
     }
   };
 
@@ -95,8 +114,11 @@ function Orders() {
 
     fetchInitialData();
     fetchOrders();
-    const interval = setInterval(fetchOrders, 30000); // Refresh every 30 seconds
-
+    fetchTakeawayOrders();
+    const interval = setInterval(() => {
+      fetchOrders();
+      fetchTakeawayOrders();
+    }, 30000);
     return () => clearInterval(interval);
   }, [branchId, token]);
 
@@ -198,6 +220,15 @@ function Orders() {
     }
   };
 
+  const handleRequestPickup = async (orderId: string) => {
+    try {
+      await orderService.requestOrderPickup(orderId);
+      fetchTakeawayOrders();
+    } catch (error) {
+      console.error('Error requesting order pickup:', error);
+    }
+  };
+
   const handleTabChange = (newTab: Tab) => {
     if (newTab === activeTab || isTransitioning) return;
     
@@ -253,6 +284,12 @@ function Orders() {
           onClick={() => handleTabChange('unpaid')}
         >
           Unpaid Orders
+        </button>
+        <button
+          className={`${styles.tab} ${activeTab === 'takeaway' ? styles.active : ''}`}
+          onClick={() => handleTabChange('takeaway')}
+        >
+          Takeaway Orders
         </button>
         <div className={styles.kitchenTabs}>
           {Object.keys(kitchenQueues).map(kitchenName => {
@@ -312,6 +349,17 @@ function Orders() {
             <UnpaidOrders 
               orders={unpaidOrders} 
               onMarkAsPaid={handleMarkAsPaid}
+            />
+          </div>
+        ) : activeTab === 'takeaway' ? (
+          <div className={`${styles.queueContent} ${activeTab === 'takeaway' ? styles.active : ''} ${isTransitioning && previousTab !== 'takeaway' ? styles.slideOut : ''}`}>
+            <TakeawayOrders
+              orders={takeawayOrders}
+              search={takeawaySearch}
+              onSearch={setTakeawaySearch}
+              onRequestPickup={handleRequestPickup}
+              onMarkAsPaid={handleMarkAsPaid}
+              isLoading={isTakeawayLoading}
             />
           </div>
         ) : (

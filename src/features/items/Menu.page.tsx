@@ -27,6 +27,7 @@ export default function MenuPage() {
         // Get presigned URLs for all items
         const itemsWithUrls = await Promise.all(
           items.map(async (item: MenuItem) => {
+            if (!item.imageUrl) return { ...item, presignedUrl: '' };
             const presignedUrl = await uploadService.getViewPresignedUrl(item.imageUrl);
             return { ...item, presignedUrl };
           })

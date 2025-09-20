@@ -36,6 +36,8 @@ export interface Order {
   TotalAmount?: number;
   IsPaid?: boolean;
   Customer?: string;
+  orderNumber?: number | null;
+  tableNumber?: number | null;
 }
 
 export interface KitchenQueue {
@@ -46,14 +48,14 @@ export interface KitchenQueue {
 
 export interface UnpaidOrder {
   orderId: string;
-  orderNumber: string;
-  orderType: string;
+  orderNumber: string | null;
+  orderType: string | null;
   customer: string;
   tableNumber?: number;
   paymentMethod: string;
   orderDate: string;
   totalAmount: number;
-  orderStatus: OrderStatus;
+  orderStatus: OrderStatus | string;
 }
 
 export type WebSocketMessage = {

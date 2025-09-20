@@ -68,7 +68,12 @@ class OrderService {
   }
 
   async markAsPaid(orderId: string): Promise<void> {
-    await api.post(`/Order/${orderId}/mark-as-paid`);
+    await api.put(`/Order/mark_paid/${orderId}`, {}, {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${localStorage.getItem('token')}`
+      }
+    });
   }
 
   async updateOrderStatus(orderId: string, status: OrderStatus): Promise<void> {
@@ -107,6 +112,20 @@ class OrderService {
       Customer: order.customer
     }));
   }
+
+  async getTakeawayOrders(branchId: string): Promise<any[]> {
+    const response = await api.get(`/Order/takeaways/${branchId}`);
+    return response.data;
+  }
+
+  async requestOrderPickup(orderId: string): Promise<void> {
+    await api.post('/Order/deliver_request', { orderId });
+  }
+
+  async setOrderAsReady(orderId: string): Promise<void> {
+    await api.put(`/OrderUpdate/set-ready/${orderId}`);
+  }
+
 }
 
 export const orderService = new OrderService();
