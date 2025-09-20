@@ -121,6 +121,11 @@ class OrderService {
   async requestOrderPickup(orderId: string): Promise<void> {
     await api.post('/Order/deliver_request', { orderId });
   }
+
+  async setOrderAsReady(orderId: string): Promise<void> {
+    await api.put(`/OrderUpdate/set-ready/${orderId}`);
+  }
+
 }
 
 export const orderService = new OrderService();
