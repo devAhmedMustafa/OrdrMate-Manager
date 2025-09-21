@@ -58,6 +58,10 @@ class TableService {
     return response.data;
   }
 
+  async confirmTableReservation(branchId: string, tableNumber: number): Promise<void> {
+    await api.put(`/BranchAttendance/confirm-attendance-via-manager/${branchId}/${tableNumber}`);
+  }
+
 }
 
 export const tableService = new TableService(); 
