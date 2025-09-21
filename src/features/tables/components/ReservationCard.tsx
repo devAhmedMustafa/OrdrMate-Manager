@@ -3,21 +3,38 @@ import { OrderStatus, ReservationOrder, TableReservation, tableService } from ".
 import { Icon } from '@iconify/react';
 import { orderService } from "../../orders/services/orderService";
 import useAuth from "../../auth/useAuth.hook";
+import OrderCustomization from "../../customizations/models/OrderCustomization.Model";
+import { customizationService } from "../../customizations";
 
 export default function ReservationCard({index, reservation}: {index: number, reservation: TableReservation}) {
 
   const [reservationOrder, setReservationOrder] = useState<ReservationOrder | null>(null);
+  const [orderCustomizations, setOrderCustomizations] = useState<OrderCustomization | null>(null);
   const {branchId} = useAuth();
 
   useEffect(()=>{
+    
     const fetchReservationOrder = async () => {
       if (reservation.reservationId) {
         const order = await tableService.getReservationOrder(reservation.reservationId);
         setReservationOrder(order);
       }
     };
+
     fetchReservationOrder();
   }, [reservation]);
+
+  useEffect(()=>{
+
+    const fetchOrderCustomizations = async () => {
+      if(reservationOrder && reservationOrder.orderId){
+        const customizations = await customizationService.getOrderCustomizations(reservationOrder.orderId);
+        setOrderCustomizations(new OrderCustomization(customizations));
+      }
+    };
+
+    fetchOrderCustomizations();
+  }, [reservationOrder]);
 
   async function handleSetOrderReady(){
     if(reservationOrder && reservationOrder.orderId){
@@ -137,17 +154,52 @@ export default function ReservationCard({index, reservation}: {index: number, re
 
       {/* Order Preview */}
       {reservationOrder && reservationOrder.orderItems.length > 0 && (
+
         <div style={{ padding: '14px 20px 16px 20px', background: '#fcfbfe', borderRadius: '0 0 14px 14px', height: "100%" }}>
+
           <div style={{ fontWeight: 600, color: '#6a4c93', fontSize: 14, marginBottom: 7, letterSpacing: 0.1 }}>Order Items</div>
+
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+
             {reservationOrder.orderItems.map((orderItem, idx) => (
+
               <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', borderRadius: 6, boxShadow: '0 1px 2px rgba(106,76,147,0.03)', padding: '6px 10px' }}>
-                <span style={{ fontWeight: 500, color: '#7B1FA2', fontSize: 13 }}>{orderItem.item.name}</span>
-                <span style={{ color: '#888', fontSize: 13, marginLeft: 'auto', fontWeight: 500 }}>x{orderItem.quantity}</span>
+
+                <span style={{ fontWeight: 500, color: '#7B1FA2', fontSize: 13 }}>
+                  {orderItem.item.name}
+                </span>
+                <span style={{ color: '#888', fontSize: 13, marginLeft: 'auto', fontWeight: 500 }}>
+                  x{orderItem.quantity}
+                </span>
+
+                {/* Customizations */}
+                {orderCustomizations && (
+                  orderCustomizations.items[orderItem.itemId] && (
+                  <div style={{
+                    marginLeft: 8,
+                    background: '#f4f0fa',
+                    borderRadius: 5,
+                    padding: '2px 8px',
+                    fontSize: 12,
+                    color: '#6a4c93',
+                    fontWeight: 500,
+                    display: 'inline-block',
+                  }}>
+                    {Object.entries(orderCustomizations.items[orderItem.itemId]).map(([key, value]) => (
+                      <span key={key} style={{ marginRight: 8 }}>
+                        <strong>{key}:</strong> {String(value)}
+                      </span>
+                    ))}
+                  </div>
+                ))}
               </li>
+
             ))}
+            
           </ul>
+
         </div>
+
       )}
 
       {/* Confirm Button */}

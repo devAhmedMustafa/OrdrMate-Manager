@@ -1,4 +1,5 @@
 import api from '../../../utils/api';
+import OrderCustomizationResponse from '../dtos/OrderCustomizationResponse.dto';
 
 export interface CustomizationChoice {
   value: string;
@@ -150,4 +151,9 @@ export const customizationService = {
   removeCategoryFromItem: async (itemId: string, categoryId: string): Promise<void> => {
     await api.delete(`/Customization/item/${itemId}/customization/${categoryId}`);
   },
+
+  getOrderCustomizations: async (orderId: string): Promise<OrderCustomizationResponse> => {
+    const response = await api.get(`/UserCustomization/order/${orderId}`);
+    return response.data;
+  }
 };

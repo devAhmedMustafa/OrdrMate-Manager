@@ -23,7 +23,7 @@ export interface TableReservation {
 export interface ReservationOrder {
   orderId: string;
   orderStatus: OrderStatus;
-  orderItems: { item: MenuItem, quantity: number }[];
+  orderItems: { itemId: string; item: MenuItem; quantity: number }[];
 }
 
 class TableService {
