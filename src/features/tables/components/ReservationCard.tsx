@@ -6,7 +6,39 @@ import useAuth from "../../auth/useAuth.hook";
 import OrderCustomization from "../../customizations/models/OrderCustomization.Model";
 import { customizationService } from "../../customizations";
 
-export default function ReservationCard({index, reservation}: {index: number, reservation: TableReservation}) {
+import { useRef } from "react";
+import styles from '../Tables.module.css';
+
+interface ReservationCardProps {
+  index: number;
+  reservation: TableReservation;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragEnd?: () => void;
+}
+
+export default function ReservationCard({index, reservation, onDragStart, onDragEnd}: ReservationCardProps) {
+  const dragRef = useRef<HTMLDivElement>(null);
+
+  // Drag event handlers for moving reservation to another table
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('application/ordrmate-reservation', JSON.stringify({
+      reservationId: reservation.reservationId,
+      fromTable: reservation.tableNumber
+    }));
+    e.dataTransfer.effectAllowed = 'move';
+    // Add ghost effect
+    if (dragRef.current) {
+      dragRef.current.classList.add(styles.draggingCard);
+    }
+    if (onDragStart) onDragStart(e);
+  };
+
+  const handleDragEnd = () => {
+    if (dragRef.current) {
+      dragRef.current.classList.remove(styles.draggingCard);
+    }
+    if (onDragEnd) onDragEnd();
+  };
 
   const [reservationOrder, setReservationOrder] = useState<ReservationOrder | null>(null);
   const [orderCustomizations, setOrderCustomizations] = useState<OrderCustomization | null>(null);
@@ -44,20 +76,20 @@ export default function ReservationCard({index, reservation}: {index: number, re
   }
 
   const getStatusIcon = (status: string) => {
-      switch (status.toLowerCase()) {
+    switch (status.toLowerCase()) {
       case 'seated':
-          return 'mdi:chair-rolling';
+        return 'mdi:chair-rolling';
       case 'pending':
-          return 'mdi:clock-outline';
+        return 'mdi:clock-outline';
       case 'confirmed':
-          return 'mdi:check-circle-outline';
+        return 'mdi:check-circle-outline';
       case 'cancelled':
-          return 'mdi:close-circle-outline';
+        return 'mdi:close-circle-outline';
       case 'completed':
-          return 'mdi:flag-checkered';
+        return 'mdi:flag-checkered';
       default:
-          return 'mdi:information-outline';
-      }
+        return 'mdi:information-outline';
+    }
   };
 
   const getReservationStatusColor = (status: string) => {
@@ -76,6 +108,10 @@ export default function ReservationCard({index, reservation}: {index: number, re
   return (
     <div
       key={index}
+      ref={dragRef}
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       style={{
         background: '#fff',
         border: '1px solid #ececec',
@@ -92,6 +128,7 @@ export default function ReservationCard({index, reservation}: {index: number, re
         display: 'flex',
         flexDirection: 'column',
         justifyContent: 'space-between',
+        cursor: 'grab',
       }}
     >
       {/* Top section: Customer and details */}

@@ -70,6 +70,13 @@ class TableService {
     await api.put(`/Table/unfreeze/${branchId}/${tableNumber}`);
   }
 
+  async moveReservation(reservationId: string, toTableNumber: number): Promise<void> {
+    await api.put(`/Table/move-reservation/`, {
+      reservationId,
+      toTableNumber
+    });
+  }
+
 }
 
 export const tableService = new TableService(); 

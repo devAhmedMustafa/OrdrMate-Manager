@@ -1,3 +1,17 @@
+.dragOverTarget {
+  outline: 3px solid #7B1FA2 !important;
+  box-shadow: 0 0 0 4px #e2dbfc;
+  transform: scale(1.08);
+  transition: outline 0.15s, box-shadow 0.15s, transform 0.15s;
+  z-index: 10;
+}
+
+.draggingCard {
+  opacity: 0.6;
+  box-shadow: 0 8px 24px rgba(123,31,162,0.18);
+  cursor: grabbing !important;
+  transition: opacity 0.12s, box-shadow 0.12s;
+}
 .seatSubNumber {
   font-size: 0.7em;
   vertical-align: sub;
