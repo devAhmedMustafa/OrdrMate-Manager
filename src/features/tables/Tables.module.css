@@ -4,24 +4,6 @@
   font-weight: 500;
   letter-spacing: -0.5px;
 }
-.tableCircle {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
-  background: #f0edff;
-  border: 2px solid #e2dbfc;
-  color: #3b2d68;
-  font-size: 1.15rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.18s;
-  box-shadow: 0 1px 4px rgba(72,43,176,0.04);
-  outline: none;
-  position: relative;
-}
 .container {
   padding: 20px;
   height: 100%;
@@ -58,12 +40,13 @@
   overflow-y: auto;
   padding-right: 8px;
   width: 220px;
+  gap: 22px;
 }
 
 .tableCircle {
-  width: 52px;
-  height: 52px;
-  border-radius: 50%;
+  width: 57px;
+  height: 57px;
+  border-radius: 24%;
   background: #f0edff;
   border: 2px solid #e2dbfc;
   color: #3b2d68;
@@ -72,7 +55,6 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  cursor: pointer;
   transition: all 0.18s;
   box-shadow: 0 1px 4px rgba(72,43,176,0.04);
   outline: none;

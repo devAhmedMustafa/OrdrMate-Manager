@@ -62,6 +62,14 @@ class TableService {
     await api.put(`/BranchAttendance/confirm-attendance-via-manager/${branchId}/${tableNumber}`);
   }
 
+  async freezeTable(branchId: string, tableNumber: number): Promise<void> {
+    await api.put(`/Table/freeze/${branchId}/${tableNumber}`);
+  }
+
+  async unfreezeTable(branchId: string, tableNumber: number): Promise<void> {
+    await api.put(`/Table/unfreeze/${branchId}/${tableNumber}`);
+  }
+
 }
 
 export const tableService = new TableService(); 

@@ -145,6 +145,23 @@ export function Tables() {
     }
   };
 
+  const handleToggleFreeze = async (table: Table) => {
+    if (!branchId || !token) return;
+
+    try {
+      if (table.isFrozen) {
+        await tableService.unfreezeTable(branchId, table.tableNumber);
+      } else {
+        await tableService.freezeTable(branchId, table.tableNumber);
+      }
+      // Refresh tables
+      const data = await tableService.getTables(branchId);
+      setTables(data);
+    } catch (error) {
+      console.error('Error toggling table freeze:', error);
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -200,21 +217,49 @@ export function Tables() {
       <div className={styles.content}>
         <div className={styles.tableGrid} style={{ overflow: "visible"}}>
           {tables.map(table => (
-            <button
-              key={table.tableNumber}
-              className={`${styles.tableCircle} ${selectedTable === table.tableNumber ? styles.selected : ''}`}
-              onClick={() => setSelectedTable(table.tableNumber)}
-              title={`Table ${table.tableNumber} (${table.seats} seats)`}
-            >
-              <span style={{ fontSize: '1.15rem', fontWeight: 600 }}>{table.tableNumber}</span>
-              <span className="absolute -left-1 -bottom-2 text-xs bg-purple-600 border-2 size-5 text-white font-bold rounded-full flex justify-center items-center">
-                <sub>{table.seats}</sub>
-              </span>
 
-              <span className="absolute -top-2 -right-1 bg-accent size-5 rounded-full flex items-center justify-center text-xs font-bold text-white">
-                {table.reservationCount}
-              </span>
-            </button>
+            <div key={table.tableNumber} 
+            className='h-fit w-fit'
+            style={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+
+              {/* Freeze/Unfreeze Button - always accessible */}
+              <button
+                title={table.isFrozen ? 'Unfreeze Table' : 'Freeze Table'}
+                style={{ position: 'absolute', top: -10, left: -10, zIndex: 3, background: table.isFrozen ? '#e57373' : '#b39ddb', color: '#fff', border: 'none', borderRadius: '50%', width: 22, height: 22, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: '0 1px 4px rgba(72,43,176,0.08)', cursor: 'pointer', fontSize: 14 }}
+                onClick={async (e) => {
+                  e.stopPropagation();
+                  await handleToggleFreeze(table);
+                }}
+              >
+                <Icon icon={table.isFrozen ? 'mdi:snowflake-off' : 'mdi:snowflake'} />
+              </button>
+
+              <button
+                className={`${styles.tableCircle} ${selectedTable === table.tableNumber ? styles.selected : ''}`}
+                onClick={() => setSelectedTable(table.tableNumber)}
+                title={`Table ${table.tableNumber} (${table.seats} seats)`}
+                style={table.isFrozen ? { opacity: 0.5, pointerEvents: 'none', filter: 'grayscale(0.7)' } : {}}
+              >
+                
+                {/* Frozen icon overlay */}
+                {table.isFrozen && (
+                  <span style={{ position: 'absolute', bottom: 4, right: 4, color: '#e57373', fontSize: 18, zIndex: 2 }}>
+                    <Icon icon="mdi:snowflake" />
+                  </span>
+                )}
+
+                <span style={{ fontSize: '1.25rem', fontWeight: 600 }}>{table.tableNumber}</span>
+
+                <span className="absolute -left-1 -bottom-2 text-xs bg-purple-600 border-2 size-5 text-white font-bold rounded-full flex justify-center items-center">
+                  <sub>{table.seats}</sub>
+                </span>
+
+                <span className="absolute -top-2 -right-1 bg-accent size-5 rounded-full flex items-center justify-center text-xs font-bold text-white">
+                  {table.reservationCount}
+                </span>
+
+              </button>
+            </div>
           ))}
         </div>
 
