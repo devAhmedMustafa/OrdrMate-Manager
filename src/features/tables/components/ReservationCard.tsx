@@ -1,56 +1,117 @@
 import { useEffect, useState } from "react";
-import { ReservationOrder, TableReservation, tableService } from "../services/tableService";
-// import styles from './TableQueue.module.css';
+import { OrderStatus, ReservationOrder, TableReservation, tableService } from "../services/tableService";
 import { Icon } from '@iconify/react';
+import { orderService } from "../../orders/services/orderService";
+import useAuth from "../../auth/useAuth.hook";
+import OrderCustomization from "../../customizations/models/OrderCustomization.Model";
+import { customizationService } from "../../customizations";
 
-export default function ReservationCard({index, reservation}: {index: number, reservation: TableReservation}) {
+import { useRef } from "react";
+import styles from '../Tables.module.css';
+
+interface ReservationCardProps {
+  index: number;
+  reservation: TableReservation;
+  onDragStart?: (e: React.DragEvent) => void;
+  onDragEnd?: () => void;
+}
+
+export default function ReservationCard({index, reservation, onDragStart, onDragEnd}: ReservationCardProps) {
+  const dragRef = useRef<HTMLDivElement>(null);
+
+  // Drag event handlers for moving reservation to another table
+  const handleDragStart = (e: React.DragEvent) => {
+    e.dataTransfer.setData('application/ordrmate-reservation', JSON.stringify({
+      reservationId: reservation.reservationId,
+      fromTable: reservation.tableNumber
+    }));
+    e.dataTransfer.effectAllowed = 'move';
+    // Add ghost effect
+    if (dragRef.current) {
+      dragRef.current.classList.add(styles.draggingCard);
+    }
+    if (onDragStart) onDragStart(e);
+  };
+
+  const handleDragEnd = () => {
+    if (dragRef.current) {
+      dragRef.current.classList.remove(styles.draggingCard);
+    }
+    if (onDragEnd) onDragEnd();
+  };
 
   const [reservationOrder, setReservationOrder] = useState<ReservationOrder | null>(null);
+  const [orderCustomizations, setOrderCustomizations] = useState<OrderCustomization | null>(null);
+  const {branchId} = useAuth();
 
   useEffect(()=>{
+    
     const fetchReservationOrder = async () => {
       if (reservation.reservationId) {
         const order = await tableService.getReservationOrder(reservation.reservationId);
-        console.log(order);
         setReservationOrder(order);
       }
     };
+
     fetchReservationOrder();
   }, [reservation]);
 
-  const getStatusIcon = (status: string) => {
-      switch (status.toLowerCase()) {
-      case 'seated':
-          return 'mdi:chair-rolling';
-      case 'pending':
-          return 'mdi:clock-outline';
-      case 'confirmed':
-          return 'mdi:check-circle-outline';
-      case 'cancelled':
-          return 'mdi:close-circle-outline';
-      case 'completed':
-          return 'mdi:flag-checkered';
-      default:
-          return 'mdi:information-outline';
+  useEffect(()=>{
+
+    const fetchOrderCustomizations = async () => {
+      if(reservationOrder && reservationOrder.orderId){
+        const customizations = await customizationService.getOrderCustomizations(reservationOrder.orderId);
+        setOrderCustomizations(new OrderCustomization(customizations));
       }
+    };
+
+    fetchOrderCustomizations();
+  }, [reservationOrder]);
+
+  async function handleSetOrderReady(){
+    if(reservationOrder && reservationOrder.orderId){
+      await orderService.setOrderAsReady(reservationOrder.orderId);
+      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
+    }
+  }
+
+  const getStatusIcon = (status: string) => {
+    switch (status.toLowerCase()) {
+      case 'seated':
+        return 'mdi:chair-rolling';
+      case 'pending':
+        return 'mdi:clock-outline';
+      case 'confirmed':
+        return 'mdi:check-circle-outline';
+      case 'cancelled':
+        return 'mdi:close-circle-outline';
+      case 'completed':
+        return 'mdi:flag-checkered';
+      default:
+        return 'mdi:information-outline';
+    }
   };
 
-  // const getOrderStatusColor = (status: OrderStatus) => {
-  //     switch (status) {
-  //     case OrderStatus.Queued:
-  //         return '#FFA726'; // Orange
-  //     case OrderStatus.Ready:
-  //         return '#66BB6A'; // Green
-  //     case OrderStatus.Delivered:
-  //         return '#42A5F5'; // Blue
-  //     default:
-  //         return '#9E9E9E'; // Grey
-  //     }
-  // };
+  const getReservationStatusColor = (status: string) => {
+      switch (status) {
+      case 'Pending':
+          return '#FF7043'; // Red-Orange
+      case 'Queued':
+          return '#FFA726'; // Orange
+      case 'Seated':
+          return '#66bb82'; // Green
+      default:
+          return '#9E9E9E'; // Grey
+      }
+  };
 
   return (
     <div
       key={index}
+      ref={dragRef}
+      draggable
+      onDragStart={handleDragStart}
+      onDragEnd={handleDragEnd}
       style={{
         background: '#fff',
         border: '1px solid #ececec',
@@ -64,6 +125,10 @@ export default function ReservationCard({index, reservation}: {index: number, re
         overflow: 'hidden',
         fontFamily: 'inherit',
         transition: 'box-shadow 0.18s',
+        display: 'flex',
+        flexDirection: 'column',
+        justifyContent: 'space-between',
+        cursor: 'grab',
       }}
     >
       {/* Top section: Customer and details */}
@@ -93,10 +158,11 @@ export default function ReservationCard({index, reservation}: {index: number, re
         alignItems: 'center',
         padding: '10px 0 0 0',
         background: '#faf9fc',
+        flexGrow: 1,
       }}>
         <span style={{
-          background: '#f3e5f5',
-          color: '#7B1FA2',
+          background: getReservationStatusColor(reservation.reservationStatus),
+          color: '#fff',
           fontWeight: 600,
           fontSize: 13,
           borderRadius: 8,
@@ -109,20 +175,76 @@ export default function ReservationCard({index, reservation}: {index: number, re
           <Icon icon={getStatusIcon(reservation.reservationStatus)} style={{ fontSize: 15, opacity: 0.8 }} />
           {reservation.reservationStatus}
         </span>
+
+        {/* Confirm table if status is waiting  */}
+        {(reservation.reservationStatus.toLowerCase() === 'waiting') && (
+          <div className="bg-emerald-400 text-white size-7 flex justify-center items-center rounded-full cursor-pointer hover:bg-emerald-600 transition ml-3" title="Confirm Reservation">
+            <button className="w-fit" onClick={async()=> {
+              await tableService.confirmTableReservation(branchId!, reservation.tableNumber);
+              window.location.reload();
+            }}>
+              <Icon icon="mdi:check" style={{ fontSize: 15 }} />
+            </button>
+          </div>
+        )}
       </div>
 
       {/* Order Preview */}
       {reservationOrder && reservationOrder.orderItems.length > 0 && (
-        <div style={{ padding: '14px 20px 16px 20px', background: '#fcfbfe', borderRadius: '0 0 14px 14px' }}>
+
+        <div style={{ padding: '14px 20px 16px 20px', background: '#fcfbfe', borderRadius: '0 0 14px 14px', height: "100%" }}>
+
           <div style={{ fontWeight: 600, color: '#6a4c93', fontSize: 14, marginBottom: 7, letterSpacing: 0.1 }}>Order Items</div>
+
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 6 }}>
+
             {reservationOrder.orderItems.map((orderItem, idx) => (
+
               <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', borderRadius: 6, boxShadow: '0 1px 2px rgba(106,76,147,0.03)', padding: '6px 10px' }}>
-                <span style={{ fontWeight: 500, color: '#7B1FA2', fontSize: 13 }}>{orderItem.item.name}</span>
-                <span style={{ color: '#888', fontSize: 13, marginLeft: 'auto', fontWeight: 500 }}>x{orderItem.quantity}</span>
+
+                <span style={{ fontWeight: 500, color: '#7B1FA2', fontSize: 13 }}>
+                  {orderItem.item.name}
+                </span>
+                <span style={{ color: '#888', fontSize: 13, marginLeft: 'auto', fontWeight: 500 }}>
+                  x{orderItem.quantity}
+                </span>
+
+                {/* Customizations */}
+                {orderCustomizations && (
+                  orderCustomizations.items[orderItem.itemId] && (
+                  <div style={{
+                    marginLeft: 8,
+                    background: '#f4f0fa',
+                    borderRadius: 5,
+                    padding: '2px 8px',
+                    fontSize: 12,
+                    color: '#6a4c93',
+                    fontWeight: 500,
+                    display: 'inline-block',
+                  }}>
+                    {Object.entries(orderCustomizations.items[orderItem.itemId]).map(([key, value]) => (
+                      <span key={key} style={{ marginRight: 8 }}>
+                        <strong>{key}:</strong> {String(value)}
+                      </span>
+                    ))}
+                  </div>
+                ))}
               </li>
+
             ))}
+            
           </ul>
+
+        </div>
+
+      )}
+
+      {/* Confirm Button */}
+      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
+        <div className="bg-emerald-400 text-white p-3 rounded-b-lg cursor-pointer hover:bg-emerald-600 transition">
+          <button className="w-full" onClick={handleSetOrderReady}>
+            <Icon icon="mdi:check" style={{ fontSize: 15, marginLeft: 5 }} />
+          </button>
         </div>
       )}
     </div>

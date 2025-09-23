@@ -126,6 +126,12 @@ class OrderService {
   async placeOrder(request: PlaceOrderRequestDto): Promise<void> {
     await api.post('/Order/create-order', request);
   }
+
+  async setOrderAsReady(orderId: string): Promise<void> {
+    await api.put(`/UpdateOrder/set-ready/${orderId}`);
+  }
+
+
 }
 
 export const orderService = new OrderService();

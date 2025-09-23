@@ -1,13 +1,10 @@
 import api from '../../../utils/api';
 import { MenuItem } from '../../items/services/itemService';
-
-export interface Table {
-  tableNumber: number;
-  seats: number;
-  branchId: string;
-}
+import CreateTableRequest from '../dtos/CreateTableRequest.dto';
+import TableResponse from '../dtos/TableResponse.dto';
 
 export enum OrderStatus {
+  Pending = 'Pending',
   Queued = 'Queued',
   Ready = 'Ready',
   Delivered = 'Delivered'
@@ -26,11 +23,11 @@ export interface TableReservation {
 export interface ReservationOrder {
   orderId: string;
   orderStatus: OrderStatus;
-  orderItems: { item: MenuItem, quantity: number }[];
+  orderItems: { itemId: string; item: MenuItem; quantity: number }[];
 }
 
 class TableService {
-  async getTables(branchId: string): Promise<Table[]> {
+  async getTables(branchId: string): Promise<TableResponse[]> {
     const response = await api.get(`/Table/${branchId}`);
     return response.data;
   }
@@ -41,7 +38,7 @@ class TableService {
   }
 
   // Create a new table
-  async createTable(table: Table): Promise<Table> {
+  async createTable(table: CreateTableRequest): Promise<TableResponse> {
     const response = await api.post('/Table', table);
     return response.data;
   }
@@ -59,6 +56,25 @@ class TableService {
   async getReservationOrder(reservationId: string): Promise<ReservationOrder> {
     const response = await api.get(`/Table/order/${reservationId}`);
     return response.data;
+  }
+
+  async confirmTableReservation(branchId: string, tableNumber: number): Promise<void> {
+    await api.put(`/BranchAttendance/confirm-attendance-via-manager/${branchId}/${tableNumber}`);
+  }
+
+  async freezeTable(branchId: string, tableNumber: number): Promise<void> {
+    await api.put(`/Table/freeze/${branchId}/${tableNumber}`);
+  }
+
+  async unfreezeTable(branchId: string, tableNumber: number): Promise<void> {
+    await api.put(`/Table/unfreeze/${branchId}/${tableNumber}`);
+  }
+
+  async moveReservation(reservationId: string, toTableNumber: number): Promise<void> {
+    await api.put(`/Table/move-reservation/`, {
+      reservationId,
+      toTableNumber
+    });
   }
 
 }
