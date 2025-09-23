@@ -178,12 +178,12 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
         {/* Confirm table if status is waiting  */}
         {(reservation.reservationStatus.toLowerCase() === 'waiting') && (
-          <div className="bg-emerald-400 text-white size-10 flex justify-center items-center rounded-full cursor-pointer hover:bg-emerald-600 transition ml-3" title="Confirm Reservation">
-            <button className="w-full" onClick={async()=> {
+          <div className="bg-emerald-400 text-white size-7 flex justify-center items-center rounded-full cursor-pointer hover:bg-emerald-600 transition ml-3" title="Confirm Reservation">
+            <button className="w-fit" onClick={async()=> {
               await tableService.confirmTableReservation(branchId!, reservation.tableNumber);
               window.location.reload();
             }}>
-              <Icon icon="mdi:check" style={{ fontSize: 15, marginLeft: 5 }} />
+              <Icon icon="mdi:check" style={{ fontSize: 15 }} />
             </button>
           </div>
         )}
