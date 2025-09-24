@@ -11,7 +11,7 @@ interface MenuItemWithPresignedUrl extends MenuItem {
 }
 
 export default function BranchMenuPage() {
-  const { pharmacyId: restaurantId, token, branchId } = useAuth();
+  const { pharmacyId, token, branchId } = useAuth();
   const [items, setItems] = useState<MenuItemWithPresignedUrl[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -28,7 +28,7 @@ export default function BranchMenuPage() {
       if (!branchId || !token) return;
 
       try {
-        const items = await itemService.getRestaurantItems(restaurantId!);
+        const items = await itemService.getPharmacyItems(pharmacyId!);
         const availableItems = await itemService.getBranchAvailableItems(branchId);
 
         items.forEach((item: any) => {
@@ -58,7 +58,7 @@ export default function BranchMenuPage() {
     };
 
     fetchItems();
-  }, [restaurantId, token]);
+  }, [pharmacyId, token]);
 
   async function toggleAvailability(itemId: string) {
     if (!branchId) return;
@@ -160,14 +160,14 @@ export default function BranchMenuPage() {
                 </button>
               </div>
               <div className={styles.content}>
+                
                 <h2 className={styles.itemName}>{item.name}</h2>
                 <p className={styles.description}>{item.description}</p>
                 <div className={styles.details}>
+
                   <span className={styles.price}>${item.price.toFixed(2)}</span>
                   <span className={styles.category}>{item.category}</span>
-                  {item.preparationTime > 0 && (
-                    <span className={styles.prepTime}>{item.preparationTime} min</span>
-                  )}
+                  
                 </div>
                 <div style={{ marginTop: 12 }}>
                   {!inCart ? (

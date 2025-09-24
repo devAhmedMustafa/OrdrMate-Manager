@@ -62,10 +62,12 @@ export default function AddItemPage() {
             description: (form.elements.namedItem('description') as HTMLTextAreaElement).value,
             price: Number((form.elements.namedItem('price') as HTMLInputElement).value),
             category: (form.elements.namedItem('category') as HTMLInputElement).value,
+            subCategory: (form.elements.namedItem('subCategory') as HTMLInputElement).value,
             pharmacyId,
             imageUrl: selectedFile?.fileUrl || '',
             priority: 0,
-            tags: ""
+            tags: "",
+            brand: (form.elements.namedItem('brand') as HTMLInputElement).value,
         };
 
         try {
@@ -140,16 +142,25 @@ export default function AddItemPage() {
                             className={styles.input}
                         />
                     </div>
+                    
+                    <div className={styles.formGroup}>
+                        <label htmlFor="subCategory" className={styles.label}>Subcategory</label>
+                        <input
+                            id="subCategory"
+                            name="subCategory"
+                            type="text"
+                            required
+                            className={styles.input}
+                        />
+                    </div>
 
                     <div className={styles.formGroup}>
-                        <label htmlFor="preparationTime" className={styles.label}>Preparation Time (minutes)</label>
+                        <label htmlFor="brand" className={styles.label}>Brand</label>
                         <input
-                            id="preparationTime"
-                            name="preparationTime"
-                            type="number"
+                            id="brand"
+                            name="brand"
+                            type="text"
                             required
-                            min="1"
-                            step="1"
                             className={styles.input}
                         />
                     </div>

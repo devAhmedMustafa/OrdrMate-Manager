@@ -9,6 +9,8 @@ export interface MenuItem {
   priority: number;
   tags: string;
   category: string;
+  subCategory?: string;
+  brand: string;
   isAvailable?: boolean;
 }
 

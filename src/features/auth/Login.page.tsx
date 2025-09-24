@@ -61,7 +61,7 @@ export default function LoginPage() {
       <div className={styles.loginCard}>
         <div className={styles.header}>
           <img src={logo} alt="Ordr Mate Logo" className={styles.logo} />
-          <h1 className={styles.appName}>Ordr Mate</h1>
+          <h1 className={styles.appName}>GCM</h1>
           <p className={styles.appSubtitle}>Green City Manager</p>
         </div>
 
