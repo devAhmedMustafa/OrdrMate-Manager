@@ -23,7 +23,7 @@ export interface TableReservation {
 export interface ReservationOrder {
   orderId: string;
   orderStatus: OrderStatus;
-  orderItems: { item: MenuItem, quantity: number }[];
+  orderItems: { itemId: string; item: MenuItem; quantity: number }[];
 }
 
 class TableService {
@@ -53,13 +53,33 @@ class TableService {
     await api.post(`/Table/deque/${branchId}/${tableNumber}`);
   }
 
-  async getReservationOrder(reservationId: string): Promise<ReservationOrder> {
+  async getReservationOrder(reservationId: string): Promise<ReservationOrder | null> {
     const response = await api.get(`/Table/order/${reservationId}`);
+
+    if (response.status != 200) {
+      return null;
+    }
+
     return response.data;
   }
 
   async confirmTableReservation(branchId: string, tableNumber: number): Promise<void> {
     await api.put(`/BranchAttendance/confirm-attendance-via-manager/${branchId}/${tableNumber}`);
+  }
+
+  async freezeTable(branchId: string, tableNumber: number): Promise<void> {
+    await api.put(`/Table/freeze/${branchId}/${tableNumber}`);
+  }
+
+  async unfreezeTable(branchId: string, tableNumber: number): Promise<void> {
+    await api.put(`/Table/unfreeze/${branchId}/${tableNumber}`);
+  }
+
+  async moveReservation(reservationId: string, toTableNumber: number): Promise<void> {
+    await api.put(`/Table/move-reservation/`, {
+      reservationId,
+      toTableNumber
+    });
   }
 
 }

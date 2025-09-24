@@ -8,9 +8,11 @@ interface TableQueueProps {
   tableNumber: number;
   reservations: TableReservation[];
   onDequeue?: () => void;
+  onReservationDragStart?: (reservation: TableReservation, e: React.DragEvent) => void;
+  onReservationDragEnd?: () => void;
 }
 
-export function TableQueue({ tableNumber, reservations, onDequeue }: TableQueueProps) {
+export function TableQueue({ tableNumber, reservations, onDequeue, onReservationDragStart, onReservationDragEnd }: TableQueueProps) {
   const { branchId, token } = useAuth();
 
   const handleDequeue = async () => {
@@ -52,7 +54,13 @@ export function TableQueue({ tableNumber, reservations, onDequeue }: TableQueueP
           </p>
         ) : (
           reservations.map((reservation, index) => (
-            <ReservationCard key={index} index={index} reservation={reservation} />
+            <ReservationCard
+              key={index}
+              index={index}
+              reservation={reservation}
+              onDragStart={onReservationDragStart ? (e) => onReservationDragStart(reservation, e) : undefined}
+              onDragEnd={onReservationDragEnd}
+            />
           ))
         )}
       </div>
