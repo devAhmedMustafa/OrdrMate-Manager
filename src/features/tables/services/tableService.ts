@@ -53,8 +53,13 @@ class TableService {
     await api.post(`/Table/deque/${branchId}/${tableNumber}`);
   }
 
-  async getReservationOrder(reservationId: string): Promise<ReservationOrder> {
+  async getReservationOrder(reservationId: string): Promise<ReservationOrder | null> {
     const response = await api.get(`/Table/order/${reservationId}`);
+
+    if (response.status != 200) {
+      return null;
+    }
+
     return response.data;
   }
 

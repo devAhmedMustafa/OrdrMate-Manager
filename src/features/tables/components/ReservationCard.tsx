@@ -190,7 +190,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       </div>
 
       {/* Order Preview */}
-      {reservationOrder && reservationOrder.orderItems.length > 0 && (
+      {reservationOrder && reservationOrder.orderItems.length > 0 ? (
 
         <div style={{ padding: '14px 20px 16px 20px', background: '#fcfbfe', borderRadius: '0 0 14px 14px', height: "100%" }}>
 
@@ -237,7 +237,14 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
         </div>
 
-      )}
+      ) : (
+        <div style={{ padding: '14px 20px 16px 20px', background: '#fcfbfe', borderRadius: '0 0 14px 14px', height: "100%" }}>
+          <div style={{ fontWeight: 500, color: '#888', fontSize: 13, textAlign: 'center' }}>
+            No order associated with this reservation.
+          </div>
+        </div>
+      )
+      }
 
       {/* Confirm Button */}
       {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
