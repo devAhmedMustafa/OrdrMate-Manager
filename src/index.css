@@ -4,6 +4,8 @@
 @theme {
     --color-sharp: #0F766E;
     --color-primary: #0E7490;
+    --color-primary-light: #38BDF8;
+    --color-primary-dark: #075985;
     --color-accent: #10B981;
     --color-accent-light: #6EE7B7;
     --color-accent-dark: #047857;

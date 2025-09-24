@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import useAuth from '../auth/useAuth.hook';
 import styles from './ItemDetail.module.css';
-import { itemService, MenuItem, Kitchen } from './services/itemService';
+import { itemService, MenuItem } from './services/itemService';
 import { uploadService } from './services/uploadService';
 
 export default function ItemDetailPage() {
@@ -14,7 +14,6 @@ export default function ItemDetailPage() {
   const [error, setError] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
   const [editedItem, setEditedItem] = useState<MenuItem | null>(null);
-  const [kitchens, setKitchens] = useState<Kitchen[]>([]);
   const [imageUrl, setImageUrl] = useState<string>('');
 
   useEffect(() => {
@@ -22,15 +21,11 @@ export default function ItemDetailPage() {
       if (!id || !token || !restaurantId) return;
 
       try {
-        const [itemData, kitchensData] = await Promise.all([
+        const [itemData] = await Promise.all([
           itemService.getItem(id),
-          itemService.getRestaurantKitchens(restaurantId)
         ]);
         
         setItem(itemData);
-        const {kitchenName, ...rest} = itemData;
-        setEditedItem(rest);
-        setKitchens(kitchensData);
 
         // Get presigned URL for the image
         if (itemData.imageUrl) {
@@ -126,8 +121,6 @@ export default function ItemDetailPage() {
     return <div className={styles.error}>Item not found</div>;
   }
 
-  const selectedKitchen = kitchens.find(k => k.id === item.kitchenId);
-
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -202,21 +195,6 @@ export default function ItemDetailPage() {
                 onChange={handleInputChange}
               />
             </div>
-            <div className={styles.formGroup}>
-              <label htmlFor="kitchenId">Kitchen</label>
-              <select
-                id="kitchenId"
-                name="kitchenId"
-                value={editedItem?.kitchenId}
-                onChange={handleInputChange}
-              >
-                {kitchens.map(kitchen => (
-                  <option key={kitchen.id} value={kitchen.id}>
-                    {kitchen.name}
-                  </option>
-                ))}
-              </select>
-            </div>
 
             <div>
               <label htmlFor='priority'>Priority</label>
@@ -241,16 +219,6 @@ export default function ItemDetailPage() {
             </div>
 
             <div className={styles.formGroup}>
-              <label htmlFor="preparationTime">Preparation Time (minutes)</label>
-              <input
-                type="number"
-                id="preparationTime"
-                name="preparationTime"
-                value={editedItem?.preparationTime}
-                onChange={handleInputChange}
-              />
-            </div>
-            <div className={styles.formGroup}>
               <label htmlFor="image">Item Image</label>
               <input
                 type="file"
@@ -273,9 +241,7 @@ export default function ItemDetailPage() {
             <div className={styles.meta}>
               <span className={styles.price}>${item.price.toFixed(2)}</span>
               <span className={styles.category}>{item.category}</span>
-              {item.preparationTime > 0 && (
-                <span className={styles.prepTime}>{item.preparationTime} min</span>
-              )}
+              
             </div>
             <p className={styles.description}>{item.description}</p>
             <div className={styles.additionalInfo}>
@@ -294,14 +260,6 @@ export default function ItemDetailPage() {
                 <span className={styles.infoValue}>{item.tags}</span>
               </div>
 
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>Preparation Time:</span>
-                <span className={styles.infoValue}>{item.preparationTime} minutes</span>
-              </div>
-              <div className={styles.infoItem}>
-                <span className={styles.infoLabel}>Kitchen:</span>
-                <span className={styles.infoValue}>{selectedKitchen?.name || 'Not assigned'}</span>
-              </div>
             </div>
           </div>
         )}

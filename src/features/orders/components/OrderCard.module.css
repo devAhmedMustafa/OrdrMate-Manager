@@ -13,7 +13,7 @@
 .card:hover {
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  border-color: #7B1FA2;
+  border-color: var(--color-primary);
 }
 
 .header {
@@ -32,7 +32,7 @@
 .header h3 {
   margin: 0;
   font-size: 1.2rem;
-  color: #1a1a1a;
+  color: var(--color-primary-dark);
   font-weight: 600;
   max-width: 200px;
   white-space: nowrap;
@@ -42,8 +42,8 @@
 
 .orderType {
   font-size: 0.9rem;
-  color: #7B1FA2;
-  background: rgba(123, 31, 162, 0.1);
+  color: var(--color-primary);
+  background: var(--color-accent-light);
   padding: 4px 8px;
   border-radius: 4px;
   display: inline-block;
@@ -92,21 +92,21 @@
 }
 
 .price {
-  color: #7B1FA2;
+  color: var(--color-primary);
   font-weight: 600;
   flex-shrink: 0;
 }
 
 .nextItem {
-  background: #F3E5F5;
+  background: var(--color-accent-light);
   padding: 12px;
   border-radius: 8px;
   margin: 12px 0;
-  border: 1px solid #7B1FA2;
+  border: 1px solid var(--color-primary);
 }
 
 .nextItemLabel {
-  color: #7B1FA2;
+  color: var(--color-primary);
   font-weight: 600;
   margin-right: 8px;
 }
@@ -149,14 +149,14 @@
 
 .total {
   font-weight: 600;
-  color: #1a1a1a;
+  color: var(--color-primary-dark);
   font-size: 1.1rem;
 }
 
 .preparing {
-  color: #7B1FA2;
+  color: var(--color-primary);
   font-weight: 600;
-  background: rgba(123, 31, 162, 0.1);
+  background: var(--color-accent-light);
   padding: 6px 12px;
   border-radius: 20px;
   font-size: 0.9rem;

@@ -10,7 +10,7 @@
 .sidebar {
   background-color: white;
   border-radius: 8px;
-  border: 1px solid #e2dbfc;
+  border: 1px solid var(--color-accent-light);
   padding: 1.5rem;
   height: fit-content;
 }
@@ -18,7 +18,7 @@
 .title {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #3b2d68;
+  color: var(--color-primary-dark);
   margin: 0 0 1.5rem 0;
 }
 
@@ -35,7 +35,7 @@
   padding: 0.75rem 1rem;
   border: none;
   background: none;
-  color: #3b2d68;
+  color: var(--color-primary-dark);
   font-size: 0.875rem;
   font-weight: 500;
   text-align: left;
@@ -45,11 +45,11 @@
 }
 
 .tab:hover {
-  background-color: #e2dbfc;
+  background-color: var(--color-accent-light);
 }
 
 .tab.active {
-  background-color: #3b2d68;
+  background-color: var(--color-primary-dark);
   color: white;
 }
 
@@ -57,7 +57,7 @@
   min-height: 0;
   background-color: white;
   border-radius: 8px;
-  border: 1px solid #e2dbfc;
+  border: 1px solid var(--color-accent-light);
   padding: 2rem;
 }
 
@@ -75,7 +75,7 @@
   margin: 0;
   font-size: 1.125rem;
   font-weight: 600;
-  color: #3b2d68;
+  color: var(--color-primary-dark);
 }
 
 .placeholder p {
@@ -91,7 +91,7 @@
 
 .profileSection h3 {
   font-size: 1.5rem;
-  color: #3b2d68;
+  color: var(--color-primary-dark);
   margin-bottom: 2rem;
 }
 
@@ -125,7 +125,7 @@
 
 .textarea:focus {
   outline: none;
-  border-color: #3b2d68;
+  border-color: var(--color-primary-dark);
   box-shadow: 0 0 0 2px rgba(59, 45, 104, 0.1);
 }
 
@@ -150,7 +150,7 @@
 }
 
 .fileInput:hover {
-  border-color: #3b2d68;
+  border-color: var(--color-primary-dark);
 }
 
 .imagePreview {
@@ -181,7 +181,7 @@
 
 .submitButton {
   padding: 0.75rem 1.5rem;
-  background-color: #3b2d68;
+  background-color: var(--color-primary-dark);
   color: white;
   border: none;
   border-radius: 6px;

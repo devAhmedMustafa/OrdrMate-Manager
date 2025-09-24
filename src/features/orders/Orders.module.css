@@ -17,7 +17,7 @@
 
 .header h1 {
   margin: 0;
-  color: #1a1a1a;
+  color: var(--color-primary-dark);
   font-size: 2rem;
   font-weight: 600;
 }
@@ -28,7 +28,7 @@
   color: white;
   font-weight: 500;
   font-size: 0.9rem;
-  background-color: #7B1FA2;
+  background-color: var(--color-primary);
 }
 
 .status {
@@ -49,7 +49,7 @@
 }
 
 .statusIndicator.connected {
-  background: #4CAF50;
+  background: var(--color-accent);
 }
 
 .statusIndicator.disconnected {
@@ -77,12 +77,12 @@
 }
 
 .tab:hover {
-  background: #F3E5F5;
-  color: #7B1FA2;
+  background: var(--color-accent-light);
+  color: var(--color-primary);
 }
 
 .tab.active {
-  background: #7B1FA2;
+  background: var(--color-primary);
   color: white;
 }
 
@@ -112,12 +112,12 @@
 }
 
 .kitchenTab:hover {
-  background: #F3E5F5;
-  color: #7B1FA2;
+  background: var(--color-accent-light);
+  color: var(--color-primary);
 }
 
 .kitchenTab.active {
-  background: #7B1FA2;
+  background: var(--color-primary);
   color: white;
 }
 
@@ -170,12 +170,12 @@
 }
 
 .unitButton:hover {
-  background: #F3E5F5;
-  color: #7B1FA2;
+  background: var(--color-accent-light);
+  color: var(--color-primary);
 }
 
 .unitButton.active {
-  background: #7B1FA2;
+  background: var(--color-primary);
   color: white;
 }
 
@@ -196,14 +196,14 @@
 }
 
 .kitchenSection {
-  background: #F3E5F5;
+  background: var(--color-accent-light);
   border-radius: 12px;
   padding: 16px;
 }
 
 .kitchenSection h2 {
   margin: 0 0 16px 0;
-  color: #7B1FA2;
+  color: var(--color-primary);
   font-size: 1.2rem;
   font-weight: 600;
 }
@@ -242,8 +242,8 @@
   border-radius: 4px;
   font-size: 0.8rem;
   font-weight: 500;
-  background: #E8F5E9;
-  color: #2E7D32;
+  background: var(--color-accent-light);
+  color: var(--color-accent-dark);
 }
 
 .orderItems {
@@ -282,7 +282,7 @@
 
 .unpaidOrders h2 {
   margin: 0 0 16px 0;
-  color: #1a1a1a;
+  color: var(--color-primary-dark);
   font-size: 1.5rem;
   font-weight: 600;
 }
@@ -336,12 +336,12 @@
 }
 
 .queueContent::-webkit-scrollbar-thumb {
-  background: #7B1FA2;
+  background: var(--color-primary);
   border-radius: 3px;
 }
 
 .queueContent::-webkit-scrollbar-thumb:hover {
-  background: #9C27B0;
+  background: var(--color-primary-dark);
 }
 
 /* Animation keyframes */
@@ -368,16 +368,16 @@
 }
 
 .debugInfo {
-  background: #F3E5F5;
+  background: var(--color-accent-light);
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 24px;
-  border: 1px solid #7B1FA2;
+  border: 1px solid var(--color-primary);
 }
 
 .debugInfo h3 {
   margin: 0 0 12px 0;
-  color: #7B1FA2;
+  color: var(--color-primary);
   font-size: 1.2rem;
   font-weight: 600;
 }

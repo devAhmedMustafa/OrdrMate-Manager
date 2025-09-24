@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { KitchenQueue } from './components/KitchenQueue';
 import { OrderCard } from './components/OrderCard';
 import { UnpaidOrders } from './components/UnpaidOrders';
 import { Order, UnpaidOrder, OrderItem } from './types';
@@ -13,7 +12,6 @@ type Tab = 'orders' | 'unpaid' | 'takeaway' | string;
 
 function Orders() {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
-  const [kitchenQueues, setKitchenQueues] = useState<Record<string, Order[]>>({});
   const [unpaidOrders, setUnpaidOrders] = useState<UnpaidOrder[]>([]);
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('orders');
@@ -28,11 +26,9 @@ function Orders() {
     if (!branchId || !token) return;
     
     try {
-      const [queues, orders] = await Promise.all([
-        orderService.getItemQueues(branchId),
+      const [orders] = await Promise.all([
         orderService.getAllOrders(branchId)
       ]);
-      setKitchenQueues(queues);
       setAllOrders(orders);
     } catch (error) {
       console.error('Error fetching initial data:', error);
@@ -82,14 +78,8 @@ function Orders() {
       }
 
       switch (message.Type) {
-        case 'NewItem':
-          handleNewItem(message.Item as OrderItem);
-          break;
         case 'OrderPlaced':
           handleOrderPlaced(message.OrderId as string, message.IsBeingPrepared as boolean);
-          break;
-        case 'NextItem':
-          handleNextItem(message.OrderId as string, message.Item as OrderItem);
           break;
         case 'OrderReady':
           handleOrderReady(message.OrderId as string);
@@ -122,82 +112,12 @@ function Orders() {
     return () => clearInterval(interval);
   }, [branchId, token]);
 
-  const handleNewItem = (item: OrderItem) => {
-    if (!item.KitchenName) {
-      return;
-    }
-
-    setKitchenQueues(prev => {
-      const newQueues = { ...prev };
-      if (!newQueues[item.KitchenName]) {
-        newQueues[item.KitchenName] = [];
-      }
-
-      const existingOrder = newQueues[item.KitchenName].find(order => order.OrderId === item.OrderId);
-      if (existingOrder) {
-        newQueues[item.KitchenName] = newQueues[item.KitchenName].map(order => 
-          order.OrderId === item.OrderId 
-            ? { ...order, Items: [...order.Items, item] }
-            : order
-        );
-      } else {
-        newQueues[item.KitchenName] = [
-          ...newQueues[item.KitchenName],
-          {
-            OrderId: item.OrderId,
-            Items: [item],
-            Status: 'Pending',
-            IsBeingPrepared: false
-          }
-        ];
-      }
-
-      return newQueues;
-    });
-  };
-
   const handleOrderPlaced = (orderId: string, isBeingPrepared: boolean) => {
-    setKitchenQueues(prev => {
-      const newQueues = { ...prev };
-      Object.keys(newQueues).forEach(kitchenName => {
-        const order = newQueues[kitchenName].find(o => o.OrderId === orderId);
-        if (order) {
-          order.IsBeingPrepared = isBeingPrepared;
-        }
-      });
-      return newQueues;
-    });
-  };
-
-  const handleNextItem = (orderId: string, nextItem: OrderItem) => {
-    setKitchenQueues(prev => {
-      const newQueues = { ...prev };
-      Object.keys(newQueues).forEach(kitchenName => {
-        const order = newQueues[kitchenName].find(o => o.OrderId === orderId);
-        if (order) {
-          order.NextItem = nextItem;
-        }
-      });
-      return newQueues;
-    });
+    
   };
 
   const handleOrderReady = (orderId: string) => {
-    // Update kitchen queues
-    setKitchenQueues(prev => {
-      const newQueues = { ...prev };
-      
-      Object.keys(newQueues).forEach(kitchenName => {
-        const orderIndex = newQueues[kitchenName].findIndex(o => o.OrderId === orderId);
-        if (orderIndex !== -1) {
-          newQueues[kitchenName][orderIndex].Status = 'Ready';
-          newQueues[kitchenName].splice(orderIndex, 1);
-        }
-      });
-      
-      return newQueues;
-    });
-
+    
     // Update all orders
     setAllOrders(prev => 
       prev.map(order => 
@@ -242,19 +162,6 @@ function Orders() {
     }, 300); // Match this with CSS transition duration
   };
 
-  const handleItemMarkedAsDone = (dequedItemId: string) => {
-    setKitchenQueues(prev => {
-      const newQueues = { ...prev };
-      Object.keys(newQueues).forEach(kitchenName => {
-        newQueues[kitchenName] = newQueues[kitchenName].map(order => ({
-          ...order,
-          Items: order.Items.filter(item => item.ItemId !== dequedItemId)
-        })).filter(order => order.Items.length > 0);
-      });
-      return newQueues;
-    });
-  };
-
   return (
     <div className={styles.container}>
       <div className={styles.header}>
@@ -291,41 +198,7 @@ function Orders() {
         >
           Takeaway Orders
         </button>
-        <div className={styles.kitchenTabs}>
-          {Object.keys(kitchenQueues).map(kitchenName => {
-            // Use a Map to ensure unique units per kitchen
-            const unitMap = new Map<string, boolean>();
-            kitchenQueues[kitchenName].forEach(order => {
-              order.Items.forEach(item => {
-                const unitId = item.KitchenUnitId || '0';
-                unitMap.set(unitId, true);
-              });
-            });
-            const units = Array.from(unitMap.keys());
-            
-            return (
-              <div key={kitchenName} className={styles.kitchenTabGroup}>
-                <button
-                  className={`${styles.kitchenTab} ${units.some(unitId => activeTab === `${kitchenName}-${unitId}`) ? styles.active : ''}`}
-                  onClick={() => handleTabChange(`${kitchenName}-${units[0]}`)}
-                >
-                  {kitchenName}
-                </button>
-                <div className={styles.unitButtons}>
-                  {units.map(unitId => (
-                    <button
-                      key={`${kitchenName}-${unitId}`}
-                      className={`${styles.unitButton} ${activeTab === `${kitchenName}-${unitId}` ? styles.active : ''}`}
-                      onClick={() => handleTabChange(`${kitchenName}-${unitId}`)}
-                    >
-                      Unit {parseInt(unitId) + 1}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            );
-          })}
-        </div>
+        
       </div>
 
       <div className={styles.content}>
@@ -362,27 +235,7 @@ function Orders() {
               isLoading={isTakeawayLoading}
             />
           </div>
-        ) : (
-          <div className={`${styles.queueContent} ${activeTab.startsWith(activeTab.split('-')[0]) ? styles.active : ''} ${isTransitioning && !previousTab.startsWith(activeTab.split('-')[0]) ? styles.slideOut : ''}`}>
-            {(() => {
-              const [kitchenName, unitId] = activeTab.split('-');
-              const queueData = {
-                KitchenName: kitchenName,
-                Orders: kitchenQueues[kitchenName] || [],
-                NextItem: kitchenQueues[kitchenName]?.find(o => 
-                  o.NextItem?.KitchenUnitId === unitId
-                )?.NextItem
-              };
-              return (
-                <KitchenQueue
-                  queue={queueData}
-                  kitchenUnitId={unitId}
-                  onItemMarkedAsDone={handleItemMarkedAsDone}
-                />
-              );
-            })()}
-          </div>
-        )}
+        ) : null}
       </div>
     </div>
   );

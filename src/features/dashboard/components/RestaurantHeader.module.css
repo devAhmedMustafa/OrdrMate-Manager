@@ -11,7 +11,7 @@
 .restaurantName {
   font-size: 1.25rem;
   font-weight: 600;
-  color: #3b2d68;
+  color: var(--color-primary-dark);
 }
 
 .error {

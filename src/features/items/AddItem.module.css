@@ -5,7 +5,6 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    background: linear-gradient(135deg, #faf5ff 0%, #fff7ed 100%);
     padding: 2rem;
 }
 
@@ -14,7 +13,7 @@
     max-width: 64rem;
     background-color: white;
     border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(124, 58, 237, 0.05);
+    box-shadow: 0 10px 25px rgba(58, 231, 237, 0.05);
     padding: 2.5rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -29,7 +28,7 @@
     font-weight: 700;
     text-align: center;
     margin-bottom: 2.5rem;
-    color: #4c1d95;
+    color: var(--color-primary-dark);
     letter-spacing: -0.5px;
 }
 
@@ -63,74 +62,74 @@
     display: block;
     font-size: 0.875rem;
     font-weight: 600;
-    color: #4c1d95;
+    color: var(--color-primary-dark);
     letter-spacing: -0.2px;
 }
 
 .input {
     width: 100%;
     padding: 0.875rem 1rem;
-    border: 2px solid #e9d5ff;
+    border: 2px solid var(--color-accent);
     border-radius: 12px;
     font-size: 1rem;
-    color: #4c1d95;
+    color: var(--color-primary-dark);
     transition: all 0.2s ease;
-    background-color: #faf5ff;
+    background-color: #f5fffd;
 }
 
 .input:hover {
-    border-color: #c084fc;
+    border-color: var(--color-primary-light);
     background-color: #fff;
 }
 
 .input:focus {
     outline: none;
-    border-color: #9333ea;
+    border-color: var(--color-primary-dark);
     background-color: #fff;
-    box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+    box-shadow: 0 0 0 4px rgba(51, 197, 234, 0.1);
 }
 
 .textarea {
     width: 100%;
     padding: 0.875rem 1rem;
-    border: 2px solid #e9d5ff;
+    border: 2px solid var(--color-accent);
     border-radius: 12px;
     font-size: 1rem;
-    color: #4c1d95;
+    color: var(--color-primary-dark);
     min-height: 200px;
     resize: vertical;
     transition: all 0.2s ease;
-    background-color: #faf5ff;
+    background-color: var(--color-background);
 }
 
 .textarea:hover {
-    border-color: #c084fc;
+    border-color: var(--color-primary-light);
     background-color: #fff;
 }
 
 .textarea:focus {
     outline: none;
-    border-color: #9333ea;
+    border-color: var(--color-primary-dark);
     background-color: #fff;
-    box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.1);
+    box-shadow: 0 0 0 4px rgba(51, 234, 204, 0.1);
 }
 
 .error {
     font-size: 0.875rem;
-    color: #dc2626;
+    color: var(--color-accent);
     margin: 0;
     font-weight: 500;
     text-align: center;
     padding: 0.75rem;
-    background-color: #fef2f2;
+    background-color: var(--color-accent-light);
     border-radius: 8px;
-    border: 1px solid #fee2e2;
+    border: 1px solid var(--color-accent);
     grid-column: 1 / -1;
 }
 
 .submitButton {
     padding: 1rem 1.5rem;
-    background: linear-gradient(135deg, #9333ea 0%, #f97316 100%);
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-accent-light) 100%);
     color: white;
     border: none;
     border-radius: 12px;
@@ -146,18 +145,18 @@
 }
 
 .submitButton:hover {
-    background: linear-gradient(135deg, #7e22ce 0%, #ea580c 100%);
+    background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-accent-light) 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(147, 51, 234, 0.2);
+    box-shadow: 0 4px 12px rgba(51, 197, 234, 0.2);
 }
 
 .submitButton:focus {
     outline: none;
-    box-shadow: 0 0 0 4px rgba(147, 51, 234, 0.2);
+    box-shadow: 0 0 0 4px rgba(51, 234, 194, 0.2);
 }
 
 .submitButton:disabled {
-    background: linear-gradient(135deg, #c084fc 0%, #fdba74 100%);
+    background: linear-gradient(135deg, var(--color-primary-light) 0%, var(--color-accent-light) 100%);
     cursor: not-allowed;
     transform: none;
     box-shadow: none;
@@ -166,7 +165,7 @@
 .progressBar {
     width: 100%;
     height: 8px;
-    background-color: #e9d5ff;
+    background-color: var(--color-background);
     border-radius: 4px;
     overflow: hidden;
     margin-top: 0.75rem;
@@ -175,7 +174,7 @@
 
 .progressFill {
     height: 100%;
-    background: linear-gradient(90deg, #9333ea 0%, #f97316 100%);
+    background: linear-gradient(90deg, var(--color-primary-dark) 0%, var(--color-accent-light) 100%);
     transition: width 0.3s ease;
     border-radius: 4px;
 }
@@ -184,7 +183,7 @@
     position: absolute;
     right: 0;
     top: -1.5rem;
-    color: #6b21a8;
+    color: var(--color-primary-dark);
     font-size: 0.75rem;
     font-weight: 500;
 }
@@ -195,15 +194,15 @@
     margin-top: 1rem;
     border-radius: 12px;
     object-fit: cover;
-    box-shadow: 0 4px 12px rgba(124, 58, 237, 0.05);
-    border: 2px solid #e9d5ff;
+    box-shadow: 0 4px 12px rgba(58, 237, 213, 0.05);
+    border: 2px solid var(--color-background);
     transition: all 0.2s ease;
 }
 
 .imagePreview:hover {
     transform: scale(1.02);
     box-shadow: 0 6px 16px rgba(124, 58, 237, 0.08);
-    border-color: #c084fc;
+    border-color: var(--color-primary-light);
 }
 
 .customizationsSection {
