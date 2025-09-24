@@ -6,26 +6,16 @@ export interface MenuItem {
   description: string;
   imageUrl: string;
   price: number;
-  preparationTime: number;
   priority: number;
   tags: string;
   category: string;
-  kitchenId: string;
   isAvailable?: boolean;
-  kitchenName?: string;
-}
-
-export interface Kitchen {
-  id: string;
-  name: string;
-  description: string;
-  restaurantId: string;
 }
 
 export const itemService = {
-  // Get all items for a restaurant
-  getRestaurantItems: async (restaurantId: string): Promise<MenuItem[]> => {
-    const response = await api.get(`/Item/restaurant/${restaurantId}`);
+  // Get all items for a pharmacy
+  getPharmacyItems: async (pharmacyId: string): Promise<MenuItem[]> => {
+    const response = await api.get(`/Item/pharmacy/${pharmacyId}`);
     return response.data;
   },
 
@@ -55,12 +45,6 @@ export const itemService = {
   // Delete an item
   deleteItem: async (id: string): Promise<void> => {
     await api.delete(`/Item/${id}`);
-  },
-
-  // Get all kitchens for a restaurant
-  getRestaurantKitchens: async (restaurantId: string): Promise<Kitchen[]> => {
-    const response = await api.get(`/Kitchen/${restaurantId}`);
-    return response.data;
   },
 
   toggleItemAvailability: async (itemId: string, branchId: string): Promise<void> => {

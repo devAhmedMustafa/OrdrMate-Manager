@@ -4,7 +4,7 @@ import styles from './RestaurantHeader.module.css';
 import { restaurantService, Restaurant } from '../services/restaurantService';
 
 export function RestaurantHeader() {
-  const { restaurantId, token } = useAuth();
+  const { pharmacyId: restaurantId, token } = useAuth();
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [error, setError] = useState<string>('');
 

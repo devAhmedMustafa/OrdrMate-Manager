@@ -11,7 +11,7 @@ interface MenuItemWithPresignedUrl extends MenuItem {
 }
 
 export default function BranchMenuPage() {
-  const { restaurantId, token, branchId } = useAuth();
+  const { pharmacyId: restaurantId, token, branchId } = useAuth();
   const [items, setItems] = useState<MenuItemWithPresignedUrl[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');

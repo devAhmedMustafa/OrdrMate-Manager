@@ -10,7 +10,7 @@ interface MenuItemWithPresignedUrl extends MenuItem {
 }
 
 export default function MenuPage() {
-  const { restaurantId, token } = useAuth();
+  const { pharmacyId, token } = useAuth();
   const navigate = useNavigate();
   const [items, setItems] = useState<MenuItemWithPresignedUrl[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,10 +19,10 @@ export default function MenuPage() {
 
   useEffect(() => {
     const fetchItems = async () => {
-      if (!restaurantId || !token) return;
+      if (!pharmacyId || !token) return;
 
       try {
-        const items = await itemService.getRestaurantItems(restaurantId);
+        const items = await itemService.getPharmacyItems(pharmacyId);
         
         // Get presigned URLs for all items
         const itemsWithUrls = await Promise.all(
@@ -43,7 +43,7 @@ export default function MenuPage() {
     };
 
     fetchItems();
-  }, [restaurantId, token]);
+  }, [pharmacyId, token]);
 
   const categories = useMemo(() => {
     const uniqueCategories = new Set(items.map(item => item.category));
@@ -105,9 +105,6 @@ export default function MenuPage() {
               <div className={styles.details}>
                 <span className={styles.price}>${item.price.toFixed(2)}</span>
                 <span className={styles.category}>{item.category}</span>
-                {item.preparationTime > 0 && (
-                  <span className={styles.prepTime}>{item.preparationTime} min</span>
-                )}
               </div>
             </div>
           </Link>

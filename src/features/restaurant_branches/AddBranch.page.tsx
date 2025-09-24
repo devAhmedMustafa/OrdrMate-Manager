@@ -7,7 +7,7 @@ import { branchService, CreateBranchData } from './services/branchService';
 
 export default function AddBranchPage() {
   const navigate = useNavigate();
-  const { restaurantId, token } = useAuth();
+  const { pharmacyId: restaurantId, token } = useAuth();
   const [formData, setFormData] = useState<CreateBranchData>({
     lantitude: 0,
     longitude: 0,

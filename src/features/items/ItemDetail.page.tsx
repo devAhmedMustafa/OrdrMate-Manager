@@ -4,12 +4,11 @@ import useAuth from '../auth/useAuth.hook';
 import styles from './ItemDetail.module.css';
 import { itemService, MenuItem, Kitchen } from './services/itemService';
 import { uploadService } from './services/uploadService';
-import ItemCustomizations from './components/ItemCustomizations';
 
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { token, restaurantId } = useAuth();
+  const { token, pharmacyId: restaurantId } = useAuth();
   const [item, setItem] = useState<MenuItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -308,13 +307,6 @@ export default function ItemDetailPage() {
         )}
       </div>
 
-      {/* Customizations Section */}
-      {!isEditing && (
-        <ItemCustomizations
-          restaurantId={restaurantId!}
-          itemId={item.id}
-        />
-      )}
     </div>
   );
 } 

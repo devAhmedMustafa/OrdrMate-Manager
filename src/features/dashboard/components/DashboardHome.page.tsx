@@ -1,19 +1,14 @@
 import { useEffect, useState } from 'react';
 import { Order } from '../../orders/types';
-import { TableReservation } from '../../tables/services/tableService';
 import { orderService } from '../../orders/services/orderService';
-import { tableService } from '../../tables/services/tableService';
 import { uploadService } from '../../items/services/uploadService';
 import { balanceService, Balance } from '../services/balanceService';
 import useAuth from '../../auth/useAuth.hook';
 import styles from './DashboardHome.module.css';
 import { Icon } from '@iconify/react';
-import Table from '../../tables/models/Table';
 
 export default function DashboardHome() {
   const [kitchenQueues, setKitchenQueues] = useState<Record<string, Order[]>>({});
-  const [tableQueues, setTableQueues] = useState<Record<number, TableReservation[]>>({});
-  const [tables, setTables] = useState<Table[]>([]);
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const [balance, setBalance] = useState<Balance | null>(null);
   const { branchId, token } = useAuth();
@@ -46,26 +41,6 @@ export default function DashboardHome() {
       }
     };
 
-    const fetchTablesAndQueues = async () => {
-      try {
-        const tablesData = await tableService.getTables(branchId);
-        setTables(tablesData);
-        const tableQueuesData: Record<number, TableReservation[]> = {};
-        for (const table of tablesData) {
-          try {
-            const queue = await tableService.getTableQueue(branchId, table.tableNumber);
-            tableQueuesData[table.tableNumber] = queue;
-          } catch (error) {
-            console.error(`Error fetching queue for table ${table.tableNumber}:`, error);
-            tableQueuesData[table.tableNumber] = [];
-          }
-        }
-        setTableQueues(tableQueuesData);
-      } catch (error) {
-        console.error('Error fetching tables:', error);
-      }
-    };
-
     const fetchBalance = async () => {
       try {
         const balanceData = await balanceService.getBalance(branchId, token);
@@ -77,13 +52,11 @@ export default function DashboardHome() {
 
     // Initial fetch
     fetchKitchenQueues();
-    fetchTablesAndQueues();
     fetchBalance();
 
     // Set up interval for periodic refresh
     const interval = setInterval(() => {
       fetchKitchenQueues();
-      fetchTablesAndQueues();
       fetchBalance();
     }, 30000);
 
@@ -215,56 +188,6 @@ export default function DashboardHome() {
         </div>
       </div>
 
-      <div className={styles.section}>
-        <h2 className={styles.sectionTitle}>
-          <Icon icon="mdi:table" className={styles.sectionIcon} />
-          Table Queues
-        </h2>
-        <div className={styles.grid}>
-          {Object.entries(tableQueues).map(([tableNumber, reservations]) => {
-            const currentReservation = reservations[0];
-            return (
-              <div key={tableNumber} className={styles.card}>
-                <div className={styles.cardHeader}>
-                  <div className={styles.tableInfo}>
-                    <h3>Table {tableNumber}</h3>
-                    <span className={styles.tableStatus}>Active</span>
-                  </div>
-                  <span className={styles.queueCount}>{reservations.length} reservations</span>
-                </div>
-                {currentReservation ? (
-                  <div className={styles.currentItem}>
-                    <div className={styles.reservationDetails}>
-                      <div className={styles.itemInfo}>
-                        <span className={styles.itemName}>{currentReservation.customerName}</span>
-                        <span className={styles.orderId}>
-                          {new Date(currentReservation.reservationDate).toLocaleTimeString()}
-                        </span>
-                        <span className={styles.guests}>
-                          <Icon icon="mdi:account-group" />
-                          {tables.find(t => t.tableNumber === parseInt(tableNumber))?.seats || 0} seats
-                        </span>
-                      </div>
-                      <button
-                        className={styles.markDoneButton}
-                        onClick={() => {/* TODO: Implement mark table as done */}}
-                        title="Mark as Ready"
-                      >
-                        <Icon icon="mdi:check-circle" />
-                      </button>
-                    </div>
-                  </div>
-                ) : (
-                  <div className={styles.noItems}>
-                    <Icon icon="mdi:check-circle" />
-                    <span>No reservations</span>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      </div>
     </div>
   );
 } 

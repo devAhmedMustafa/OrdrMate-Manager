@@ -10,7 +10,7 @@ type SettingsTab = 'branches' | 'profile' | 'notifications';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('branches');
-  const { restaurantId } = useAuth();
+  const { pharmacyId: restaurantId } = useAuth();
   const [profileData, setProfileData] = useState<RestaurantProfile>({
     description: '',
     logoUrl: '',

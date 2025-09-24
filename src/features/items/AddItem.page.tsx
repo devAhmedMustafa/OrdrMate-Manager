@@ -3,13 +3,11 @@ import useAuth from "../auth/useAuth.hook";
 import { useNavigate } from "react-router-dom";
 import ManagerRole from "../auth/ManagerRole";
 import styles from "./AddItem.module.css";
-import { itemService, Kitchen, MenuItem } from "./services/itemService";
+import { itemService, MenuItem } from "./services/itemService";
 import { uploadService } from "./services/uploadService";
-import { customizationService } from "../customizations/services/customizationService";
-import ItemCustomizations from "./components/ItemCustomizations";
 
 type AddItemFormData = Omit<MenuItem, 'id'> & {
-    restaurantId: string;
+    pharmacyId: string;
 };
 
 interface FileWithUrl extends File {
@@ -17,31 +15,13 @@ interface FileWithUrl extends File {
 }
 
 export default function AddItemPage() {
-    const { token, role, restaurantId } = useAuth(); 
+    const { token, role, pharmacyId } = useAuth(); 
     const navigate = useNavigate();
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
     const [selectedFile, setSelectedFile] = useState<FileWithUrl | null>(null);
     const [imageUrl, setImageUrl] = useState<string>("");
     const [uploadProgress, setUploadProgress] = useState(0);
-    const [kitchens, setKitchens] = useState<Kitchen[]>([]);
-    const [selectedKitchenId, setSelectedKitchenId] = useState<string>("");
-    const [selectedCustomizationIds, setSelectedCustomizationIds] = useState<string[]>([]);
-
-    useEffect(() => {
-        if (!restaurantId || !token) return;
-        fetchKitchens();
-    }, [restaurantId, token]);
-
-    const fetchKitchens = async () => {
-        try {
-            const kitchensData = await itemService.getRestaurantKitchens(restaurantId!);
-            setKitchens(kitchensData);
-        } catch (err) {
-            setError('Failed to load kitchens');
-            console.error('Error fetching kitchens:', err);
-        }
-    };
 
     if (role !== ManagerRole.TopLevel) {
         navigate("/");
@@ -71,7 +51,7 @@ export default function AddItemPage() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        if (!token || !restaurantId) return;
+        if (!token || !pharmacyId) return;
         
         setError("");
         setLoading(true);
@@ -82,28 +62,15 @@ export default function AddItemPage() {
             description: (form.elements.namedItem('description') as HTMLTextAreaElement).value,
             price: Number((form.elements.namedItem('price') as HTMLInputElement).value),
             category: (form.elements.namedItem('category') as HTMLInputElement).value,
-            restaurantId,
+            pharmacyId,
             imageUrl: selectedFile?.fileUrl || '',
-            preparationTime: Number((form.elements.namedItem('preparationTime') as HTMLInputElement).value),
-            kitchenId: selectedKitchenId,
             priority: 0,
             tags: ""
         };
 
         try {
             // First create the item
-            const createdItem = await itemService.createItem(formData);
-
-            // Then assign selected customizations to the item
-            if (selectedCustomizationIds.length > 0) {
-                const assignmentPromises = selectedCustomizationIds.map(categoryId =>
-                    customizationService.assignCategoryToItem({
-                        itemId: createdItem.id,
-                        categoryId
-                    })
-                );
-                await Promise.all(assignmentPromises);
-            }
+            await itemService.createItem(formData);
 
             navigate("/menu");
         } catch (err: any) {
@@ -175,25 +142,6 @@ export default function AddItemPage() {
                     </div>
 
                     <div className={styles.formGroup}>
-                        <label htmlFor="kitchen" className={styles.label}>Kitchen</label>
-                        <select
-                            id="kitchen"
-                            name="kitchen"
-                            required
-                            className={styles.input}
-                            value={selectedKitchenId}
-                            onChange={(e) => setSelectedKitchenId(e.target.value)}
-                        >
-                            <option value="">Select a kitchen</option>
-                            {kitchens.map(kitchen => (
-                                <option key={kitchen.id} value={kitchen.id}>
-                                    {kitchen.name}
-                                </option>
-                            ))}
-                        </select>
-                    </div>
-
-                    <div className={styles.formGroup}>
                         <label htmlFor="preparationTime" className={styles.label}>Preparation Time (minutes)</label>
                         <input
                             id="preparationTime"
@@ -232,14 +180,6 @@ export default function AddItemPage() {
                                 className={styles.imagePreview}
                             />
                         )}
-                    </div>
-
-                    {/* Customizations Section */}
-                    <div className={styles.customizationsSection}>
-                        <ItemCustomizations
-                            restaurantId={restaurantId!}
-                            onAssignmentsChange={setSelectedCustomizationIds}
-                        />
                     </div>
 
                     {error && (
