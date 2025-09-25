@@ -82,6 +82,10 @@ class TableService {
     });
   }
 
+  async setOrdersAsReady(reservationId: string): Promise<void> {
+    await api.put(`/Table/orders/set-as-ready/${reservationId}`);
+  }
+
 }
 
 export const tableService = new TableService(); 

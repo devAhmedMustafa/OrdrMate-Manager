@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { OrderStatus, ReservationOrder, TableReservation, tableService } from "../services/tableService";
 import { Icon } from '@iconify/react';
-import { orderService } from "../../orders/services/orderService";
 import useAuth from "../../auth/useAuth.hook";
 import OrderCustomization from "../../customizations/models/OrderCustomization.Model";
 import { customizationService } from "../../customizations";
@@ -60,7 +59,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
     const fetchOrderCustomizations = async () => {
       if(reservationOrder && reservationOrder.orderId){
-        const customizations = await customizationService.getOrderCustomizations(reservationOrder.orderId);
+        const customizations = await customizationService.getOrderCustomizationByReservation(reservationOrder.orderId);
         setOrderCustomizations(new OrderCustomization(customizations));
       }
     };
@@ -70,8 +69,8 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
   async function handleSetOrderReady(){
     if(reservationOrder && reservationOrder.orderId){
-      await orderService.setOrderAsReady(reservationOrder.orderId);
-      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
+      await tableService.setOrdersAsReady(reservation.reservationId);
+      // setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
     }
   }
 
