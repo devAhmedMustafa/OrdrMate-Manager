@@ -217,4 +217,152 @@
   margin: 1rem;
   border: 1px solid rgba(229, 62, 62, 0.1);
   box-shadow: 0 4px 6px rgba(229, 62, 62, 0.1);
+}
+
+/* Cart Summary Styles */
+.cartSummary {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background: #fff;
+  box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+  padding: 1rem 2rem;
+  z-index: 100;
+  border-top: 1px solid #e0e0e0;
+}
+
+.cartContent {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.orderSummary {
+  flex: 1;
+  min-width: 300px;
+  font-size: 0.95rem;
+}
+
+.orderSummary strong {
+  color: #333;
+  margin-right: 8px;
+}
+
+.totalAmount {
+  margin-left: 16px;
+  font-weight: 500;
+  color: #7B1FA2;
+}
+
+.tableNumberSection {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 150px;
+}
+
+.tableNumberLabel {
+  font-weight: 500;
+  color: #333;
+  white-space: nowrap;
+  font-size: 0.95rem;
+}
+
+.tableNumberInput {
+  padding: 8px 12px;
+  border: 2px solid #e0e0e0;
+  border-radius: 6px;
+  font-size: 1rem;
+  width: 80px;
+  text-align: center;
+  transition: all 0.2s ease;
+  font-weight: 500;
+}
+
+.tableNumberInput:focus {
+  outline: none;
+  border-color: #7B1FA2;
+  box-shadow: 0 0 0 2px rgba(123, 31, 162, 0.1);
+}
+
+.tableNumberInput:invalid {
+  border-color: #f44336;
+}
+
+.cartActions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.buttonGroup {
+  display: flex;
+  gap: 12px;
+}
+
+.statusMessages {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.errorMessage {
+  color: #f44336;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.successMessage {
+  color: #4caf50;
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+.warningMessage {
+  color: #ff9800;
+  font-size: 0.85rem;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .cartContent {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 12px;
+  }
+  
+  .orderSummary {
+    min-width: unset;
+    text-align: center;
+  }
+  
+  .tableNumberSection {
+    justify-content: center;
+    min-width: unset;
+  }
+  
+  .cartActions {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 8px;
+  }
+  
+  .buttonGroup {
+    justify-content: center;
+  }
+  
+  .statusMessages {
+    justify-content: center;
+    text-align: center;
+  }
 } 

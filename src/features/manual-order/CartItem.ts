@@ -1,14 +1,14 @@
 export default class CartItem {
-    id: string;
     name: string;
+    itemId: string;
     price: number;
     quantity: number;
     customizations?: { [key: string]: any };
 
-    public constructor({ id, name, price, quantity, customizations }: 
-        { id: string; name: string; price: number; quantity: number; customizations?: { [key: string]: any } }) {
-        this.id = id;
+    public constructor({ name, itemId, price, quantity, customizations }: 
+        { name: string; itemId: string; price: number; quantity: number; customizations?: { [key: string]: any } }) {
         this.name = name;
+        this.itemId = itemId;
         this.price = price;
         this.quantity = quantity;
         this.customizations = customizations;

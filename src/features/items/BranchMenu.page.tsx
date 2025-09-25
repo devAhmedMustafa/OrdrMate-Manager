@@ -18,10 +18,27 @@ export default function BranchMenuPage() {
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
 
   // Manual order cart context
-  const { items: cartItems, addItem, removeItem, changeItemQuantity, placeOrder, clearCart } = useVirtualCart();
+  const { items: cartItems, addItem, removeItem, changeItemQuantity, placeOrder, clearCart, tableNumber, setTableNumber } = useVirtualCart();
   const [placingOrder, setPlacingOrder] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderError, setOrderError] = useState('');
+
+  // Keyboard shortcut to focus table number input
+  useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      if (event.key === 't' && (event.ctrlKey || event.metaKey) && cartItems.length > 0) {
+        event.preventDefault();
+        const tableInput = document.getElementById('tableNumber') as HTMLInputElement;
+        if (tableInput) {
+          tableInput.focus();
+          tableInput.select();
+        }
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyPress);
+    return () => document.removeEventListener('keydown', handleKeyPress);
+  }, [cartItems.length]);
 
   useEffect(() => {
     const fetchItems = async () => {
@@ -113,7 +130,7 @@ export default function BranchMenuPage() {
 
       <div className={styles.grid}>
         {filteredItems.map((item) => {
-          const inCart = cartItems.find(ci => ci.id === item.id);
+          const inCart = cartItems.find(ci => ci.itemId === item.id);
           return (
             <div key={item.id} className={styles.card} style={{ position: 'relative' }}>
               <div className={styles.imageContainer}>
@@ -173,7 +190,7 @@ export default function BranchMenuPage() {
                   {!inCart ? (
                     <button
                       className={styles.addButton}
-                      onClick={() => addItem(new CartItem({ id: item.id, name: item.name, price: item.price, quantity: 1 }))}
+                      onClick={() => addItem(new CartItem({ itemId: item.id, name: item.name, price: item.price, quantity: 1 }))}
                     >
                       Add to Order
                     </button>
@@ -211,57 +228,90 @@ export default function BranchMenuPage() {
 
       {/* Virtual Cart Summary and Place Order Button */}
       {cartItems.length > 0 && (
-        <div style={{
-          position: 'fixed',
-          bottom: 0,
-          left: 0,
-          width: '100%',
-          background: '#fff',
-          boxShadow: '0 -2px 12px rgba(0,0,0,0.08)',
-          padding: '1rem 2rem',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          zIndex: 100
-        }}>
-          <div>
-            <strong>Order:</strong> {cartItems.map(ci => `${ci.name} x${ci.quantity}`).join(', ')}
-            <span style={{ marginLeft: 16, fontWeight: 500 }}>
-              Total: ${cartItems.reduce((sum, ci) => sum + ci.price * ci.quantity, 0).toFixed(2)}
-            </span>
+        <div className={styles.cartSummary}>
+          {/* Order Summary and Table Number Input */}
+          <div className={styles.cartContent}>
+            <div className={styles.orderSummary}>
+              <strong>Order:</strong> {cartItems.map(ci => `${ci.name} x${ci.quantity}`).join(', ')}
+              <span className={styles.totalAmount}>
+                Total: ${cartItems.reduce((sum, ci) => sum + ci.price * ci.quantity, 0).toFixed(2)}
+              </span>
+            </div>
+            
+            {/* Table Number Input */}
+            <div className={styles.tableNumberSection}>
+              <label htmlFor="tableNumber" className={styles.tableNumberLabel}>
+                Table #:
+              </label>
+              <input
+                id="tableNumber"
+                type="number"
+                min="1"
+                max="999"
+                placeholder="Table"
+                value={tableNumber || ''}
+                onChange={(e) => setTableNumber(e.target.value ? parseInt(e.target.value) : undefined)}
+                className={styles.tableNumberInput}
+                title="Press Ctrl+T to quickly focus this field"
+                required
+              />
+            </div>
           </div>
-          <div style={{ display: 'flex', gap: 12 }}>
-            <button
-              className={styles.addButton}
-              style={{ background: '#f44336' }}
-              onClick={clearCart}
-              disabled={placingOrder}
-            >
-              Clear
-            </button>
-            <button
-              className={styles.addButton}
-              onClick={async () => {
-                setPlacingOrder(true);
-                setOrderError('');
-                setOrderSuccess(false);
-                try {
-                  await placeOrder();
-                  setOrderSuccess(true);
-                  clearCart();
-                } catch (e) {
-                  setOrderError('Failed to place order');
-                } finally {
-                  setPlacingOrder(false);
-                }
-              }}
-              disabled={placingOrder}
-            >
-              {placingOrder ? 'Placing...' : 'Place Order'}
-            </button>
+          
+          {/* Action Buttons */}
+          <div className={styles.cartActions}>
+            <div className={styles.buttonGroup}>
+              <button
+                className={styles.addButton}
+                style={{ background: '#f44336' }}
+                onClick={clearCart}
+                disabled={placingOrder}
+              >
+                Clear Cart
+              </button>
+              <button
+                className={styles.addButton}
+                onClick={async () => {
+                  if (!tableNumber) {
+                    setOrderError('Please enter a table number');
+                    return;
+                  }
+                  
+                  setPlacingOrder(true);
+                  setOrderError('');
+                  setOrderSuccess(false);
+                  try {
+                    await placeOrder();
+                    setOrderSuccess(true);
+                    clearCart();
+                    setTableNumber(undefined);
+                  } catch (e) {
+                    setOrderError('Failed to place order');
+                  } finally {
+                    setPlacingOrder(false);
+                  }
+                }}
+                disabled={placingOrder || !tableNumber}
+                style={{
+                  opacity: !tableNumber ? 0.6 : 1,
+                  cursor: !tableNumber ? 'not-allowed' : 'pointer'
+                }}
+              >
+                {placingOrder ? 'Placing...' : 'Place Order'}
+              </button>
+            </div>
+            
+            {/* Status Messages */}
+            <div className={styles.statusMessages}>
+              {orderError && <span className={styles.errorMessage}>{orderError}</span>}
+              {orderSuccess && <span className={styles.successMessage}>Order placed successfully!</span>}
+              {!tableNumber && cartItems.length > 0 && (
+                <span className={styles.warningMessage}>
+                  ⚠️ Table number required
+                </span>
+              )}
+            </div>
           </div>
-          {orderError && <span style={{ color: '#f44336', marginLeft: 16 }}>{orderError}</span>}
-          {orderSuccess && <span style={{ color: '#4caf50', marginLeft: 16 }}>Order placed!</span>}
         </div>
       )}
     </div>
