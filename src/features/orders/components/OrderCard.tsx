@@ -1,4 +1,4 @@
-import { Order, OrderStatus } from '../types';
+import { Order } from '../types';
 import styles from './OrderCard.module.css';
 
 interface OrderCardProps {
@@ -7,37 +7,23 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, onClick }: OrderCardProps) {
-  const getStatusColor = (status: OrderStatus): string => {
+
+  console.log("Rendering OrderCard for OrderId:", order);
+
+  const getStatusColor = (status: string): string => {
     switch (status) {
-      case OrderStatus.Pending:
+      case 'Pending':
         return '#FFA726';
-      case OrderStatus.InProgress:
+      case 'Queued':
+        return '#FFB74D';
+      case 'InProgress':
         return '#42A5F5';
-      case OrderStatus.Ready:
+      case 'Ready':
         return '#66BB6A';
-      case OrderStatus.Delivered:
+      case 'Delivered':
         return '#66BB6A';
       default:
         return '#9E9E9E';
-    }
-  };
-
-  const getStatusText = (status: OrderStatus) => {
-    switch (status) {
-      case OrderStatus.Pending:
-        return 'Pending';
-      case OrderStatus.Queued:
-        return 'Queued';
-      case OrderStatus.InProgress:
-        return 'In Progress';
-      case OrderStatus.Ready:
-        return 'Ready';
-      case OrderStatus.Delivered:
-        return 'Delivered';
-      case OrderStatus.Cancelled:
-        return 'Cancelled';
-      default:
-        return 'Unknown';
     }
   };
 
@@ -47,15 +33,15 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
         <div className={styles.orderInfo}>
           <h3>Order #{order.OrderId}</h3>
           {order.OrderType && (
-            <span className={styles.orderType}>{order.OrderType}</span>
+            <span className={styles.orderType}>{order.OrderType} | {order.OrderType == "DineIn" ? `Table ${order.tableNumber}` : `Order #${order.orderNumber}`}</span>
           )}
           <span className={styles.date}>{new Date(order.OrderDate || '').toLocaleString()}</span>
         </div>
         <div 
           className={styles.status}
-          style={{ backgroundColor: getStatusColor(order.Status as unknown as OrderStatus) }}
+          style={{ backgroundColor: getStatusColor(order.Status) }}
         >
-          {getStatusText(order.Status as unknown as OrderStatus)}
+          {order.Status}
         </div>
       </div>
       

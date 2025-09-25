@@ -104,13 +104,15 @@ class OrderService {
     return response.data.map((order: any) => ({
       OrderId: order.orderId,
       Items: [], // Items will be populated separately
-      Status: OrderStatus[order.orderStatus] || OrderStatus[OrderStatus.Pending],
+      Status: order.orderStatus,
       IsBeingPrepared: false,
       OrderType: order.orderType,
       OrderDate: order.orderDate,
       TotalAmount: order.totalAmount,
       IsPaid: order.isPaid,
-      Customer: order.customer
+      Customer: order.customer,
+      tableNumber: order.tableNumber,
+      orderNumber: order.orderNumber
     }));
   }
 
