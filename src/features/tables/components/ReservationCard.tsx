@@ -70,8 +70,8 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
   async function handleSetOrderReady(){
     if(reservationOrder && reservationOrder.orderId){
-      await orderService.setOrderAsReady(reservationOrder.orderId);
-      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
+      await tableService.setOrdersAsReady(reservation.reservationId);
+      // setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
     }
   }
 
