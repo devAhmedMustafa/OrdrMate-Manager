@@ -1,4 +1,5 @@
 import api from '../../../utils/api';
+import PlaceOrderRequestDto from '../../manual-order/PlaceOrderRequest.dto';
 import { OrderStatus, Order, UnpaidOrder } from '../types';
 
 export interface CheckPreparedResponse {
@@ -122,9 +123,14 @@ class OrderService {
     await api.post('/Order/deliver_request', { orderId });
   }
 
+  async placeOrder(request: PlaceOrderRequestDto): Promise<void> {
+    await api.post('/Order/create-order', request);
+  }
+
   async setOrderAsReady(orderId: string): Promise<void> {
     await api.put(`/UpdateOrder/set-ready/${orderId}`);
   }
+
 
 }
 

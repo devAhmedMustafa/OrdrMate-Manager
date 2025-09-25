@@ -7,6 +7,7 @@ import { RestaurantHeader } from './components/RestaurantHeader';
 import { useEffect } from 'react';
 import { websocketService } from './services/websocketService';
 import { AttendanceTokenProvider } from '../branch/contexts/attemdanceToken.context';
+import { VirtualCartProvider } from '../manual-order/VirtualCart';
 
 export function BranchManagerLayout() {
   const { logout, branchId, token } = useAuth();
@@ -63,12 +64,17 @@ export function BranchManagerLayout() {
           </button>
         </nav>
 
-        <div className={styles.contentWrapper}>
-          <RestaurantHeader />
-          <main className={styles.mainContent}>
-            <Outlet />
-          </main>
-        </div>
+        <VirtualCartProvider>
+
+          <div className={styles.contentWrapper}>
+            <RestaurantHeader />
+            <main className={styles.mainContent}>
+              <Outlet />
+            </main>
+          </div>
+
+        </VirtualCartProvider>
+
       </div>
       
     </AttendanceTokenProvider>

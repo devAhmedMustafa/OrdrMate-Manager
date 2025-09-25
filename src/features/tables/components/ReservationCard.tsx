@@ -70,8 +70,8 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
   async function handleSetOrderReady(){
     if(reservationOrder && reservationOrder.orderId){
-      await orderService.setOrderAsReady(reservationOrder.orderId);
-      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
+      await tableService.setOrdersAsReady(reservation.reservationId);
+      // setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
     }
   }
 
@@ -178,19 +178,19 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
         {/* Confirm table if status is waiting  */}
         {(reservation.reservationStatus.toLowerCase() === 'waiting') && (
-          <div className="bg-emerald-400 text-white size-10 flex justify-center items-center rounded-full cursor-pointer hover:bg-emerald-600 transition ml-3" title="Confirm Reservation">
-            <button className="w-full" onClick={async()=> {
+          <div className="bg-emerald-400 text-white size-7 flex justify-center items-center rounded-full cursor-pointer hover:bg-emerald-600 transition ml-3" title="Confirm Reservation">
+            <button className="w-fit" onClick={async()=> {
               await tableService.confirmTableReservation(branchId!, reservation.tableNumber);
               window.location.reload();
             }}>
-              <Icon icon="mdi:check" style={{ fontSize: 15, marginLeft: 5 }} />
+              <Icon icon="mdi:check" style={{ fontSize: 15 }} />
             </button>
           </div>
         )}
       </div>
 
       {/* Order Preview */}
-      {reservationOrder && reservationOrder.orderItems.length > 0 && (
+      {reservationOrder && reservationOrder.orderItems.length > 0 ? (
 
         <div style={{ padding: '14px 20px 16px 20px', background: '#fcfbfe', borderRadius: '0 0 14px 14px', height: "100%" }}>
 
@@ -237,7 +237,14 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
         </div>
 
-      )}
+      ) : (
+        <div style={{ padding: '14px 20px 16px 20px', background: '#fcfbfe', borderRadius: '0 0 14px 14px', height: "100%" }}>
+          <div style={{ fontWeight: 500, color: '#888', fontSize: 13, textAlign: 'center' }}>
+            No order associated with this reservation.
+          </div>
+        </div>
+      )
+      }
 
       {/* Confirm Button */}
       {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
