@@ -5,9 +5,12 @@ import useVirtualCart from '../manual-order/useVirtualCart';
 import CartItem from '../manual-order/CartItem';
 import { itemService, MenuItem } from './services/itemService';
 import { uploadService } from './services/uploadService';
+import { customizationService, CustomizationCategory } from '../customizations/services/customizationService';
+import ItemCustomizationModal from './components/ItemCustomizationModal';
 
 interface MenuItemWithPresignedUrl extends MenuItem {
   presignedUrl: string;
+  customizations?: CustomizationCategory[];
 }
 
 export default function BranchMenuPage() {
@@ -22,6 +25,8 @@ export default function BranchMenuPage() {
   const [placingOrder, setPlacingOrder] = useState(false);
   const [orderSuccess, setOrderSuccess] = useState(false);
   const [orderError, setOrderError] = useState('');
+  const [showCustomizationModal, setShowCustomizationModal] = useState(false);
+  const [selectedItem, setSelectedItem] = useState<MenuItemWithPresignedUrl | null>(null);
 
   // Keyboard shortcut to focus table number input
   useEffect(() => {
@@ -57,11 +62,20 @@ export default function BranchMenuPage() {
           }
         });
 
-        // Get presigned URLs for all items
+        // Get presigned URLs and customizations for all items
         const itemsWithUrls = await Promise.all(
           items.map(async (item: MenuItem) => {
-            const presignedUrl = await uploadService.getViewPresignedUrl(item.imageUrl);
-            return { ...item, presignedUrl };
+            const [presignedUrl, customizations] = await Promise.all([
+              uploadService.getViewPresignedUrl(item.imageUrl),
+              customizationService.getItemCustomizations(item.id).then((customizations) => {
+                console.log(`Customization`, customizations );
+                return customizations;
+              }).catch(() => {
+                console.warn(`No customizations found for item ${item.id}`);
+                return [];
+              })
+            ]);
+            return { ...item, presignedUrl, customizations };
           })
         );
         
@@ -89,6 +103,45 @@ export default function BranchMenuPage() {
       console.error('Error toggling availability:', err);
     }
   }
+
+  const handleItemClick = async (item: MenuItemWithPresignedUrl) => {
+    try {
+      if (item.customizations && item.customizations.length > 0) {
+        setSelectedItem(item);
+        setShowCustomizationModal(true);
+      } else {
+        addItemToCart(item);
+      }
+    } catch (error) {
+      console.error('Error handling item click:', error);
+      // If error, just add to cart without customizations
+      addItemToCart(item);
+    }
+  };
+
+  const addItemToCart = (item: MenuItemWithPresignedUrl, customizations?: {[categoryName: string]: any}) => {
+    const cartItem = new CartItem({ 
+      itemId: item.id, 
+      name: item.name, 
+      price: item.price, 
+      quantity: 1,
+      customizations 
+    });
+    addItem(cartItem);
+  };
+
+  const handleCustomizationConfirm = (customizations: {[categoryName: string]: any}) => {
+    if (selectedItem) {
+      addItemToCart(selectedItem, customizations);
+      setShowCustomizationModal(false);
+      setSelectedItem(null);
+    }
+  };
+
+  const handleCustomizationCancel = () => {
+    setShowCustomizationModal(false);
+    setSelectedItem(null);
+  };
 
   const categories = useMemo(() => {
     const uniqueCategories = new Set(items.map(item => item.category));
@@ -190,7 +243,7 @@ export default function BranchMenuPage() {
                   {!inCart ? (
                     <button
                       className={styles.addButton}
-                      onClick={() => addItem(new CartItem({ itemId: item.id, name: item.name, price: item.price, quantity: 1 }))}
+                      onClick={() => handleItemClick(item)}
                     >
                       Add to Order
                     </button>
@@ -313,6 +366,18 @@ export default function BranchMenuPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* Customization Modal */}
+      {showCustomizationModal && selectedItem && (
+        <ItemCustomizationModal
+          itemId={selectedItem.id}
+          itemName={selectedItem.name}
+          itemPrice={selectedItem.price}
+          customizations={selectedItem.customizations || []}
+          onClose={handleCustomizationCancel}
+          onAddToCart={handleCustomizationConfirm}
+        />
       )}
     </div>
   );
