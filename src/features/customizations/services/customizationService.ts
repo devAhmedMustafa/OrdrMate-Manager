@@ -155,5 +155,10 @@ export const customizationService = {
   getOrderCustomizations: async (orderId: string): Promise<OrderCustomizationResponse> => {
     const response = await api.get(`/UserCustomization/order/${orderId}`);
     return response.data;
+  },
+
+  getOrderCustomizationByReservation: async (reservationId: string): Promise<OrderCustomizationResponse> => {
+    const response = await api.get(`/UserCustomization/reservation/${reservationId}`);
+    return response.data;
   }
 };
