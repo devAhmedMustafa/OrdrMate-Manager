@@ -59,7 +59,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
     const fetchOrderCustomizations = async () => {
       if(reservationOrder && reservationOrder.orderId){
-        const customizations = await customizationService.getOrderCustomizationByReservation(reservationOrder.orderId);
+        const customizations = await customizationService.getOrderCustomizationByReservation(reservation.reservationId);
         setOrderCustomizations(new OrderCustomization(customizations));
       }
     };
