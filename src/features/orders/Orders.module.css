@@ -56,86 +56,8 @@
   background: #f44336;
 }
 
-.tabs {
-  display: flex;
-  gap: 16px;
-  border-bottom: 1px solid #e0e0e0;
-  padding-bottom: 8px;
-  margin-bottom: 24px;
-  flex-wrap: wrap;
-}
 
-.tab {
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #666;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  border: none;
-  background: none;
-}
 
-.tab:hover {
-  background: var(--color-accent-light);
-  color: var(--color-primary);
-}
-
-.tab.active {
-  background: var(--color-primary);
-  color: white;
-}
-
-.kitchenTabs {
-  display: flex;
-  gap: 8px;
-  flex-wrap: wrap;
-}
-
-.kitchenTabGroup {
-  position: relative;
-  display: inline-block;
-}
-
-.kitchenTab {
-  padding: 8px 16px;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #666;
-  font-weight: 500;
-  transition: all 0.2s ease;
-  border: none;
-  background: none;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.kitchenTab:hover {
-  background: var(--color-accent-light);
-  color: var(--color-primary);
-}
-
-.kitchenTab.active {
-  background: var(--color-primary);
-  color: white;
-}
-
-.kitchenTab::after {
-  content: '';
-  width: 0;
-  height: 0;
-  border-left: 4px solid transparent;
-  border-right: 4px solid transparent;
-  border-top: 4px solid currentColor;
-  transition: transform 0.2s ease;
-}
-
-.kitchenTabGroup:hover .unitButtons {
-  opacity: 1;
-  transform: translateY(0);
-  pointer-events: all;
-}
 
 .unitButtons {
   position: absolute;
@@ -195,24 +117,12 @@
   gap: 24px;
 }
 
-.kitchenSection {
-  background: var(--color-accent-light);
-  border-radius: 12px;
-  padding: 16px;
-}
-
-.kitchenSection h2 {
-  margin: 0 0 16px 0;
-  color: var(--color-primary);
-  font-size: 1.2rem;
-  font-weight: 600;
-}
-
 .ordersList {
   display: flex;
   flex-direction: column;
   gap: 16px;
-  padding-bottom: 16px; /* Add padding at bottom for better scrolling */
+  width: 100%;
+  height: 100%;
 }
 
 .orderCard {
@@ -299,49 +209,11 @@
   font-size: 0.9rem;
 }
 
-.kitchenQueue {
-  position: relative;
-  width: 100%;
-}
-
 .queueContent {
   position: relative;
   width: 100%;
-  opacity: 0;
-  transform: translateX(20px);
-  transition: opacity 0.3s ease, transform 0.3s ease;
+  height: 100%;
   pointer-events: none;
-  display: none;
-}
-
-.queueContent.active {
-  opacity: 1;
-  transform: translateX(0);
-  pointer-events: all;
-  display: block;
-}
-
-.queueContent.slideOut {
-  opacity: 0;
-  transform: translateX(-20px);
-}
-
-.queueContent::-webkit-scrollbar {
-  width: 6px;
-}
-
-.queueContent::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 3px;
-}
-
-.queueContent::-webkit-scrollbar-thumb {
-  background: var(--color-primary);
-  border-radius: 3px;
-}
-
-.queueContent::-webkit-scrollbar-thumb:hover {
-  background: var(--color-primary-dark);
 }
 
 /* Animation keyframes */

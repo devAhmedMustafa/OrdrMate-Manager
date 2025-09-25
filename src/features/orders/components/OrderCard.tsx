@@ -40,10 +40,6 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
     }
   };
 
-  useEffect(()=> {
-    console.log('Order updated:', order);
-  }, [order]);
-
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.header}>
@@ -66,9 +62,9 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
         <div className={styles.items}>
           {order.orderItems.map((item, index) => (
             <div key={index} className={styles.item}>
-              <span className={styles.quantity}>{item.Quantity}x</span>
-              <span className={styles.name}>{item.ItemName}</span>
-              {item.Notes && <span className={styles.notes}>{item.Notes}</span>}
+              <span className={styles.quantity}>{item.quantity}x</span>
+              <span className={styles.name}>{item.item.name}</span>
+              {item.notes && <span className={styles.notes}>{item.notes}</span>}
             </div>
           ))}
         </div>
@@ -93,7 +89,7 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
           <div className={styles.detail}>
             <span className={styles.label}>Total:</span>
             <span className={styles.total}>
-              ${order.totalAmount?.toFixed(2) || order.orderItems.reduce((sum, item) => sum + (item.Price * item.Quantity), 0).toFixed(2)}
+              ${order.totalAmount?.toFixed(2) || order.orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}
             </span>
           </div>
         </div>

@@ -1,3 +1,5 @@
+import { MenuItem } from "../items/services/itemService";
+
 export enum OrderStatus {
   Pending = 0,
   Queued = 1,
@@ -8,14 +10,14 @@ export enum OrderStatus {
 }
 
 export interface OrderItem {
-  OrderId: string;
-  OrderDate: string;
-  ItemName: string;
-  ItemId: string;
-  Price: number;
-  Quantity: number;
-  ImageUrl?: string;
-  Notes?: string;
+  orderId: string;
+  orderDate: string;
+  itemId: string;
+  price: number;
+  quantity: number;
+  item: MenuItem;
+  imageUrl?: string;
+  notes?: string;
 }
 
 export interface OrderStatusUpdate {
