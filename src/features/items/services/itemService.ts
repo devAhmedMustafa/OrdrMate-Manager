@@ -11,7 +11,13 @@ export interface MenuItem {
   category: string;
   subCategory?: string;
   brand: string;
-  isAvailable?: boolean;
+}
+
+export interface ItemAvailability {
+  itemId: string;
+  branchId: string;
+  isAvailable: boolean;
+  stock: number;
 }
 
 export const itemService = {
@@ -49,8 +55,24 @@ export const itemService = {
     await api.delete(`/Item/${id}`);
   },
 
+  // Get item availability data for a branch
+  getItemAvailability: async (branchId: string): Promise<ItemAvailability[]> => {
+    const response = await api.get(`/ItemAvailability/get-availability-items/${branchId}`);
+    return response.data;
+  },
+
+  // Toggle item availability
   toggleItemAvailability: async (itemId: string, branchId: string): Promise<void> => {
     await api.put(`/ItemAvailability/toggle`, { branchId, itemId });
+  },
+
+  // Update item stock quantity
+  updateItemQuantity: async (itemId: string, branchId: string, quantity: number): Promise<void> => {
+    await api.put(`/ItemAvailability/update-quantity`, { 
+      BranchId: branchId, 
+      ItemId: itemId, 
+      Quantity: quantity 
+    });
   }
 
 }; 

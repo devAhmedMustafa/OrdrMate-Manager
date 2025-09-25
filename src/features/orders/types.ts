@@ -11,9 +11,7 @@ export interface OrderItem {
   OrderId: string;
   OrderDate: string;
   ItemName: string;
-  KitchenName: string;
   ItemId: string;
-  KitchenUnitId: string;
   Price: number;
   Quantity: number;
   ImageUrl?: string;
@@ -21,29 +19,20 @@ export interface OrderItem {
 }
 
 export interface OrderStatusUpdate {
-  OrderId: string;
-  OrderStatus: OrderStatus;
+  orderId: string;
+  orderStatus: OrderStatus;
 }
 
 export interface Order {
-  OrderId: string;
-  Items: OrderItem[];
-  Status: string;
-  IsBeingPrepared: boolean;
-  NextItem?: OrderItem;
-  OrderType?: string;
-  OrderDate?: string;
-  TotalAmount?: number;
-  IsPaid?: boolean;
-  Customer?: string;
+  orderId: string;
+  orderItems: OrderItem[];
+  status: string;
+  orderType?: string;
+  orderDate?: string;
+  totalAmount?: number;
+  isPaid?: boolean;
+  customer?: string;
   orderNumber?: number | null;
-  tableNumber?: number | null;
-}
-
-export interface KitchenQueue {
-  KitchenName: string;
-  Orders: Order[];
-  NextItem?: OrderItem;
 }
 
 export interface UnpaidOrder {

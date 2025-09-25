@@ -8,60 +8,6 @@ export interface CheckPreparedResponse {
 }
 
 class OrderService {
-  async getItemQueues(branchId: string): Promise<Record<string, Order[]>> {
-    const response = await api.get(`/Order/item_queues/${branchId}`);
-    const items: any[] = response.data;
-    
-    // Group items by kitchen name
-    const queues: Record<string, Order[]> = {};
-    
-    items.forEach(item => {
-      if (!item.kitchenName) return;
-
-      // Ensure KitchenUnitId is set
-      if (!item.kitchenUnitId) {
-        item.kitchenUnitId = '0';
-      }
-
-      if (!queues[item.kitchenName]) {
-        queues[item.kitchenName] = [];
-      }
-
-      const existingOrder = queues[item.kitchenName].find(order => order.OrderId === item.orderId);
-      if (existingOrder) {
-        existingOrder.Items.push({
-          OrderId: item.orderId,
-          OrderDate: item.orderDate,
-          ItemName: item.itemName,
-          KitchenName: item.kitchenName,
-          ItemId: item.itemId,
-          KitchenUnitId: item.kitchenUnitId.toString(),
-          Price: item.price,
-          Quantity: item.quantity,
-          ImageUrl: item.imageUrl
-        });
-      } else {
-        queues[item.kitchenName].push({
-          OrderId: item.orderId,
-          Items: [{
-            OrderId: item.orderId,
-            OrderDate: item.orderDate,
-            ItemName: item.itemName,
-            KitchenName: item.kitchenName,
-            ItemId: item.itemId,
-            KitchenUnitId: item.kitchenUnitId.toString(),
-            Price: item.price,
-            Quantity: item.quantity,
-            ImageUrl: item.imageUrl
-          }],
-          Status: OrderStatus[OrderStatus.Pending],
-          IsBeingPrepared: false
-        });
-      }
-    });
-
-    return queues;
-  }
 
   async getUnpaidOrders(branchId: string): Promise<UnpaidOrder[]> {
     const response = await api.get(`/Order/unpaid/${branchId}`);
@@ -131,7 +77,11 @@ class OrderService {
     await api.put(`/UpdateOrder/set-ready/${orderId}`);
   }
 
-
+  async getOrderQueueByBranch(branchId: string): Promise<Order[]> {
+    const response = await api.get(`/Order/branch-queue/${branchId}`);
+    return response.data;
+  }
+  
 }
 
 export const orderService = new OrderService();

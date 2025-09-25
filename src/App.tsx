@@ -16,7 +16,6 @@ import BranchSettingsPage from './features/branch-settings/BranchSettings.page'
 import BranchRequestsPage from './features/admin/BranchRequests.page'
 import Orders from './features/orders/Orders.page'
 import DashboardHome from './features/dashboard/components/DashboardHome.page'
-import AttendanceCodePage from './features/branch/AttendanceCode.page'
 
 function AppContent() {
   return (
@@ -46,7 +45,6 @@ function AppContent() {
             <Route path="menu" element={<BranchMenuPage />} />
             <Route path="orders" element={<Orders />} />
             <Route path="settings" element={<BranchSettingsPage />} />
-            <Route path="attendance" element={<AttendanceCodePage />} />
           </Route>
 
           <Route path='/items/add' element={

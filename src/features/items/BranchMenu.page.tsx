@@ -10,9 +10,14 @@ interface MenuItemWithPresignedUrl extends MenuItem {
   presignedUrl: string;
 }
 
+interface MenuItemWithAvailability extends MenuItemWithPresignedUrl {
+  isAvailable: boolean;
+  stock: number;
+}
+
 export default function BranchMenuPage() {
   const { pharmacyId, token, branchId } = useAuth();
-  const [items, setItems] = useState<MenuItemWithPresignedUrl[]>([]);
+  const [items, setItems] = useState<MenuItemWithAvailability[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
   const [selectedCategory, setSelectedCategory] = useState<string>('all');
@@ -28,27 +33,27 @@ export default function BranchMenuPage() {
       if (!branchId || !token) return;
 
       try {
-        const items = await itemService.getPharmacyItems(pharmacyId!);
-        const availableItems = await itemService.getBranchAvailableItems(branchId);
+        const [menuItems, availabilityData] = await Promise.all([
+          itemService.getPharmacyItems(pharmacyId!),
+          itemService.getItemAvailability(branchId)
+        ]);
 
-        items.forEach((item: any) => {
-          const availableItem = availableItems.find((i) => i.id === item.id);
-          if (availableItem) {
-            item.isAvailable = availableItem.isAvailable;
-          } else {
-            item.isAvailable = false;
-          }
-        });
-
-        // Get presigned URLs for all items
-        const itemsWithUrls = await Promise.all(
-          items.map(async (item: MenuItem) => {
+        // Get presigned URLs and merge with availability data
+        const itemsWithAvailability = await Promise.all(
+          menuItems.map(async (item: MenuItem) => {
             const presignedUrl = await uploadService.getViewPresignedUrl(item.imageUrl);
-            return { ...item, presignedUrl };
+            const availability = availabilityData.find(avail => avail.itemId === item.id);
+            
+            return {
+              ...item,
+              presignedUrl,
+              isAvailable: availability?.isAvailable || false,
+              stock: availability?.stock || 0
+            };
           })
         );
         
-        setItems(itemsWithUrls);
+        setItems(itemsWithAvailability);
       } catch (err) {
         setError('Failed to load menu items');
         console.error('Error fetching menu items:', err);
@@ -58,18 +63,18 @@ export default function BranchMenuPage() {
     };
 
     fetchItems();
-  }, [pharmacyId, token]);
+  }, [pharmacyId, branchId, token]);
 
-  async function toggleAvailability(itemId: string) {
+  async function updateQuantity(itemId: string, newStock: number) {
     if (!branchId) return;
     try {
-      await itemService.toggleItemAvailability(itemId, branchId);
+      await itemService.updateItemQuantity(itemId, branchId, newStock);
       setItems(prevItems => prevItems.map(item => 
-        item.id === itemId ? { ...item, isAvailable: !item.isAvailable } : item
+        item.id === itemId ? { ...item, stock: newStock, isAvailable: newStock > 0 } : item
       ));
     }
     catch (err) {
-      console.error('Error toggling availability:', err);
+      console.error('Error updating stock quantity:', err);
     }
   }
 
@@ -122,42 +127,73 @@ export default function BranchMenuPage() {
                   alt={item.name}
                   className={styles.image}
                 />
-                {/* Toggle availability icon button */}
-                <button
-                  title={item.isAvailable ? "Set unavailable" : "Set available"}
-                  onClick={() => toggleAvailability(item.id)}
+                {/* Quantity controls */}
+                <div
                   style={{
                     position: 'absolute',
                     top: 8,
                     right: 8,
-                    background: 'rgba(255,255,255,0.85)',
-                    border: 'none',
-                    borderRadius: '50%',
-                    width: 32,
-                    height: 32,
+                    background: 'rgba(255,255,255,0.95)',
+                    border: '1px solid #ddd',
+                    borderRadius: '8px',
+                    padding: '4px 8px',
                     display: 'flex',
                     alignItems: 'center',
-                    justifyContent: 'center',
-                    boxShadow: '0 1px 4px rgba(0,0,0,0.08)',
-                    cursor: 'pointer',
-                    zIndex: 2
+                    gap: '4px',
+                    boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+                    zIndex: 2,
+                    fontSize: '12px',
+                    fontWeight: '500'
                   }}
                 >
-                  {item.isAvailable ? (
-                    // Green check icon
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="10" cy="10" r="10" fill="#4CAF50"/>
-                      <path d="M6 10.5L9 13.5L14 8.5" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                    </svg>
-                  ) : (
-                    // Red cross icon
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <circle cx="10" cy="10" r="10" fill="#F44336"/>
-                      <path d="M7 7L13 13" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                      <path d="M13 7L7 13" stroke="white" strokeWidth="2" strokeLinecap="round"/>
-                    </svg>
-                  )}
-                </button>
+                  <button
+                    onClick={() => updateQuantity(item.id, Math.max(0, item.stock - 1))}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '2px 4px',
+                      fontSize: '14px',
+                      color: '#666',
+                      lineHeight: 1
+                    }}
+                    disabled={item.stock <= 0}
+                  >
+                    -
+                  </button>
+                  <input
+                    type="number"
+                    min="0"
+                    value={item.stock}
+                    onChange={(e) => {
+                      const newStock = parseInt(e.target.value) || 0;
+                      updateQuantity(item.id, newStock);
+                    }}
+                    style={{
+                      width: '40px',
+                      border: '1px solid #ddd',
+                      borderRadius: '4px',
+                      padding: '2px 4px',
+                      textAlign: 'center',
+                      fontSize: '12px',
+                      background: '#fff'
+                    }}
+                  />
+                  <button
+                    onClick={() => updateQuantity(item.id, item.stock + 1)}
+                    style={{
+                      background: 'none',
+                      border: 'none',
+                      cursor: 'pointer',
+                      padding: '2px 4px',
+                      fontSize: '14px',
+                      color: '#666',
+                      lineHeight: 1
+                    }}
+                  >
+                    +
+                  </button>
+                </div>
               </div>
               <div className={styles.content}>
                 

@@ -1,3 +1,4 @@
+import { useEffect } from 'react';
 import { Order, OrderStatus } from '../types';
 import styles from './OrderCard.module.css';
 
@@ -28,8 +29,6 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
         return 'Pending';
       case OrderStatus.Queued:
         return 'Queued';
-      case OrderStatus.InProgress:
-        return 'In Progress';
       case OrderStatus.Ready:
         return 'Ready';
       case OrderStatus.Delivered:
@@ -41,27 +40,31 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
     }
   };
 
+  useEffect(()=> {
+    console.log('Order updated:', order);
+  }, [order]);
+
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.header}>
         <div className={styles.orderInfo}>
-          <h3>Order #{order.OrderId}</h3>
-          {order.OrderType && (
-            <span className={styles.orderType}>{order.OrderType}</span>
+          <h3>Order #{order.orderId}</h3>
+          {order.orderType && (
+            <span className={styles.orderType}>{order.orderType}</span>
           )}
-          <span className={styles.date}>{new Date(order.OrderDate || '').toLocaleString()}</span>
+          <span className={styles.date}>{new Date(order.orderDate || '').toLocaleString()}</span>
         </div>
         <div 
           className={styles.status}
-          style={{ backgroundColor: getStatusColor(order.Status as unknown as OrderStatus) }}
+          style={{ backgroundColor: getStatusColor(order.status as unknown as OrderStatus) }}
         >
-          {getStatusText(order.Status as unknown as OrderStatus)}
+          {getStatusText(order.status as unknown as OrderStatus)}
         </div>
       </div>
       
-      {order.Items.length > 0 && (
+      {order.orderItems.length > 0 && (
         <div className={styles.items}>
-          {order.Items.map((item, index) => (
+          {order.orderItems.map((item, index) => (
             <div key={index} className={styles.item}>
               <span className={styles.quantity}>{item.Quantity}x</span>
               <span className={styles.name}>{item.ItemName}</span>
@@ -71,39 +74,29 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
         </div>
       )}
 
-      {order.NextItem && (
-        <div className={styles.nextItem}>
-          <span className={styles.nextItemLabel}>Next Item:</span>
-          <span className={styles.nextItemName}>{order.NextItem.ItemName}</span>
-        </div>
-      )}
-
       <div className={styles.footer}>
         <div className={styles.orderDetails}>
-          {order.Customer && (
+          {order.customer && (
             <div className={styles.detail}>
               <span className={styles.label}>Customer:</span>
-              <span className={styles.value}>{order.Customer}</span>
+              <span className={styles.value}>{order.customer}</span>
             </div>
           )}
-          {order.OrderDate && (
+          {order.orderDate && (
             <div className={styles.detail}>
               <span className={styles.label}>Date:</span>
               <span className={styles.value}>
-                {new Date(order.OrderDate).toLocaleString()}
+                {new Date(order.orderDate).toLocaleString()}
               </span>
             </div>
           )}
           <div className={styles.detail}>
             <span className={styles.label}>Total:</span>
             <span className={styles.total}>
-              ${order.TotalAmount?.toFixed(2) || order.Items.reduce((sum, item) => sum + (item.Price * item.Quantity), 0).toFixed(2)}
+              ${order.totalAmount?.toFixed(2) || order.orderItems.reduce((sum, item) => sum + (item.Price * item.Quantity), 0).toFixed(2)}
             </span>
           </div>
         </div>
-        {order.IsBeingPrepared && (
-          <span className={styles.preparing}>Preparing...</span>
-        )}
       </div>
     </div>
   );

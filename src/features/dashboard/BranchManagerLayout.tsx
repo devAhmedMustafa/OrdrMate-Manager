@@ -6,7 +6,6 @@ import logo from '@/assets/OrdrMate.png';
 import { RestaurantHeader } from './components/RestaurantHeader';
 import { useEffect } from 'react';
 import { websocketService } from './services/websocketService';
-import { AttendanceTokenProvider } from '../branch/contexts/attemdanceToken.context';
 import { VirtualCartProvider } from '../manual-order/VirtualCart';
 
 export function BranchManagerLayout() {
@@ -27,14 +26,10 @@ export function BranchManagerLayout() {
     { path: '/branch', label: 'Home', icon: 'iconamoon:home-duotone' },
     { path: '/branch/orders', label: 'Orders', icon: 'lets-icons:order-duotone' },
     { path: '/branch/menu', label: 'Menu', icon: 'ic:twotone-menu-book' },
-    { path: '/branch/tables', label: 'Tables', icon: 'mdi:table' },
-    { path: '/branch/kitchen-power', label: 'Kitchen Power', icon: 'mdi:power-socket' },
     { path: '/branch/settings', label: 'Settings', icon: 'mdi:cog' },
-    { path: '/branch/attendance', label: 'Attendance Code', icon: 'mdi:barcode' },
   ];
 
   return (
-    <AttendanceTokenProvider>
 
       <div className={styles.dashboardContainer}>
         <nav className={styles.sidebar}>
@@ -77,7 +72,5 @@ export function BranchManagerLayout() {
 
       </div>
       
-    </AttendanceTokenProvider>
-
   );
 } 
