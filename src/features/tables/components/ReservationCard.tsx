@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { OrderStatus, ReservationOrder, TableReservation, tableService } from "../services/tableService";
 import { Icon } from '@iconify/react';
-import { orderService } from "../../orders/services/orderService";
 import useAuth from "../../auth/useAuth.hook";
 import OrderCustomization from "../../customizations/models/OrderCustomization.Model";
 import { customizationService } from "../../customizations";
