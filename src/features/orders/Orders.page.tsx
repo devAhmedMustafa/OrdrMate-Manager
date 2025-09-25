@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo } from 'react';
-import { KitchenQueue } from './components/KitchenQueue';
+// import { KitchenQueue } from './components/KitchenQueue';
 import { OrderCard } from './components/OrderCard';
 import { UnpaidOrders } from './components/UnpaidOrders';
 import { Order, UnpaidOrder, OrderItem } from './types';
@@ -110,10 +110,10 @@ function Orders() {
           handleNewItem(message.Item as OrderItem);
           break;
         case 'OrderPlaced':
-          handleOrderPlaced(message.OrderId as string, message.IsBeingPrepared as boolean);
+          // handleOrderPlaced(message.OrderId as string, message.IsBeingPrepared as boolean);
           break;
         case 'NextItem':
-          handleNextItem(message.OrderId as string, message.Item as OrderItem);
+          // handleNextItem(message.OrderId as string, message.Item as OrderItem);
           break;
         case 'OrderReady':
           handleOrderReady(message.OrderId as string);
@@ -182,7 +182,7 @@ function Orders() {
     // });
   };
 
-  const handleOrderPlaced = (orderId: string, isBeingPrepared: boolean) => {
+  // const handleOrderPlaced = (orderId: string, isBeingPrepared: boolean) => {
     // setKitchenQueues(prev => {
     //   const newQueues = { ...prev };
     //   Object.keys(newQueues).forEach(kitchenName => {
@@ -193,9 +193,9 @@ function Orders() {
     //   });
     //   return newQueues;
     // });
-  };
+  // };
 
-  const handleNextItem = (orderId: string, nextItem: OrderItem) => {
+  // const handleNextItem = (orderId: string, nextItem: OrderItem) => {
     // setKitchenQueues(prev => {
     //   const newQueues = { ...prev };
     //   Object.keys(newQueues).forEach(kitchenName => {
@@ -206,7 +206,7 @@ function Orders() {
     //   });
     //   return newQueues;
     // });
-  };
+  // };
 
   const handleOrderReady = (orderId: string) => {
     // Update kitchen queues
