@@ -78,7 +78,7 @@ function Orders() {
     setAllOrders(prev => 
       prev.map(order => 
         order.orderId === orderId 
-          ? { ...order, status: 'Ready' }
+          ? { ...order, orderStatus: 'Ready' }
           : order
       )
     );

@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { Order, OrderStatus } from '../types';
 import styles from './OrderCard.module.css';
 
@@ -23,23 +22,6 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
     }
   };
 
-  const getStatusText = (status: OrderStatus) => {
-    switch (status) {
-      case OrderStatus.Pending:
-        return 'Pending';
-      case OrderStatus.Queued:
-        return 'Queued';
-      case OrderStatus.Ready:
-        return 'Ready';
-      case OrderStatus.Delivered:
-        return 'Delivered';
-      case OrderStatus.Cancelled:
-        return 'Cancelled';
-      default:
-        return 'Unknown';
-    }
-  };
-
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.header}>
@@ -52,9 +34,9 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
         </div>
         <div 
           className={styles.status}
-          style={{ backgroundColor: getStatusColor(order.status as unknown as OrderStatus) }}
+          style={{ backgroundColor: getStatusColor(order.orderStatus as unknown as OrderStatus) }}
         >
-          {getStatusText(order.status as unknown as OrderStatus)}
+          {order.orderStatus}
         </div>
       </div>
       

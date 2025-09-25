@@ -28,7 +28,7 @@ export interface OrderStatusUpdate {
 export interface Order {
   orderId: string;
   orderItems: OrderItem[];
-  status: string;
+  orderStatus: string;
   orderType?: string;
   orderDate?: string;
   totalAmount?: number;
