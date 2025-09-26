@@ -1,6 +1,5 @@
 import api from '../../../utils/api';
-import { MenuItem } from '../../items/services/itemService';
-import { Order } from '../../orders/types';
+import Order from '../../orders/models/Order';
 import CreateTableRequest from '../dtos/CreateTableRequest.dto';
 import TableResponse from '../dtos/TableResponse.dto';
 
@@ -21,12 +20,7 @@ export interface TableReservation {
   orderStatus: OrderStatus;
 }
 
-export interface ReservationOrder {
-  orderId: string;
-  orderStatus: OrderStatus;
-  orderItems: { itemId: string; item: MenuItem; quantity: number }[];
-  isPaid: boolean;
-}
+export interface ReservationOrder extends Order {}
 
 class TableService {
   async getTables(branchId: string): Promise<TableResponse[]> {

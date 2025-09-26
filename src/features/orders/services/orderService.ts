@@ -1,6 +1,7 @@
 import api from '../../../utils/api';
 import PlaceOrderRequestDto from '../../manual-order/PlaceOrderRequest.dto';
-import { OrderStatus, Order, UnpaidOrder } from '../types';
+import Order from '../models/Order';
+import { OrderStatus, UnpaidOrder } from '../types';
 
 export interface CheckPreparedResponse {
   dequedItemId: string;
@@ -27,37 +28,36 @@ class OrderService {
         queues[item.kitchenName] = [];
       }
 
-      const existingOrder = queues[item.kitchenName].find(order => order.OrderId === item.orderId);
-      if (existingOrder) {
-        existingOrder.Items.push({
-          OrderId: item.orderId,
-          OrderDate: item.orderDate,
-          ItemName: item.itemName,
-          KitchenName: item.kitchenName,
-          ItemId: item.itemId,
-          KitchenUnitId: item.kitchenUnitId.toString(),
-          Price: item.price,
-          Quantity: item.quantity,
-          ImageUrl: item.imageUrl
-        });
-      } else {
-        queues[item.kitchenName].push({
-          OrderId: item.orderId,
-          Items: [{
-            OrderId: item.orderId,
-            OrderDate: item.orderDate,
-            ItemName: item.itemName,
-            KitchenName: item.kitchenName,
-            ItemId: item.itemId,
-            KitchenUnitId: item.kitchenUnitId.toString(),
-            Price: item.price,
-            Quantity: item.quantity,
-            ImageUrl: item.imageUrl
-          }],
-          Status: OrderStatus[OrderStatus.Pending],
-          IsBeingPrepared: false
-        });
-      }
+      // const existingOrder = queues[item.kitchenName].find(order => order.OrderId === item.orderId);
+      // if (existingOrder) {
+      //   existingOrder.Items.push({
+      //     OrderId: item.orderId,
+      //     OrderDate: item.orderDate,
+      //     ItemName: item.itemName,
+      //     KitchenName: item.kitchenName,
+      //     ItemId: item.itemId,
+      //     KitchenUnitId: item.kitchenUnitId.toString(),
+      //     Price: item.price,
+      //     Quantity: item.quantity,
+      //     ImageUrl: item.imageUrl
+      //   });
+      // } else {
+      //   queues[item.kitchenName].push({
+      //     OrderId: item.orderId,
+      //     Items: [{
+      //       OrderId: item.orderId,
+      //       OrderDate: item.orderDate,
+      //       ItemName: item.itemName,
+      //       KitchenName: item.kitchenName,
+      //       ItemId: item.itemId,
+      //       KitchenUnitId: item.kitchenUnitId.toString(),
+      //       Price: item.price,
+      //       Quantity: item.quantity,
+      //       ImageUrl: item.imageUrl
+      //     }],
+      //     Status: OrderStatus[OrderStatus.Pending]
+      //   });
+      // }
     });
 
     return queues;
@@ -101,19 +101,7 @@ class OrderService {
 
   async getAllOrders(branchId: string): Promise<Order[]> {
     const response = await api.get(`/Order/list/${branchId}`);
-    return response.data.map((order: any) => ({
-      OrderId: order.orderId,
-      Items: [], // Items will be populated separately
-      Status: order.orderStatus,
-      IsBeingPrepared: false,
-      OrderType: order.orderType,
-      OrderDate: order.orderDate,
-      TotalAmount: order.totalAmount,
-      IsPaid: order.isPaid,
-      Customer: order.customer,
-      tableNumber: order.tableNumber,
-      orderNumber: order.orderNumber
-    }));
+    return response.data;
   }
 
   async getTakeawayOrders(branchId: string): Promise<any[]> {

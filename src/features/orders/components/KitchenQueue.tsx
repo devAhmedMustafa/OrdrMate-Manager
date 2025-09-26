@@ -1,9 +1,10 @@
-import { KitchenQueue as KitchenQueueType, Order } from '../types';
+import { KitchenQueue as KitchenQueueType } from '../types';
 import { KitchenItem } from './KitchenItem';
 import styles from './KitchenQueue.module.css';
 import useAuth from '../../auth/useAuth.hook';
 import { useState, useEffect } from 'react';
 import { orderService } from '../services/orderService';
+import Order from '../models/Order';
 
 interface KitchenQueueProps {
   queue: KitchenQueueType;
@@ -14,12 +15,12 @@ interface KitchenQueueProps {
 export function KitchenQueue({ queue, kitchenUnitId, onItemMarkedAsDone }: KitchenQueueProps) {
   const { branchId, token } = useAuth();
   const [isAnimating, setIsAnimating] = useState(false);
-  const [localItems, setLocalItems] = useState<Order['Items']>([]);
+  const [localItems, setLocalItems] = useState<Order['orderItems']>([]);
   
   // Get all items for this kitchen unit
   const allItems = queue.Orders.reduce((items: any[], order) => {
-    const orderItems = order.Items.filter(item => 
-      String(item.KitchenUnitId) === String(kitchenUnitId)
+    const orderItems = order.orderItems.filter(item => 
+      String(item.item.kitchenId) === String(kitchenUnitId)
     );
     return [...items, ...orderItems];
   }, []);
@@ -41,14 +42,14 @@ export function KitchenQueue({ queue, kitchenUnitId, onItemMarkedAsDone }: Kitch
       const response = await orderService.checkItemAsPrepared(
         branchId,
         queue.KitchenName,
-        currentItem.KitchenUnitId,
+        currentItem.item.kitchenId,
         token
       );
       
       // Wait for the response before updating the queue
-      if (response.dequedItemId === currentItem.ItemId) {
+      if (response.dequedItemId === currentItem.itemId) {
         // Remove the current item from the queue
-        setLocalItems(prev => prev.filter(item => item.ItemId !== currentItem.ItemId));
+        setLocalItems(prev => prev.filter(item => item.itemId !== currentItem.itemId));
         // Notify parent component
         onItemMarkedAsDone?.(response.dequedItemId);
       }

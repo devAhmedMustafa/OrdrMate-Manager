@@ -6,6 +6,7 @@ import OrderCustomization from "../../customizations/models/OrderCustomization.M
 import { customizationService } from "../../customizations";
 import styles from '../Tables.module.css';
 import { useTableContext } from '../context/TableContext';
+import { printOrderInvoice } from "../../orders/utils/printOrder";
 
 interface ReservationCardProps {
   index: number;
@@ -67,33 +68,6 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
     fetchOrderCustomizations();
   }, [reservationOrder]);
 
-  useEffect(()=> {
-    async function connectQZ(){
-      if (!window.qz){
-        console.log("QZ not loaded yet");
-        return;
-      }
-
-      try {
-        if (!window.qz.websocket.isActive()) {
-          await window.qz.websocket.connect();
-          console.log("QZ connected from ReservationCard");
-        }
-      } catch (error) {
-        console.error("Error connecting to QZ:", error);
-      }
-    }
-
-    connectQZ();
-
-    return () => {
-      if (window.qz && window.qz.websocket.isActive()) {
-        window.qz.websocket.disconnect();
-        console.log("QZ disconnected from ReservationCard");
-      }
-    };
-  }, []);
-
   async function handleSetOrderReady(){
     if(reservationOrder && reservationOrder.orderId){
       await tableService.setOrdersAsReady(reservation.reservationId);
@@ -107,7 +81,8 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
   async function handlePayOrder(){
     if(reservationOrder && reservationOrder.orderId){
-      await tableService.payOrders(reservation.reservationId);
+      const order = await tableService.payOrders(reservation.reservationId);
+      printOrderInvoice(order);
       setReservationOrder({...reservationOrder, isPaid: true});
     }
   }
