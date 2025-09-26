@@ -83,7 +83,7 @@ class TableService {
   }
 
   async setOrdersAsReady(reservationId: string): Promise<void> {
-    await api.put(`/Table/orders/set-as-ready/${reservationId}`);
+    await api.put(`/Table/order/set-ready/${reservationId}`);
   }
 
 }

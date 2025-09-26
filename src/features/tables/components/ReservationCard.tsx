@@ -1,12 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { OrderStatus, ReservationOrder, TableReservation, tableService } from "../services/tableService";
 import { Icon } from '@iconify/react';
 import useAuth from "../../auth/useAuth.hook";
 import OrderCustomization from "../../customizations/models/OrderCustomization.Model";
 import { customizationService } from "../../customizations";
-
-import { useRef } from "react";
 import styles from '../Tables.module.css';
+import { useTableContext } from '../context/TableContext';
 
 interface ReservationCardProps {
   index: number;
@@ -17,6 +16,7 @@ interface ReservationCardProps {
 
 export default function ReservationCard({index, reservation, onDragStart, onDragEnd}: ReservationCardProps) {
   const dragRef = useRef<HTMLDivElement>(null);
+  const { updateReservationInQueue } = useTableContext();
 
   // Drag event handlers for moving reservation to another table
   const handleDragStart = (e: React.DragEvent) => {
@@ -70,7 +70,11 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
   async function handleSetOrderReady(){
     if(reservationOrder && reservationOrder.orderId){
       await tableService.setOrdersAsReady(reservation.reservationId);
-      // setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
+      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
+      // Update the reservation in the table queue context
+      updateReservationInQueue(reservation.tableNumber, reservation.reservationId, {
+        orderStatus: OrderStatus.Ready
+      });
     }
   }
 
@@ -177,14 +181,18 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
         {/* Confirm table if status is waiting  */}
         {(reservation.reservationStatus.toLowerCase() === 'waiting') && (
+
           <div className="bg-emerald-400 text-white size-7 flex justify-center items-center rounded-full cursor-pointer hover:bg-emerald-600 transition ml-3" title="Confirm Reservation">
+
             <button className="w-fit" onClick={async()=> {
               await tableService.confirmTableReservation(branchId!, reservation.tableNumber);
-              window.location.reload();
+              updateReservationInQueue(reservation.tableNumber, reservation.reservationId, { reservationStatus: 'Seated' });
             }}>
               <Icon icon="mdi:check" style={{ fontSize: 15 }} />
             </button>
+            
           </div>
+
         )}
       </div>
 
