@@ -1,5 +1,6 @@
 import api from '../../../utils/api';
 import { MenuItem } from '../../items/services/itemService';
+import { Order } from '../../orders/types';
 import CreateTableRequest from '../dtos/CreateTableRequest.dto';
 import TableResponse from '../dtos/TableResponse.dto';
 
@@ -24,6 +25,7 @@ export interface ReservationOrder {
   orderId: string;
   orderStatus: OrderStatus;
   orderItems: { itemId: string; item: MenuItem; quantity: number }[];
+  isPaid: boolean;
 }
 
 class TableService {
@@ -59,7 +61,7 @@ class TableService {
     if (response.status != 200) {
       return null;
     }
-
+    
     return response.data;
   }
 
@@ -84,6 +86,11 @@ class TableService {
 
   async setOrdersAsReady(reservationId: string): Promise<void> {
     await api.put(`/Table/order/set-ready/${reservationId}`);
+  }
+
+  async payOrders(reservationId: string): Promise<Order> {
+    const response = await api.put(`/Table/order/pay/${reservationId}`);
+    return response.data;
   }
 
 }

@@ -253,6 +253,21 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       )
       }
 
+      {/* Pay Order Button */}
+      {(reservation.reservationId && reservationOrder?.isPaid === false) && (
+        <div className="bg-blue-500 text-white p-3 rounded-b-lg cursor-pointer hover:bg-blue-700 transition">
+          <button className="w-full flex justify-center items-center" onClick={async()=>{
+            if(reservationOrder && reservationOrder.orderId){
+              await tableService.payOrders(reservation.reservationId);
+              setReservationOrder({...reservationOrder, isPaid: true});
+            }
+          }}>
+            <Icon icon="mdi:currency-usd" style={{ fontSize: 15, marginLeft: 5 }} />
+            <span className="ml-2">Mark as Paid</span>
+          </button>
+        </div>
+      )}
+
       {/* Confirm Button */}
       {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
         <div className="bg-emerald-400 text-white p-3 rounded-b-lg cursor-pointer hover:bg-emerald-600 transition">
