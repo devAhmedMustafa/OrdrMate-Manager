@@ -67,6 +67,33 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
     fetchOrderCustomizations();
   }, [reservationOrder]);
 
+  useEffect(()=> {
+    async function connectQZ(){
+      if (!window.qz){
+        console.log("QZ not loaded yet");
+        return;
+      }
+
+      try {
+        if (!window.qz.websocket.isActive()) {
+          await window.qz.websocket.connect();
+          console.log("QZ connected from ReservationCard");
+        }
+      } catch (error) {
+        console.error("Error connecting to QZ:", error);
+      }
+    }
+
+    connectQZ();
+
+    return () => {
+      if (window.qz && window.qz.websocket.isActive()) {
+        window.qz.websocket.disconnect();
+        console.log("QZ disconnected from ReservationCard");
+      }
+    };
+  }, []);
+
   async function handleSetOrderReady(){
     if(reservationOrder && reservationOrder.orderId){
       await tableService.setOrdersAsReady(reservation.reservationId);
@@ -75,6 +102,13 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       updateReservationInQueue(reservation.tableNumber, reservation.reservationId, {
         orderStatus: OrderStatus.Ready
       });
+    }
+  }
+
+  async function handlePayOrder(){
+    if(reservationOrder && reservationOrder.orderId){
+      await tableService.payOrders(reservation.reservationId);
+      setReservationOrder({...reservationOrder, isPaid: true});
     }
   }
 
@@ -256,12 +290,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       {/* Pay Order Button */}
       {(reservation.reservationId && reservationOrder?.isPaid === false) && (
         <div className="bg-blue-500 text-white p-3 rounded-b-lg cursor-pointer hover:bg-blue-700 transition">
-          <button className="w-full flex justify-center items-center" onClick={async()=>{
-            if(reservationOrder && reservationOrder.orderId){
-              await tableService.payOrders(reservation.reservationId);
-              setReservationOrder({...reservationOrder, isPaid: true});
-            }
-          }}>
+          <button className="w-full flex justify-center items-center" onClick={handlePayOrder}>
             <Icon icon="mdi:currency-usd" style={{ fontSize: 15, marginLeft: 5 }} />
             <span className="ml-2">Mark as Paid</span>
           </button>
