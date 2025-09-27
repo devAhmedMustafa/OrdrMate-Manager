@@ -31,6 +31,35 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
     });
 
     return `
+        <style>
+            @media print {
+                html, body {
+                    margin: 0;
+                    padding: 0;
+                    width: auto !important;
+                    height: auto !important;
+                }
+                * {
+                    page-break-before: avoid;
+                    page-break-after: avoid;
+                    page-break-inside: avoid;
+                }
+                [style*="display: flex"] {
+                    display: block !important;
+                }
+                img {
+                    max-width: 100% !important;
+                    max-height: 100% !important;
+                }
+                table {
+                    page-break-inside: auto;
+                }
+                tr, td, th {
+                    page-break-inside: avoid;
+                    page-break-after: auto;
+                }
+            }
+        </style>
         <div style="
             max-width: 400px; 
             margin: 0 auto; 
@@ -132,9 +161,9 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
                     <p style="margin: 15px 0 5px 0; font-size: 12px; color: black;">Powered by <strong>Gahez</strong></p>
                 </div>
                 ${qrCodeUrl ? `
-                <div style="position: absolute; bottom: -10px; right: 0; text-align: center;">
+                <div style="text-align: center; margin: auto">
+                <img src="${qrCodeUrl}" alt="QR Code for Menu" style="width: 90px; height: 90px;"/>
                     <p style="margin: 0 0 3px 0; font-size: 9px; color: black;">Scan to order</p>
-                    <img src="${qrCodeUrl}" alt="QR Code for Menu" style="width: 90px; height: 90px;"/>
                 </div>
                 ` : ''}
             </div>
