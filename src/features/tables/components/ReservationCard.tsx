@@ -6,7 +6,7 @@ import OrderCustomization from "../../customizations/models/OrderCustomization.M
 import { customizationService } from "../../customizations";
 import styles from '../Tables.module.css';
 import { useTableContext } from '../context/TableContext';
-import { printOrderInvoice } from "../../orders/utils/printOrder";
+import { printOrderInvoice, printOrderItems } from "../../orders/utils/printOrder";
 
 interface ReservationCardProps {
   index: number;
@@ -89,7 +89,8 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
   async function handlePushToKitchen(){
     if(reservationOrder && reservationOrder.orderId){
-      await tableService.pushToKitchen(reservation.reservationId);
+      const orderItems = await tableService.pushToKitchen(reservation.reservationId);
+      printOrderItems(orderItems);
       setReservationOrder({...reservationOrder, orderStatus: OrderStatus.InProgress});
     }
   }

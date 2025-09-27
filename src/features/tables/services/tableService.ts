@@ -1,5 +1,6 @@
 import api from '../../../utils/api';
 import Order from '../../orders/models/Order';
+import OrderItem from '../../orders/models/OrderItem';
 import CreateTableRequest from '../dtos/CreateTableRequest.dto';
 import TableResponse from '../dtos/TableResponse.dto';
 
@@ -88,9 +89,9 @@ class TableService {
     return response.data;
   }
 
-  async pushToKitchen(reservationId: string): Promise<void> {
-    const response = await api.put(`/TableReservation/push-to-kitchen/${reservationId}`);
-    return response.data;
+  async pushToKitchen(reservationId: string): Promise<OrderItem[]> {
+    const response = await api.put<{orderItems: OrderItem[]}>(`/TableReservation/push-to-kitchen/${reservationId}`);
+    return response.data.orderItems;
   }
 
 }
