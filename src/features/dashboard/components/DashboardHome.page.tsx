@@ -10,6 +10,7 @@ import useAuth from '../../auth/useAuth.hook';
 import styles from './DashboardHome.module.css';
 import { Icon } from '@iconify/react';
 import Table from '../../tables/models/Table';
+import ShiftEarningsResponse from '../dtos/ShiftEarningsResponse.dto';
 
 export default function DashboardHome() {
   const [kitchenQueues, setKitchenQueues] = useState<Record<string, Order[]>>({});
@@ -20,6 +21,7 @@ export default function DashboardHome() {
   const [shiftStatus, setShiftStatus] = useState<ShiftResponse | null>(null);
   const [isShiftLoading, setIsShiftLoading] = useState(false);
   const { branchId, token } = useAuth();
+  const [shiftEarnings, setShiftEarnings] = useState<ShiftEarningsResponse | null>(null);
 
   useEffect(() => {
     if (!branchId || !token) return;
@@ -87,11 +89,21 @@ export default function DashboardHome() {
       }
     };
 
+    const fetchShiftEarnings = async () => {
+      try {
+        const earnings = await shiftService.fetchShiftEarnings(branchId);
+        setShiftEarnings(earnings);
+      } catch (error) {
+        console.error('Error fetching shift earnings:', error);
+      }
+    };
+
     // Initial fetch
     fetchKitchenQueues();
     fetchTablesAndQueues();
     fetchBalance();
     fetchShiftStatus();
+    fetchShiftEarnings();
 
     // Set up interval for periodic refresh
     const interval = setInterval(() => {
@@ -99,6 +111,7 @@ export default function DashboardHome() {
       fetchTablesAndQueues();
       fetchBalance();
       fetchShiftStatus();
+      fetchShiftEarnings();
     }, 30000);
 
     return () => clearInterval(interval);
@@ -124,6 +137,13 @@ export default function DashboardHome() {
     try {
       const result = await shiftService.startShift(branchId);
       setShiftStatus(result);
+      // Refresh earnings after starting shift
+      try {
+        const earnings = await shiftService.fetchShiftEarnings(branchId);
+        setShiftEarnings(earnings);
+      } catch (earningsError) {
+        console.error('Error fetching earnings after shift start:', earningsError);
+      }
       alert('Shift started successfully!');
     } catch (error) {
       console.error('Error starting shift:', error);
@@ -142,11 +162,16 @@ export default function DashboardHome() {
     
     setIsShiftLoading(true);
     try {
-
-        const result = await shiftService.endShift(branchId);
-        setShiftStatus(result);
-        alert('Shift ended successfully!');
-
+      const result = await shiftService.endShift(branchId);
+      setShiftStatus(result);
+      // Refresh earnings after ending shift
+      try {
+        const earnings = await shiftService.fetchShiftEarnings(branchId);
+        setShiftEarnings(earnings);
+      } catch (earningsError) {
+        console.error('Error fetching earnings after shift end:', earningsError);
+      }
+      alert('Shift ended successfully!');
     } catch (error) {
       console.error('Error ending shift:', error);
       alert('Error ending shift. Please try again.');
@@ -189,6 +214,73 @@ export default function DashboardHome() {
           </button>
         </div>
       </div>
+
+      {shiftEarnings && (
+        <div className={styles.section}>
+          <h2 className={styles.sectionTitle}>
+            <Icon icon="mdi:chart-line" className={styles.sectionIcon} />
+            Current Shift Earnings
+          </h2>
+          <div className={styles.shiftEarningsGrid}>
+            <div className={styles.balanceCard}>
+              <div className={styles.balanceHeader}>
+                <Icon icon="mdi:cash" className={styles.balanceIcon} />
+                <span>Shift Earnings</span>
+              </div>
+              <div className={styles.balanceAmount}>
+                ${shiftEarnings.totalEarnings.toFixed(2)}
+              </div>
+            </div>
+            <div className={styles.balanceCard}>
+              <div className={styles.balanceHeader}>
+                <Icon icon="mdi:receipt" className={styles.balanceIcon} />
+                <span>Total Orders</span>
+              </div>
+              <div className={styles.balanceAmount}>
+                {shiftEarnings.totalOrders}
+              </div>
+            </div>
+            <div className={styles.balanceCard}>
+              <div className={styles.balanceHeader}>
+                <Icon icon="mdi:calculator" className={styles.balanceIcon} />
+                <span>Avg per Order</span>
+              </div>
+              <div className={styles.balanceAmount}>
+                ${Number(shiftEarnings.totalOrders) > 0 
+                  ? (shiftEarnings.totalEarnings / Number(shiftEarnings.totalOrders)).toFixed(2)
+                  : '0.00'
+                }
+              </div>
+            </div>
+            <div className={styles.balanceCard}>
+              <div className={styles.balanceHeader}>
+                <Icon icon="mdi:clock-start" className={styles.balanceIcon} />
+                <span>Shift Start</span>
+              </div>
+              <div className={styles.balanceAmount} style={{ fontSize: '1rem' }}>
+                {new Date(shiftEarnings.startTime).toLocaleTimeString([], {
+                  hour: '2-digit',
+                  minute: '2-digit'
+                })}
+              </div>
+            </div>
+            {shiftEarnings.endTime && (
+              <div className={styles.balanceCard}>
+                <div className={styles.balanceHeader}>
+                  <Icon icon="mdi:clock-end" className={styles.balanceIcon} />
+                  <span>Shift End</span>
+                </div>
+                <div className={styles.balanceAmount} style={{ fontSize: '1rem' }}>
+                  {new Date(shiftEarnings.endTime).toLocaleTimeString([], {
+                    hour: '2-digit',
+                    minute: '2-digit'
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
 
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
