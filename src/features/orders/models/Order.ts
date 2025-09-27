@@ -3,6 +3,7 @@ import OrderItem from "./OrderItem";
 export default interface Order {
 
     orderId: string;
+    branchId: string;
     orderItems: OrderItem[];
     orderStatus: string;
     orderType: string;

@@ -90,7 +90,8 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
   async function handlePushToKitchen(){
     if(reservationOrder && reservationOrder.orderId){
       const orderItems = await tableService.pushToKitchen(reservation.reservationId);
-      printOrderItems(orderItems);
+      console.log("Pushed to kitchen:", orderItems);
+      printOrderItems(orderItems, reservationOrder);
       setReservationOrder({...reservationOrder, orderStatus: OrderStatus.InProgress});
     }
   }

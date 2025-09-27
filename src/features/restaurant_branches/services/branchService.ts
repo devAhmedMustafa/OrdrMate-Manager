@@ -9,6 +9,15 @@ export interface Branch {
   branchPhoneNumber: string;
 }
 
+export interface BranchInfoResponse {
+    branchId: string;
+    address: string;
+    phone: string;
+    restaurantName: string;
+    taxRate: number;
+    logoUrl: string;
+}
+
 export interface CreateBranchData {
   lantitude: number;
   longitude: number;
@@ -30,5 +39,11 @@ export const branchService = {
 
   deleteBranch: async (branchId: string): Promise<void> => {
     await api.delete(`/Branch/${branchId}`);
+  },
+
+  getBranchInfo: async (branchId: string): Promise<BranchInfoResponse> => {
+    const response = await api.get(`/Branch/detailed-info/${branchId}`);
+    return response.data;
   }
+
 }; 
