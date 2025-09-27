@@ -1,5 +1,7 @@
 import Order from '../models/Order';
 import styles from './OrderCard.module.css';
+import { printOrderInvoice } from '../utils/printOrder';
+import { Icon } from '@iconify/react';
 
 interface OrderCardProps {
   order: Order;
@@ -7,6 +9,11 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, onClick }: OrderCardProps) {
+
+  const handlePrint = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent card click event
+    printOrderInvoice(order);
+  };
 
   const getStatusColor = (status: string): string => {
     switch (status) {
@@ -35,11 +42,20 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
           )}
           <span className={styles.date}>{new Date(order.orderDate || '').toLocaleString()}</span>
         </div>
-        <div 
-          className={styles.status}
-          style={{ backgroundColor: getStatusColor(order.orderStatus) }}
-        >
-          {order.orderStatus}
+        <div className={styles.headerActions}>
+          <button 
+            className={styles.printButton}
+            onClick={handlePrint}
+            title="Print Order"
+          >
+            <Icon icon="mdi:printer" />
+          </button>
+          <div 
+            className={styles.status}
+            style={{ backgroundColor: getStatusColor(order.orderStatus) }}
+          >
+            {order.orderStatus}
+          </div>
         </div>
       </div>
       
