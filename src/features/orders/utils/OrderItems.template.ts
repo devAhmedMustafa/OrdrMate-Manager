@@ -2,13 +2,37 @@ import Order from '../models/Order';
 import OrderItem from '../models/OrderItem';
 
 const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchInfo: any): Promise<string> => {
-
     // Format date and time
     const now = new Date();
     const formattedDate = now.toLocaleDateString('en-GB');
     const formattedTime = now.toLocaleTimeString('en-GB', { hour12: false });
 
     return `
+        <style>
+            @media print {
+                html, body {
+                    margin: 0;
+                    padding: 0;
+                    width: auto !important;
+                    height: auto !important;
+                }
+                * {
+                    page-break-before: avoid;
+                    page-break-after: avoid;
+                    page-break-inside: avoid;
+                }
+                [style*="display: flex"] {
+                    display: block !important;
+                }
+                img {
+                    max-width: 100% !important;
+                    max-height: 100% !important;
+                }
+                div {
+                    page-break-inside: avoid;
+                }
+            }
+        </style>
         <div style="
             font-family: 'Courier New', monospace;
             max-width: 300px;

@@ -14,7 +14,7 @@ export async function printOrderInvoice(order: Order) {
     w.document.write(`
         <html>
             <head>
-                <title>Order #${order.orderId}</title>
+                <title>Gahez</title>
             </head>
             <body>
                 ${printable}
