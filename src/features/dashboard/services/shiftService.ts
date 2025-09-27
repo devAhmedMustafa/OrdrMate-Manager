@@ -1,4 +1,5 @@
 import api from '../../../utils/api';
+import ShiftEarningsResponse from '../dtos/ShiftEarningsResponse.dto';
 
 export enum ShiftStatus {
   NotStarted = 0,
@@ -69,6 +70,17 @@ class ShiftService {
       throw error;
     }
   }
+
+  async fetchShiftEarnings(branchId: string): Promise<ShiftEarningsResponse> {
+    try {
+      const response = await api.get<ShiftEarningsResponse>(`/BranchShift/last-earnings/${branchId}`);
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching shift earnings:', error);
+      throw error;
+    }
+  }
+
 }
 
 
