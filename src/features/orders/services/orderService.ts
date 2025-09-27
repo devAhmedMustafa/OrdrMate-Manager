@@ -27,37 +27,9 @@ class OrderService {
     await api.put(`/Order/${orderId}/status`, { status: OrderStatus[status] });
   }
 
-  async markItemAsPrepared(branchId: string, kitchenName: string, kitchenUnitId: string): Promise<void> {
-    await api.post(`/Order/check-prepared/${branchId}/${kitchenName}/${kitchenUnitId}`);
-  }
-
-  async checkItemAsPrepared(
-    branchId: string,
-    kitchenName: string,
-    kitchenUnitId: string,
-    token: string
-  ): Promise<CheckPreparedResponse> {
-    const response = await api.post(`/Order/check-prepared/${branchId}/${kitchenName}/${kitchenUnitId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    return response.data;
-  }
-
   async getAllOrders(branchId: string): Promise<Order[]> {
     const response = await api.get(`/Order/list/${branchId}`);
-    return response.data.map((order: any) => ({
-      OrderId: order.orderId,
-      Items: [], // Items will be populated separately
-      Status: OrderStatus[order.orderStatus] || OrderStatus[OrderStatus.Pending],
-      IsBeingPrepared: false,
-      OrderType: order.orderType,
-      OrderDate: order.orderDate,
-      TotalAmount: order.totalAmount,
-      IsPaid: order.isPaid,
-      Customer: order.customer
-    }));
+    return response.data;
   }
 
   async getTakeawayOrders(branchId: string): Promise<any[]> {
@@ -80,6 +52,10 @@ class OrderService {
   async getOrderQueueByBranch(branchId: string): Promise<Order[]> {
     const response = await api.get(`/Order/branch-queue/${branchId}`);
     return response.data;
+  }
+
+  async confirmOrder(orderId: string): Promise<void> {
+    await api.put(`/Order/confirm-pending/${orderId}`);
   }
   
 }

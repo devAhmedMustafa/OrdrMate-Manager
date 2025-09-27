@@ -11,13 +11,10 @@ export enum OrderStatus {
 
 export interface OrderItem {
   orderId: string;
-  orderDate: string;
   itemId: string;
   price: number;
   quantity: number;
   item: MenuItem;
-  imageUrl?: string;
-  notes?: string;
 }
 
 export interface OrderStatusUpdate {
@@ -29,12 +26,12 @@ export interface Order {
   orderId: string;
   orderItems: OrderItem[];
   orderStatus: string;
-  orderType?: string;
-  orderDate?: string;
-  totalAmount?: number;
-  isPaid?: boolean;
-  customer?: string;
-  orderNumber?: number | null;
+  orderType: string;
+  orderDate: string;
+  totalAmount: number;
+  isPaid: boolean;
+  customer: string;
+  orderNumber: number | null;
 }
 
 export interface UnpaidOrder {

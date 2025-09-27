@@ -21,7 +21,7 @@ export const branchRequestService = {
   },
 
   approveBranchRequest: async (requestId: string): Promise<BranchCredentials> => {
-    const response = await api.post(`/Branch/${requestId}`);
+    const response = await api.post(`/Branch/request/approve/${requestId}`);
     return {
       username: response.data.branchManagerUsername,
       password: response.data.branchManagerPassword

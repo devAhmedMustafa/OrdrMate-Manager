@@ -4,9 +4,10 @@ import styles from './OrderCard.module.css';
 interface OrderCardProps {
   order: Order;
   onClick?: () => void;
+  onConfirmOrder?: (orderId: string) => void;
 }
 
-export function OrderCard({ order, onClick }: OrderCardProps) {
+export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
   const getStatusColor = (status: OrderStatus): string => {
     switch (status) {
       case OrderStatus.Pending:
@@ -21,6 +22,15 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
         return '#9E9E9E';
     }
   };
+
+  const handleConfirmOrder = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Prevent triggering the card's onClick
+    if (onConfirmOrder) {
+      onConfirmOrder(order.orderId);
+    }
+  };
+
+  const isPending = order.orderStatus === 'Pending';
 
   return (
     <div className={styles.card} onClick={onClick}>
@@ -44,9 +54,8 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
         <div className={styles.items}>
           {order.orderItems.map((item, index) => (
             <div key={index} className={styles.item}>
-              <span className={styles.quantity}>{item.quantity}x</span>
               <span className={styles.name}>{item.item.name}</span>
-              {item.notes && <span className={styles.notes}>{item.notes}</span>}
+              <span className={styles.quantity}>{item.quantity}x</span>
             </div>
           ))}
         </div>
@@ -75,6 +84,15 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
             </span>
           </div>
         </div>
+        
+        {isPending && onConfirmOrder && (
+          <button 
+            className={styles.confirmButton}
+            onClick={handleConfirmOrder}
+          >
+            Confirm Order
+          </button>
+        )}
       </div>
     </div>
   );

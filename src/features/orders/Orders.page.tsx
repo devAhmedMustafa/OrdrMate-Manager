@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { OrderCard } from './components/OrderCard';
-import { Order, UnpaidOrder, OrderItem } from './types';
+import { Order } from './types';
 import styles from './Orders.module.css';
 import useAuth from '../auth/useAuth.hook';
 import { orderService } from './services/orderService';
@@ -36,7 +36,7 @@ function Orders() {
 
       switch (message.Type) {
         case 'OrderPlaced':
-          handleOrderPlaced(message.OrderId as string, message.IsBeingPrepared as boolean);
+          // handleOrderPlaced(message.OrderId as string, message.IsBeingPrepared as boolean);
           break;
         case 'OrderReady':
           handleOrderReady(message.OrderId as string);
@@ -68,9 +68,9 @@ function Orders() {
     return () => clearInterval(interval);
   }, [branchId, token]);
 
-  const handleOrderPlaced = (orderId: string, isBeingPrepared: boolean) => {
+  // const handleOrderPlaced = (orderId: string, isBeingPrepared: boolean) => {
     
-  };
+  // };
 
   const handleOrderReady = (orderId: string) => {
     
@@ -84,22 +84,34 @@ function Orders() {
     );
   };
 
-  const handleMarkAsPaid = async (orderId: string) => {
+  // const handleMarkAsPaid = async (orderId: string) => {
+  //   if (!token) return;
+    
+  //   try {
+  //     await orderService.markAsPaid(orderId);
+  //   } catch (error) {
+  //     console.error('Error marking order as paid:', error);
+  //   }
+  // };
+
+  // const handleRequestPickup = async (orderId: string) => {
+  //   try {
+  //     await orderService.requestOrderPickup(orderId);
+  //     // fetchTakeawayOrders();
+  //   } catch (error) {
+  //     console.error('Error requesting order pickup:', error);
+  //   }
+  // };
+
+  const handleConfirmOrder = async (orderId: string) => {
     if (!token) return;
     
     try {
-      await orderService.markAsPaid(orderId);
+      await orderService.confirmOrder(orderId);
+      // Refresh orders after confirmation
+      await fetchOrders();
     } catch (error) {
-      console.error('Error marking order as paid:', error);
-    }
-  };
-
-  const handleRequestPickup = async (orderId: string) => {
-    try {
-      await orderService.requestOrderPickup(orderId);
-      // fetchTakeawayOrders();
-    } catch (error) {
-      console.error('Error requesting order pickup:', error);
+      console.error('Error confirming order:', error);
     }
   };
 
@@ -130,7 +142,8 @@ function Orders() {
               allOrders.map(order => (
                 <OrderCard
                   key={order.orderId} 
-                  order={order} 
+                  order={order}
+                  onConfirmOrder={handleConfirmOrder}
                 />
               ))
             )}
