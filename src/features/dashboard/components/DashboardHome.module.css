@@ -22,6 +22,87 @@
   color: #482bb0;
 }
 
+.shiftContainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: white;
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  border: 1px solid #e2dbfc;
+}
+
+.shiftStatus {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.statusIndicator {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-weight: 600;
+  font-size: 1.1rem;
+}
+
+.statusIndicator.active {
+  color: #22c55e;
+}
+
+.statusIndicator.inactive {
+  color: #6b7280;
+}
+
+.shiftTime {
+  font-size: 0.875rem;
+  color: #6b7280;
+  margin-left: 1.25rem;
+}
+
+.shiftButton {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.shiftButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.shiftButton.startShift {
+  background: #22c55e;
+  color: white;
+}
+
+.shiftButton.startShift:hover:not(:disabled) {
+  background: #16a34a;
+  transform: translateY(-1px);
+}
+
+.shiftButton.endShift {
+  background: #ef4444;
+  color: white;
+}
+
+.shiftButton.endShift:hover:not(:disabled) {
+  background: #dc2626;
+  transform: translateY(-1px);
+}
+
+.buttonIcon {
+  font-size: 1.2rem;
+}
+
 .grid {
   display: grid;
   grid-template-columns: repeat(2, 1fr);

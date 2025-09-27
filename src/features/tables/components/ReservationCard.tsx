@@ -1,12 +1,12 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { OrderStatus, ReservationOrder, TableReservation, tableService } from "../services/tableService";
 import { Icon } from '@iconify/react';
 import useAuth from "../../auth/useAuth.hook";
 import OrderCustomization from "../../customizations/models/OrderCustomization.Model";
 import { customizationService } from "../../customizations";
-
-import { useRef } from "react";
 import styles from '../Tables.module.css';
+import { useTableContext } from '../context/TableContext';
+import { printOrderInvoice, printOrderItems } from "../../orders/utils/printOrder";
 
 interface ReservationCardProps {
   index: number;
@@ -17,6 +17,7 @@ interface ReservationCardProps {
 
 export default function ReservationCard({index, reservation, onDragStart, onDragEnd}: ReservationCardProps) {
   const dragRef = useRef<HTMLDivElement>(null);
+  const { updateReservationInQueue } = useTableContext();
 
   // Drag event handlers for moving reservation to another table
   const handleDragStart = (e: React.DragEvent) => {
@@ -70,7 +71,27 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
   async function handleSetOrderReady(){
     if(reservationOrder && reservationOrder.orderId){
       await tableService.setOrdersAsReady(reservation.reservationId);
-      // setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
+      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
+      // Update the reservation in the table queue context
+      updateReservationInQueue(reservation.tableNumber, reservation.reservationId, {
+        orderStatus: OrderStatus.Ready
+      });
+    }
+  }
+
+  async function handlePayOrder(){
+    if(reservationOrder && reservationOrder.orderId){
+      const order = await tableService.payOrders(reservation.reservationId);
+      printOrderInvoice(order);
+      setReservationOrder({...reservationOrder, isPaid: true});
+    }
+  }
+
+  async function handlePushToKitchen(){
+    if(reservationOrder && reservationOrder.orderId){
+      const orderItems = await tableService.pushToKitchen(reservation.reservationId);
+      printOrderItems(orderItems);
+      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.InProgress});
     }
   }
 
@@ -177,14 +198,18 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
         {/* Confirm table if status is waiting  */}
         {(reservation.reservationStatus.toLowerCase() === 'waiting') && (
+
           <div className="bg-emerald-400 text-white size-7 flex justify-center items-center rounded-full cursor-pointer hover:bg-emerald-600 transition ml-3" title="Confirm Reservation">
+
             <button className="w-fit" onClick={async()=> {
               await tableService.confirmTableReservation(branchId!, reservation.tableNumber);
-              window.location.reload();
+              updateReservationInQueue(reservation.tableNumber, reservation.reservationId, { reservationStatus: 'Seated' });
             }}>
               <Icon icon="mdi:check" style={{ fontSize: 15 }} />
             </button>
+            
           </div>
+
         )}
       </div>
 
@@ -245,11 +270,30 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       )
       }
 
+      {/* Pay Order Button */}
+      {(reservation.reservationId && reservationOrder?.isPaid === false) && (
+        <div className="bg-blue-500 text-white p-3 rounded-b-lg cursor-pointer hover:bg-blue-700 transition">
+          <button className="w-full flex justify-center items-center" onClick={handlePayOrder}>
+            <Icon icon="mdi:currency-usd" style={{ fontSize: 15, marginLeft: 5 }} />
+            <span className="ml-2">Mark as Paid</span>
+          </button>
+        </div>
+      )}
+
       {/* Confirm Button */}
-      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
+      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.InProgress) && (
         <div className="bg-emerald-400 text-white p-3 rounded-b-lg cursor-pointer hover:bg-emerald-600 transition">
           <button className="w-full" onClick={handleSetOrderReady}>
             <Icon icon="mdi:check" style={{ fontSize: 15, marginLeft: 5 }} />
+          </button>
+        </div>
+      )}
+
+      {/* Push to Kitchen Button */}
+      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
+        <div className="bg-amber-400 text-white p-3 rounded-b-lg cursor-pointer hover:bg-amber-600 transition">
+          <button className="w-full" onClick={handlePushToKitchen}>
+            <Icon icon="mdi:kitchen" style={{ fontSize: 15, marginLeft: 5 }} />
           </button>
         </div>
       )}

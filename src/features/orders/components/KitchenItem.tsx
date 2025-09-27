@@ -1,8 +1,8 @@
-import { OrderItem } from '../types';
 import styles from './KitchenItem.module.css';
 import { useEffect, useState } from 'react';
 import useAuth from '../../auth/useAuth.hook';
 import { uploadService } from '../../items/services/uploadService';
+import OrderItem from '../models/OrderItem';
 
 interface KitchenItemProps {
   item: OrderItem;
@@ -15,10 +15,10 @@ export function KitchenItem({ item, isCurrent }: KitchenItemProps) {
 
   useEffect(() => {
     const fetchPresignedUrl = async () => {
-      if (!item.ImageUrl || !token) return;
+      if (!item.item.imageUrl || !token) return;
 
       try {
-        const presignedUrl = await uploadService.getViewPresignedUrl(item.ImageUrl);
+        const presignedUrl = await uploadService.getViewPresignedUrl(item.item.imageUrl);
         setImageUrl(presignedUrl);
       } catch (err) {
         console.error('Error fetching presigned URL:', err);
@@ -26,7 +26,7 @@ export function KitchenItem({ item, isCurrent }: KitchenItemProps) {
     };
 
     fetchPresignedUrl();
-  }, [item.ImageUrl, token]);
+  }, [item.item.imageUrl, token]);
 
   return (
     <div className={`${styles.item} ${isCurrent ? styles.current : ''}`}>
@@ -35,7 +35,7 @@ export function KitchenItem({ item, isCurrent }: KitchenItemProps) {
           <div className={styles.imageContainer}>
             <img 
               src={imageUrl} 
-              alt={item.ItemName} 
+              alt={item.item.name} 
               className={styles.itemImage}
               onError={(e) => {
                 const target = e.target as HTMLImageElement;
@@ -47,14 +47,9 @@ export function KitchenItem({ item, isCurrent }: KitchenItemProps) {
 
         <div className={styles.details}>
           <div className={styles.header}>
-            <h3 className={styles.name}>{item.ItemName}</h3>
-            <span className={styles.quantity}>x{item.Quantity}</span>
+            <h3 className={styles.name}>{item.item.name}</h3>
+            <span className={styles.quantity}>x{item.quantity}</span>
           </div>
-          {item.Notes && (
-            <p className={styles.notes}>
-              <span className={styles.notesLabel}>Notes:</span> {item.Notes}
-            </p>
-          )}
         </div>
       </div>
     </div>

@@ -1,192 +1,63 @@
-import { useEffect, useState, useRef } from 'react';
-// Type for drag state
-type DraggedReservation = {
-  reservation: TableReservation;
-  offsetX: number;
-  offsetY: number;
-};
-import { TableReservation, OrderStatus, tableService } from './services/tableService';
+import { useState } from 'react';
 import { TableQueue } from './components/TableQueue';
 import styles from './Tables.module.css';
-import useAuth from '../auth/useAuth.hook';
 import { Icon } from '@iconify/react';
-import { websocketService } from '../dashboard/services/websocketService';
-import Table from './models/Table';
-import ReservationNotification from './dtos/ReservationNotification';
+import { TableProvider, useTableContext } from './context/TableContext';
 
-export function Tables() {
-  const [tables, setTables] = useState<Table[]>([]);
-  const [selectedTable, setSelectedTable] = useState<number | null>(null);
-  const [tableQueues, setTableQueues] = useState<Record<number, TableReservation[]>>({});
+const TablesContent = () => {
+  const {
+    tables,
+    selectedTable,
+    tableQueues,
+    draggedReservation,
+    dragPreviewPos,
+    dragOverTableNumber,
+    setSelectedTable,
+    setDraggedReservation,
+    setDragOverTableNumber,
+    moveReservation,
+    refreshTableQueue,
+    freezeTable,
+    unfreezeTable,
+    createTable
+  } = useTableContext();
+
   const [isAdding, setIsAdding] = useState(false);
   const [newTable, setNewTable] = useState({ tableNumber: '', seats: '' });
-  const { branchId, token } = useAuth();
-
-  // Custom drag layer state
-  const [draggedReservation, setDraggedReservation] = useState<DraggedReservation | null>(null);
-  const [dragPreviewPos, setDragPreviewPos] = useState<{x: number, y: number}>({x: 0, y: 0});
-  const dragLayerRef = useRef<HTMLDivElement>(null);
-  // Mousemove handler for drag preview
-  useEffect(() => {
-    if (!draggedReservation) return;
-    const handleMouseMove = (e: MouseEvent) => {
-      setDragPreviewPos({
-        x: e.clientX - draggedReservation.offsetX,
-        y: e.clientY - draggedReservation.offsetY
-      });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, [draggedReservation]);
-
-  useEffect(() => {
-    if (!branchId || !token) return;
-
-    const fetchTables = async () => {
-      try {
-        const data = await tableService.getTables(branchId);
-        setTables(data);
-      } catch (error) {
-        console.error('Error fetching tables:', error);
-      }
-    };
-
-    fetchTables();
-  }, [branchId, token]);
-
-  useEffect(() => {
-    if (!branchId || !token || !selectedTable) return;
-
-    const fetchTableQueue = async () => {
-      try {
-        const data = await tableService.getTableQueue(branchId, selectedTable);
-        setTableQueues(prev => ({
-          ...prev,
-          [selectedTable]: data
-        }));
-      } catch (error) {
-        console.error('Error fetching table queue:', error);
-      }
-    };
-
-    fetchTableQueue();
-    const interval = setInterval(fetchTableQueue, 30000); // Refresh every 30 seconds
-
-    return () => clearInterval(interval);
-  }, [branchId, token, selectedTable]);
-
-  useEffect(() => {
-    // Subscribe to WebSocket messages
-    const handleMessage = (message: any) => {
-      if (!message.Type) return;
-
-      if (message.Type === 'TableReserved') {
-
-        const msg = message as ReservationNotification;
-
-        const reservation: TableReservation = {
-          reservationId: msg.Reservation.ReservationId,
-          tableNumber: msg.Reservation.TableNumber,
-          customerName: msg.Reservation.CustomerName,
-          reservationDate: msg.Reservation.ReservationDate,
-          reservationStatus: msg.Reservation.ReservationStatus,
-          orderId: msg.Reservation.OrderId,
-          orderStatus: msg.Reservation.OrderStatus
-        };
-
-        setTableQueues(prev => ({
-          ...prev,
-          [reservation.tableNumber]: [
-            ...(prev[reservation.tableNumber] || []),
-            reservation
-          ]
-        }));
-
-        setTables(prevTables => prevTables.map(t => 
-          t.tableNumber === reservation.tableNumber 
-            ? { ...t, reservationCount: (t.reservationCount || 0) + 1 } 
-            : t
-        ));
-      } else if (message.Type === 'OrderReady') {
-        const orderId = message.OrderId;
-        
-        setTableQueues(prev => {
-          const newQueues = { ...prev };
-          Object.keys(newQueues).forEach(tableNumber => {
-            const reservations = newQueues[parseInt(tableNumber)];
-            const reservationIndex = reservations.findIndex(r => r.orderId === orderId);
-            if (reservationIndex !== -1) {
-              newQueues[parseInt(tableNumber)][reservationIndex] = {
-                ...reservations[reservationIndex],
-                orderStatus: OrderStatus.Ready
-              };
-            }
-          });
-          return newQueues;
-        });
-      }
-    };
-
-    websocketService.on('message', handleMessage);
-
-    return () => {
-      websocketService.off('message', handleMessage);
-    };
-  }, []);
 
   const handleAddTable = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!branchId || !token) return;
     
     try {
-      await tableService.createTable({
-        tableNumber: parseInt(newTable.tableNumber),
-        seats: parseInt(newTable.seats),
-        branchId
-      });
+      await createTable(parseInt(newTable.tableNumber), parseInt(newTable.seats));
       setNewTable({ tableNumber: '', seats: '' });
       setIsAdding(false);
-      // Refresh tables list
-      const data = await tableService.getTables(branchId);
-      setTables(data);
     } catch (error) {
       console.error('Error adding table:', error);
     }
   };
 
   const handleDequeue = async () => {
-    if (!branchId || !token || !selectedTable) return;
+    if (!selectedTable) return;
     
     try {
-      const data = await tableService.getTableQueue(branchId, selectedTable);
-      setTableQueues(prev => ({
-        ...prev,
-        [selectedTable]: data
-      }));
+      await refreshTableQueue(selectedTable);
     } catch (error) {
       console.error('Error refreshing table queue:', error);
     }
   };
 
-  const handleToggleFreeze = async (table: Table) => {
-    if (!branchId || !token) return;
-
+  const handleToggleFreeze = async (table: any) => {
     try {
       if (table.isFrozen) {
-        await tableService.unfreezeTable(branchId, table.tableNumber);
+        await unfreezeTable(table.tableNumber);
       } else {
-        await tableService.freezeTable(branchId, table.tableNumber);
+        await freezeTable(table.tableNumber);
       }
-      // Refresh tables
-      const data = await tableService.getTables(branchId);
-      setTables(data);
     } catch (error) {
       console.error('Error toggling table freeze:', error);
     }
   };
-
-  // Track which table is being dragged over for visual feedback
-  const [dragOverTableNumber, setDragOverTableNumber] = useState<number | null>(null);
 
   return (
     <div className={styles.container}>
@@ -253,19 +124,10 @@ export function Tables() {
               const { reservation } = draggedReservation;
               if (reservation.tableNumber === table.tableNumber) return;
 
-              await tableService.moveReservation(reservation.reservationId, table.tableNumber);
-
-              if (branchId) {
-                const [oldQueue, newQueue] = await Promise.all([
-                  tableService.getTableQueue(branchId, reservation.tableNumber),
-                  tableService.getTableQueue(branchId, table.tableNumber)
-                ]);
-                setTableQueues(prev => ({
-                  ...prev,
-                  [reservation.tableNumber]: oldQueue,
-                  [table.tableNumber]: newQueue
-                }));
-                setSelectedTable(table.tableNumber);
+              try {
+                await moveReservation(reservation.reservationId, table.tableNumber, reservation.tableNumber);
+              } catch (error) {
+                console.error('Error moving reservation:', error);
               }
               setDraggedReservation(null);
             };
@@ -328,7 +190,6 @@ export function Tables() {
       {/* Custom drag preview layer */}
       {draggedReservation && (
         <div
-          ref={dragLayerRef}
           style={{
             position: 'fixed',
             left: dragPreviewPos.x,
@@ -372,5 +233,13 @@ export function Tables() {
         </div>
       </div>
     </div>
+  );
+};
+
+export function Tables() {
+  return (
+    <TableProvider>
+      <TablesContent />
+    </TableProvider>
   );
 } 

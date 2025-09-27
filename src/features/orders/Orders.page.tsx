@@ -2,12 +2,14 @@ import { useEffect, useState, useMemo } from 'react';
 // import { KitchenQueue } from './components/KitchenQueue';
 import { OrderCard } from './components/OrderCard';
 import { UnpaidOrders } from './components/UnpaidOrders';
-import { Order, UnpaidOrder, OrderItem } from './types';
+import { UnpaidOrder } from './types';
 import styles from './Orders.module.css';
 import useAuth from '../auth/useAuth.hook';
 import { orderService } from './services/orderService';
 import { websocketService } from '../dashboard/services/websocketService';
 import TakeawayOrders from './components/TakeawayOrders';
+import Order from './models/Order';
+// import OrderItem from './models/OrderItem';
 
 type Tab = 'orders' | 'unpaid' | 'takeaway' | string;
 
@@ -107,7 +109,7 @@ function Orders() {
 
       switch (message.Type) {
         case 'NewItem':
-          handleNewItem(message.Item as OrderItem);
+          // handleNewItem(message.Item as OrderItem);
           break;
         case 'OrderPlaced':
           // handleOrderPlaced(message.OrderId as string, message.IsBeingPrepared as boolean);
@@ -148,10 +150,10 @@ function Orders() {
 
 
 
-  const handleNewItem = (item: OrderItem) => {
-    if (!item.KitchenName) {
-      return;
-    }
+  // const handleNewItem = (item: OrderItem) => {
+    // if (!item.KitchenName) {
+    //   return;
+    // }
 
     // setKitchenQueues(prev => {
     //   const newQueues = { ...prev };
@@ -180,7 +182,7 @@ function Orders() {
 
     //   return newQueues;
     // });
-  };
+  // };
 
   // const handleOrderPlaced = (orderId: string, isBeingPrepared: boolean) => {
     // setKitchenQueues(prev => {
@@ -227,7 +229,7 @@ function Orders() {
     // Update all orders
     setAllOrders(prev => 
       prev.map(order => 
-        order.OrderId === orderId 
+        order.orderId === orderId 
           ? { ...order, Status: 'Ready' }
           : order
       )
@@ -274,7 +276,7 @@ function Orders() {
     // Filter by date range
     if (filters.dateFrom) {
       filtered = filtered.filter(order => {
-        const orderDate = order.OrderDate || order.Items[0]?.OrderDate;
+        const orderDate = order.orderDate;
         if (!orderDate) return false;
         try {
           const date = new Date(orderDate);
@@ -288,7 +290,7 @@ function Orders() {
 
     if (filters.dateTo) {
       filtered = filtered.filter(order => {
-        const orderDate = order.OrderDate || order.Items[0]?.OrderDate;
+        const orderDate = order.orderDate;
         if (!orderDate) return false;
         try {
           const date = new Date(orderDate);
@@ -305,14 +307,14 @@ function Orders() {
     // Filter by status
     if (filters.status) {
       filtered = filtered.filter(order => 
-        order.Status && order.Status.toLowerCase() === filters.status.toLowerCase()
+        order.orderStatus && order.orderStatus.toLowerCase() === filters.status.toLowerCase()
       );
     }
 
     // Filter by order type
     if (filters.orderType) {
       filtered = filtered.filter(order => 
-        order.OrderType && order.OrderType.toLowerCase() === filters.orderType.toLowerCase()
+        order.orderType && order.orderType.toLowerCase() === filters.orderType.toLowerCase()
       );
     }
 
@@ -321,10 +323,10 @@ function Orders() {
       const isPaidFilter = filters.isPaid === 'paid';
       filtered = filtered.filter(order => {
         // Handle cases where IsPaid might be undefined
-        if (order.IsPaid === undefined || order.IsPaid === null) {
+        if (order.isPaid === undefined || order.isPaid === null) {
           return !isPaidFilter; // Treat undefined/null as unpaid
         }
-        return order.IsPaid === isPaidFilter;
+        return order.isPaid === isPaidFilter;
       });
     }
 
@@ -361,7 +363,7 @@ function Orders() {
     }
   };
 
-  const getUniqueValues = (key: 'Status' | 'OrderType') => {
+  const getUniqueValues = (key: 'orderStatus' | 'orderType') => {
     const values = allOrders.map(order => order[key]).filter(Boolean);
     return [...new Set(values)];
   };
@@ -466,7 +468,7 @@ function Orders() {
                 className={styles.filterInput}
               >
                 <option value="">All Statuses</option>
-                {getUniqueValues('Status').map(status => (
+                {getUniqueValues('orderStatus').map(status => (
                   <option key={status} value={status}>{status}</option>
                 ))}
               </select>
@@ -480,7 +482,7 @@ function Orders() {
                 className={styles.filterInput}
               >
                 <option value="">All Types</option>
-                {getUniqueValues('OrderType').map(type => (
+                {getUniqueValues('orderType').map(type => (
                   <option key={type} value={type}>{type}</option>
                 ))}
               </select>
@@ -646,7 +648,7 @@ function Orders() {
               ) : (
                 filteredOrders.map(order => (
                   <OrderCard 
-                    key={order.OrderId} 
+                    key={order.orderId} 
                     order={order} 
                   />
                 ))

@@ -1,3 +1,6 @@
+import Order from "./models/Order";
+import OrderItem from "./models/OrderItem";
+
 export enum OrderStatus {
   Pending = 0,
   Queued = 1,
@@ -7,38 +10,36 @@ export enum OrderStatus {
   Cancelled = -1
 }
 
-export interface OrderItem {
-  OrderId: string;
-  OrderDate: string;
-  ItemName: string;
-  KitchenName: string;
-  ItemId: string;
-  KitchenUnitId: string;
-  Price: number;
-  Quantity: number;
-  ImageUrl?: string;
-  Notes?: string;
-}
+// export interface OrderItem {
+//   OrderId: string;
+//   OrderDate: string;
+//   ItemName: string;
+//   KitchenName: string;
+//   ItemId: string;
+//   KitchenUnitId: string;
+//   Price: number;
+//   Quantity: number;
+//   ImageUrl?: string;
+//   Notes?: string;
+// }
 
 export interface OrderStatusUpdate {
   OrderId: string;
   OrderStatus: OrderStatus;
 }
 
-export interface Order {
-  OrderId: string;
-  Items: OrderItem[];
-  Status: string;
-  IsBeingPrepared: boolean;
-  NextItem?: OrderItem;
-  OrderType?: string;
-  OrderDate?: string;
-  TotalAmount?: number;
-  IsPaid?: boolean;
-  Customer?: string;
-  orderNumber?: number | null;
-  tableNumber?: number | null;
-}
+// export interface Order {
+//   OrderId: string;
+//   Items: OrderItem[];
+//   Status: string;
+//   OrderType: string;
+//   OrderDate: string;
+//   TotalAmount: number;
+//   IsPaid: boolean;
+//   Customer: string;
+//   orderNumber?: number | null;
+//   tableNumber?: number | null;
+// }
 
 export interface KitchenQueue {
   KitchenName: string;

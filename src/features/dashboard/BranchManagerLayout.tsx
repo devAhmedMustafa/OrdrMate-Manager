@@ -31,6 +31,7 @@ export function BranchManagerLayout() {
     { path: '/branch/kitchen-power', label: 'Kitchen Power', icon: 'mdi:power-socket' },
     { path: '/branch/settings', label: 'Settings', icon: 'mdi:cog' },
     { path: '/branch/attendance', label: 'Attendance Code', icon: 'mdi:barcode' },
+    { path: '/branch/analytics', label: 'Analytics', icon: 'mdi:chart-bar' },
   ];
 
   return (

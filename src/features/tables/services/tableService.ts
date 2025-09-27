@@ -1,11 +1,13 @@
 import api from '../../../utils/api';
-import { MenuItem } from '../../items/services/itemService';
+import Order from '../../orders/models/Order';
+import OrderItem from '../../orders/models/OrderItem';
 import CreateTableRequest from '../dtos/CreateTableRequest.dto';
 import TableResponse from '../dtos/TableResponse.dto';
 
 export enum OrderStatus {
   Pending = 'Pending',
   Queued = 'Queued',
+  InProgress = 'InProgress',
   Ready = 'Ready',
   Delivered = 'Delivered'
 }
@@ -20,11 +22,7 @@ export interface TableReservation {
   orderStatus: OrderStatus;
 }
 
-export interface ReservationOrder {
-  orderId: string;
-  orderStatus: OrderStatus;
-  orderItems: { itemId: string; item: MenuItem; quantity: number }[];
-}
+export interface ReservationOrder extends Order {}
 
 class TableService {
   async getTables(branchId: string): Promise<TableResponse[]> {
@@ -59,7 +57,7 @@ class TableService {
     if (response.status != 200) {
       return null;
     }
-
+    
     return response.data;
   }
 
@@ -83,7 +81,17 @@ class TableService {
   }
 
   async setOrdersAsReady(reservationId: string): Promise<void> {
-    await api.put(`/Table/orders/set-as-ready/${reservationId}`);
+    await api.put(`/Table/order/set-ready/${reservationId}`);
+  }
+
+  async payOrders(reservationId: string): Promise<Order> {
+    const response = await api.put(`/Table/order/pay/${reservationId}`);
+    return response.data;
+  }
+
+  async pushToKitchen(reservationId: string): Promise<OrderItem[]> {
+    const response = await api.put<{orderItems: OrderItem[]}>(`/TableReservation/push-to-kitchen/${reservationId}`);
+    return response.data.orderItems;
   }
 
 }

@@ -1,25 +1,22 @@
-import { TableReservation, tableService } from '../services/tableService';
 import styles from './TableQueue.module.css';
 import { Icon } from '@iconify/react';
-import useAuth from '../../auth/useAuth.hook';
 import ReservationCard from './ReservationCard';
+import { useTableContext } from '../context/TableContext';
 
 interface TableQueueProps {
   tableNumber: number;
-  reservations: TableReservation[];
+  reservations: any[];
   onDequeue?: () => void;
-  onReservationDragStart?: (reservation: TableReservation, e: React.DragEvent) => void;
+  onReservationDragStart?: (reservation: any, e: React.DragEvent) => void;
   onReservationDragEnd?: () => void;
 }
 
 export function TableQueue({ tableNumber, reservations, onDequeue, onReservationDragStart, onReservationDragEnd }: TableQueueProps) {
-  const { branchId, token } = useAuth();
+  const { dequeueTable } = useTableContext();
 
   const handleDequeue = async () => {
-    if (!branchId || !token) return;
-    
     try {
-      await tableService.dequeueTable(branchId, tableNumber);
+      await dequeueTable(tableNumber);
       if (onDequeue) {
         onDequeue();
       }
