@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
-import { Order } from '../../orders/types';
+import Order from '../../orders/models/Order';
 import { TableReservation } from '../../tables/services/tableService';
 import { orderService } from '../../orders/services/orderService';
 import { tableService } from '../../tables/services/tableService';
 import { uploadService } from '../../items/services/uploadService';
 import { balanceService, Balance } from '../services/balanceService';
+import { ShiftResponse, shiftService, ShiftStatus } from '../services/shiftService';
 import useAuth from '../../auth/useAuth.hook';
 import styles from './DashboardHome.module.css';
 import { Icon } from '@iconify/react';
@@ -16,6 +17,8 @@ export default function DashboardHome() {
   const [tables, setTables] = useState<Table[]>([]);
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});
   const [balance, setBalance] = useState<Balance | null>(null);
+  const [shiftStatus, setShiftStatus] = useState<ShiftResponse | null>(null);
+  const [isShiftLoading, setIsShiftLoading] = useState(false);
   const { branchId, token } = useAuth();
 
   useEffect(() => {
@@ -28,11 +31,11 @@ export default function DashboardHome() {
         const urls: Record<string, string> = {};
         for (const orders of Object.values(queues)) {
           for (const order of orders) {
-            for (const item of order.Items) {
-              if (item.ImageUrl && !urls[item.ImageUrl]) {
+            for (const orderItem of order.orderItems) {
+              if (orderItem.item.imageUrl && !urls[orderItem.item.imageUrl]) {
                 try {
-                  const presignedUrl = await uploadService.getViewPresignedUrl(item.ImageUrl);
-                  urls[item.ImageUrl] = presignedUrl;
+                  const presignedUrl = await uploadService.getViewPresignedUrl(orderItem.item.imageUrl);
+                  urls[orderItem.item.imageUrl] = presignedUrl;
                 } catch (error) {
                   console.error('Error fetching presigned URL:', error);
                 }
@@ -75,16 +78,27 @@ export default function DashboardHome() {
       }
     };
 
+    const fetchShiftStatus = async () => {
+      try {
+        const status = await shiftService.getShiftStatus(branchId);
+        setShiftStatus(status);
+      } catch (error) {
+        console.error('Error fetching shift status:', error);
+      }
+    };
+
     // Initial fetch
     fetchKitchenQueues();
     fetchTablesAndQueues();
     fetchBalance();
+    fetchShiftStatus();
 
     // Set up interval for periodic refresh
     const interval = setInterval(() => {
       fetchKitchenQueues();
       fetchTablesAndQueues();
       fetchBalance();
+      fetchShiftStatus();
     }, 30000);
 
     return () => clearInterval(interval);
@@ -103,8 +117,79 @@ export default function DashboardHome() {
     }
   };
 
+  const handleStartShift = async () => {
+    if (!branchId) return;
+    
+    setIsShiftLoading(true);
+    try {
+      const result = await shiftService.startShift(branchId);
+      setShiftStatus(result);
+      alert('Shift started successfully!');
+    } catch (error) {
+      console.error('Error starting shift:', error);
+      alert('Error starting shift. Please try again.');
+    } finally {
+      setIsShiftLoading(false);
+    }
+  };
+
+  const handleEndShift = async () => {
+    if (!branchId) return;
+    
+    if (!confirm('Are you sure you want to end the current shift?')) {
+      return;
+    }
+    
+    setIsShiftLoading(true);
+    try {
+
+        const result = await shiftService.endShift(branchId);
+        setShiftStatus(result);
+        alert('Shift ended successfully!');
+
+    } catch (error) {
+      console.error('Error ending shift:', error);
+      alert('Error ending shift. Please try again.');
+    } finally {
+      setIsShiftLoading(false);
+    }
+  };
+
   return (
     <div className={styles.container}>
+      <div className={styles.section}>
+        <h2 className={styles.sectionTitle}>
+          <Icon icon="mdi:clock-time-eight-outline" className={styles.sectionIcon} />
+          Shift Management
+        </h2>
+        <div className={styles.shiftContainer}>
+          <div className={styles.shiftStatus}>
+            <span className={`${styles.statusIndicator} ${shiftStatus?.status === ShiftStatus.Started ? styles.active : styles.inactive}`}>
+              <Icon icon={shiftStatus?.status === ShiftStatus.Started ? "mdi:circle" : "mdi:circle-outline"} />
+              {shiftStatus?.status === ShiftStatus.Started ? 'Shift Active' : 'Shift Inactive'}
+            </span>
+            {shiftStatus?.status === ShiftStatus.Started && shiftStatus?.shiftStartTime && (
+              <span className={styles.shiftTime}>
+                Started: {new Date(shiftStatus.shiftStartTime).toLocaleTimeString()}
+              </span>
+            )}
+          </div>
+          <button
+            className={`${styles.shiftButton} ${shiftStatus?.status === ShiftStatus.Started ? styles.endShift : styles.startShift}`}
+            onClick={shiftStatus?.status === ShiftStatus.Started ? handleEndShift : handleStartShift}
+            disabled={isShiftLoading}
+          >
+            <Icon icon={shiftStatus?.status === ShiftStatus.Started ? "mdi:stop-circle" : "mdi:play-circle"} className={styles.buttonIcon} />
+            {isShiftLoading
+              ? 'Processing...'
+              : shiftStatus?.status === ShiftStatus.Started
+                ? 'End Shift'
+                : 'Start Shift'
+            }
+          </button>
+        </div>
+      </div>
+
       <div className={styles.section}>
         <h2 className={styles.sectionTitle}>
           <Icon icon="mdi:cash-multiple" className={styles.sectionIcon} />
@@ -141,7 +226,7 @@ export default function DashboardHome() {
           {Object.entries(kitchenQueues).map(([kitchenName, orders]) => {
             // Get all items for this kitchen
             const allItems = orders.reduce((items: any[], order) => {
-              return [...items, ...order.Items];
+              return [...items, ...order.orderItems];
             }, []);
 
             // Group items by kitchen unit
