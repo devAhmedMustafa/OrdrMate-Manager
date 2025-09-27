@@ -54,6 +54,21 @@ class ShiftService {
       throw error;
     }
   }
+
+  async downloadShiftOrdersCSV(shiftId: string): Promise<Blob> {
+    try {
+      const response = await api.get(`/BranchShift/${shiftId}/orders/csv`, {
+        responseType: 'blob',
+        headers: {
+          'Accept': 'text/csv,application/octet-stream'
+        }
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error downloading shift orders CSV:', error);
+      throw error;
+    }
+  }
 }
 
 

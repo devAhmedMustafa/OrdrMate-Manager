@@ -10,6 +10,7 @@ export default function WorkShifts() {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [refreshing, setRefreshing] = useState(false);
+    const [downloadingShifts, setDownloadingShifts] = useState<Set<string>>(new Set());
 
     const fetchShifts = async (isRefresh = false) => {
         if (!branchId) return;
@@ -37,6 +38,40 @@ export default function WorkShifts() {
 
     const handleRefresh = () => {
         fetchShifts(true);
+    };
+
+    const handleDownloadCSV = async (shiftId: string, shiftDate: string) => {
+        try {
+            setDownloadingShifts(prev => new Set(prev).add(shiftId));
+            
+            const csvBlob = await shiftService.downloadShiftOrdersCSV(shiftId);
+            
+            const url = window.URL.createObjectURL(csvBlob);
+            const link = document.createElement('a');
+            link.href = url;
+            
+            // Format filename with date
+            const formattedDate = new Date(shiftDate).toISOString().split('T')[0];
+            link.download = `shift-orders-${formattedDate}-${shiftId.substring(0, 8)}.csv`;
+            
+            // Trigger download
+            document.body.appendChild(link);
+            link.click();
+            
+            // Cleanup
+            document.body.removeChild(link);
+            window.URL.revokeObjectURL(url);
+            
+        } catch (error) {
+            console.error('Error downloading CSV:', error);
+            alert('Failed to download CSV file. Please try again.');
+        } finally {
+            setDownloadingShifts(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(shiftId);
+                return newSet;
+            });
+        }
     };
 
     useEffect(() => {
@@ -252,13 +287,53 @@ export default function WorkShifts() {
                                     <Icon icon={getStatusIcon(shift.status)} />
                                     {getStatusText(shift.status)}
                                 </span>
-                                <span style={{
-                                    fontSize: '0.875rem',
-                                    color: '#6b7280',
-                                    fontWeight: '500'
-                                }}>
-                                    {formatDate(shift.shiftStartTime)}
-                                </span>
+                                <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                                    <button
+                                        onClick={() => handleDownloadCSV(shift.id, shift.shiftStartTime)}
+                                        disabled={downloadingShifts.has(shift.id)}
+                                        title={downloadingShifts.has(shift.id) ? 'Downloading orders...' : 'Download shift orders as CSV'}
+                                        style={{
+                                            display: 'flex',
+                                            alignItems: 'center',
+                                            gap: '0.25rem',
+                                            padding: '0.375rem 0.75rem',
+                                            fontSize: '0.75rem',
+                                            fontWeight: '500',
+                                            background: downloadingShifts.has(shift.id) ? '#f3f4f6' : '#482bb0',
+                                            color: downloadingShifts.has(shift.id) ? '#6b7280' : 'white',
+                                            border: 'none',
+                                            borderRadius: '6px',
+                                            cursor: downloadingShifts.has(shift.id) ? 'not-allowed' : 'pointer',
+                                            transition: 'all 0.2s ease'
+                                        }}
+                                        onMouseEnter={(e) => {
+                                            if (!downloadingShifts.has(shift.id)) {
+                                                e.currentTarget.style.background = '#3d1a78';
+                                            }
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            if (!downloadingShifts.has(shift.id)) {
+                                                e.currentTarget.style.background = '#482bb0';
+                                            }
+                                        }}
+                                    >
+                                        <Icon 
+                                            icon={downloadingShifts.has(shift.id) ? "mdi:loading" : "mdi:download"} 
+                                            style={{ 
+                                                fontSize: '0.875rem',
+                                                animation: downloadingShifts.has(shift.id) ? 'spin 1s linear infinite' : 'none'
+                                            }}
+                                        />
+                                        {downloadingShifts.has(shift.id) ? 'Downloading...' : 'CSV'}
+                                    </button>
+                                    <span style={{
+                                        fontSize: '0.875rem',
+                                        color: '#6b7280',
+                                        fontWeight: '500'
+                                    }}>
+                                        {formatDate(shift.shiftStartTime)}
+                                    </span>
+                                </div>
                             </div>
 
                             {/* Shift details */}
