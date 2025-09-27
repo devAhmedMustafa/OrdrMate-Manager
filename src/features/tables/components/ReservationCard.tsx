@@ -87,6 +87,13 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
     }
   }
 
+  async function handlePushToKitchen(){
+    if(reservationOrder && reservationOrder.orderId){
+      await tableService.pushToKitchen(reservation.reservationId);
+      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.InProgress});
+    }
+  }
+
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case 'seated':
@@ -273,10 +280,19 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       )}
 
       {/* Confirm Button */}
-      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
+      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.InProgress) && (
         <div className="bg-emerald-400 text-white p-3 rounded-b-lg cursor-pointer hover:bg-emerald-600 transition">
           <button className="w-full" onClick={handleSetOrderReady}>
             <Icon icon="mdi:check" style={{ fontSize: 15, marginLeft: 5 }} />
+          </button>
+        </div>
+      )}
+
+      {/* Push to Kitchen Button */}
+      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
+        <div className="bg-amber-400 text-white p-3 rounded-b-lg cursor-pointer hover:bg-amber-600 transition">
+          <button className="w-full" onClick={handlePushToKitchen}>
+            <Icon icon="mdi:kitchen" style={{ fontSize: 15, marginLeft: 5 }} />
           </button>
         </div>
       )}

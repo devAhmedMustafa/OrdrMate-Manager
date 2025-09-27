@@ -6,6 +6,7 @@ import TableResponse from '../dtos/TableResponse.dto';
 export enum OrderStatus {
   Pending = 'Pending',
   Queued = 'Queued',
+  InProgress = 'InProgress',
   Ready = 'Ready',
   Delivered = 'Delivered'
 }
@@ -84,6 +85,11 @@ class TableService {
 
   async payOrders(reservationId: string): Promise<Order> {
     const response = await api.put(`/Table/order/pay/${reservationId}`);
+    return response.data;
+  }
+
+  async pushToKitchen(reservationId: string): Promise<void> {
+    const response = await api.put(`/TableReservation/push-to-kitchen/${reservationId}`);
     return response.data;
   }
 
