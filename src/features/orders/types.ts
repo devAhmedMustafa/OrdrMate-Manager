@@ -31,7 +31,7 @@ export interface Order {
   totalAmount: number;
   isPaid: boolean;
   customer: string;
-  orderNumber: number | null;
+  orderNumber?: number | null;
 }
 
 export interface UnpaidOrder {

@@ -14,8 +14,9 @@ import ItemDetailPage from './features/items/ItemDetail.page'
 import SettingsPage from './features/dashboard/components/Settings.page'
 import BranchSettingsPage from './features/branch-settings/BranchSettings.page'
 import BranchRequestsPage from './features/admin/BranchRequests.page'
-import Orders from './features/orders/Orders.page'
+import IncomingOrders from './features/orders/OrdersQueue.page'
 import DashboardHome from './features/dashboard/components/DashboardHome.page'
+import Orders from './features/orders/Orders.page'
 
 function AppContent() {
   return (
@@ -44,6 +45,7 @@ function AppContent() {
             <Route index element={<DashboardHome />} />
             <Route path="menu" element={<BranchMenuPage />} />
             <Route path="orders" element={<Orders />} />
+            <Route path="incoming-orders" element={<IncomingOrders />} />
             <Route path="settings" element={<BranchSettingsPage />} />
           </Route>
 
