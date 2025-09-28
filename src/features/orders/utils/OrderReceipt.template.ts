@@ -1,17 +1,17 @@
 import { BranchInfoResponse } from "../../restaurant_branches/services/branchService";
 import Order from "../models/Order";
-import { generateQRCode } from "../../../utils/qr-generator";
+// import { generateQRCode } from "../../../utils/qr-generator";
 
 const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Promise<string> => {
     // Generate QR code for the customer app
-    const customerAppUrl = `${import.meta.env.VITE_CUSTOMER_APP_URL}/branch/${order.branchId}`;
-    let qrCodeUrl = '';
+    // const customerAppUrl = `${import.meta.env.VITE_CUSTOMER_APP_URL}/branch/${order.branchId}`;
+    // let qrCodeUrl = '';
     
-    try {
-        qrCodeUrl = await generateQRCode(customerAppUrl);
-    } catch (error) {
-        console.error('Failed to generate QR code for receipt:', error);
-    }
+    // try {
+    //     qrCodeUrl = await generateQRCode(customerAppUrl);
+    // } catch (error) {
+    //     console.error('Failed to generate QR code for receipt:', error);
+    // }
 
     // Calculate totals
     const subtotal = order.orderItems.reduce((sum, item) => sum + (item.item.price * item.quantity), 0);
@@ -110,22 +110,22 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
                 <table style="width: 100%; border-collapse: collapse; border: 1px solid black;">
                     <thead>
                         <tr style="border-bottom: 2px solid black;">
-                            <th style="text-align: left; padding: 8px; font-size: 12px; color: black; border-right: 1px solid black;">Item</th>
-                            <th style="text-align: center; padding: 8px; font-size: 12px; color: black; border-right: 1px solid black;">Qty</th>
-                            <th style="text-align: right; padding: 8px; font-size: 12px; color: black; border-right: 1px solid black;">Price</th>
-                            <th style="text-align: right; padding: 8px; font-size: 12px; color: black;">Total</th>
+                            <th style="text-align: left; padding: 5px; font-size: 10px; color: black; border-right: 1px solid black;">Item</th>
+                            <th style="text-align: center; padding: 5px; font-size: 10px; color: black; border-right: 1px solid black;">Qty</th>
+                            <th style="text-align: right; padding: 5px; font-size: 10px; color: black; border-right: 1px solid black;">Price</th>
+                            <th style="text-align: right; padding: 5px; font-size: 10px; color: black;">Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${order.orderItems.map(item => `
-                        <tr style="border-bottom: 1px solid black;">
-                            <td style="padding: 8px; font-size: 12px; border-right: 1px solid black; word-wrap: break-word; overflow-wrap: break-word; max-width: 150px;">
+                        <tr style="border-bottom: 1px solid black; font-weight: bold;">
+                            <td style="padding: 5px; font-size: 10px; border-right: 1px solid black; word-wrap: break-word; overflow-wrap: break-word; max-width: 150px;">
                                 <strong>${item.item.name}</strong>
-                                <br><small style="color: #666; font-size: 10px;">${item.item.category}</small>
+                                <br><small style="color: #666; font-size: 9px;">${item.item.category}</small>
                             </td>
-                            <td style="text-align: center; padding: 8px; font-size: 12px; border-right: 1px solid black;">${item.quantity}</td>
-                            <td style="text-align: right; padding: 8px; font-size: 12px; border-right: 1px solid black;">L.E.${item.item.price.toFixed(2)}</td>
-                            <td style="text-align: right; padding: 8px; font-size: 12px; font-weight: bold;">L.E.${(item.item.price * item.quantity).toFixed(2)}</td>
+                            <td style="text-align: center; padding: 5px; font-size: 10px; font-weight: bold; border-right: 1px solid black;">${item.quantity}</td>
+                            <td style="text-align: right; padding: 5px; font-size: 10px; font-weight: bold; border-right: 1px solid black;">L.E.${item.item.price.toFixed(2)}</td>
+                            <td style="text-align: right; padding: 5px; font-size: 10px; font-weight: bold;">L.E.${(item.item.price * item.quantity).toFixed(2)}</td>
                         </tr>
                         `).join('')}
                     </tbody>
@@ -151,18 +151,12 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
             </div>
 
             <!-- Footer -->
-            <div style="margin-top: 22px; padding-top: 12px; border-top: 1px solid black;">
+            <div style="margin-top: 18px; padding-top: 12px; border-top: 1px solid black;">
                 <div style="text-align: center;">
-                    <p style="margin: 5px 0; font-size: 16px; color: black; font-weight: bold;">Thank you for your order!</p>
-                    <p style="margin: 5px 0; font-size: 12px; color: black;">Please keep this receipt for your records</p>
-                    <p style="margin: 15px 0 5px 0; font-size: 12px; color: black;">Powered by <strong>Gahez</strong></p>
+                    <p style="font-size: 16px; color: black; font-weight: bold;">Thank you for your order!</p>
+                    <p style="font-size: 10px; color: black;">Powered by <strong>Gahez</strong></p>
                 </div>
-                ${qrCodeUrl ? `
-                <div style="text-align: center; margin: 10px auto;">
-                    <img src="${qrCodeUrl}" alt="QR Code for Menu" style="width: 90px; height: 90px; display: block; margin: 0 auto;"/>
-                    <p style="margin: 3px 0 0 0; font-size: 9px; color: black;">Scan to order</p>
-                </div>
-                ` : ''}
+                
             </div>
         </div>
     `;
