@@ -89,15 +89,15 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
             </div>
 
             <!-- Order Info -->
-            <div style="border: 1px solid black; padding: 10px; margin-bottom: 15px;">
+            <div style="border: 1px solid black; padding: 6px; margin-bottom: 15px;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
-                        <td style="text-align: left; padding: 2px 5px; font-size: 12px; width: 50%;">${order.orderId.substring(0, 8).toUpperCase()}</td>
-                        <td style="text-align: right; padding: 2px 5px; font-size: 12px; width: 50%;">${cleanCustomerName(order.customer || 'Walk-in')}</td>
+                        <td style="text-align: left; padding: 2px 5px; font-size: 9px; width: 50%;">${order.orderId.substring(0, 8).toUpperCase()}</td>
+                        <td style="text-align: right; padding: 2px 5px; font-size: 9px; width: 50%;">${cleanCustomerName(order.customer || 'Walk-in')}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left; padding: 2px 5px; font-size: 12px; width: 50%;">${formattedDateTime}</td>
-                        <td style="text-align: right; padding: 2px 5px; font-size: 12px; width: 50%;">
+                        <td style="text-align: left; padding: 2px 5px; font-size: 9px; width: 50%;">${formattedDateTime}</td>
+                        <td style="text-align: right; padding: 2px 5px; font-size: 9px; width: 50%;">
                             ${order.orderType ? `${order.orderType}${order.tableNumber ? ` - Table ${order.tableNumber}` : ''}` : ''}
                         </td>
                     </tr>
