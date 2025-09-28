@@ -140,8 +140,8 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
                     <span>L.E.${subtotal.toFixed(2)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
-                    <span>Service Charge (%${branchInfo.taxRate}):</span>
-                    <span>L.E.${branchInfo.taxRate.toFixed(2)}</span>
+                    <span>Service Charge (%${branchInfo.taxRate * 100}):</span>
+                    <span>L.E.${(subtotal * branchInfo.taxRate).toFixed(2)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: black; padding-top: 8px; border-top: 1px solid black;">
                     <span>TOTAL:</span>
