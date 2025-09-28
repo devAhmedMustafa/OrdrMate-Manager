@@ -58,6 +58,16 @@ class OrderService {
     await api.put(`/Order/confirm-pending/${orderId}`);
   }
   
+  async deliverOrder(orderId: string) : Promise<Order> {
+    const response = await api.put(`/Order/deliver/${orderId}`);
+    return response.data;
+  }
+
+  async outDeliveryOrders(branchId: string) : Promise<Order[]> {
+    const response = await api.get(`/Order/list/out-delivery/${branchId}`);
+    return response.data;
+  }
+
 }
 
 export const orderService = new OrderService();

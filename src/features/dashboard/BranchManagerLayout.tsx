@@ -26,6 +26,7 @@ export function BranchManagerLayout() {
     { path: '/branch', label: 'Home', icon: 'iconamoon:home-duotone' },
     { path: '/branch/orders', label: 'Orders', icon: 'lets-icons:order-duotone' },
     { path: '/branch/incoming-orders', label: 'Incoming Orders', icon: 'lets-icons:order-duotone' },
+    { path: '/branch/on-delivery', label: 'On Delivery', icon: 'mdi:truck-delivery' },
     { path: '/branch/menu', label: 'Menu', icon: 'ic:twotone-menu-book' },
     { path: '/branch/settings', label: 'Settings', icon: 'mdi:cog' },
   ];
