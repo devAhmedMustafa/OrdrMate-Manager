@@ -36,7 +36,7 @@ export async function printOrderItems(orderItems: OrderItem[], order: Order) {
     w.document.write(`
         <html>
             <head>
-                <title>Kitchen Order - ${order.orderId}</title>
+                <title>Gahez</title>
             </head>
             <body>
                 ${printable}

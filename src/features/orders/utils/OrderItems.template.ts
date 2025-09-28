@@ -13,85 +13,126 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
         <meta charset="UTF-8" />
         <title>Kitchen Order</title>
         <style>
-            body {
-                font-family: monospace, sans-serif;
-                max-width: 280px;
-                margin: 0 auto;
-                background: #fff;
-                color: #000;
-                font-size: 12px;
-                line-height: 1.4;
+            @media print {
+                @page {
+                    size: A4;
+                    margin: 8mm;
+                }
+                html, body {
+                    margin: 0 !important;
+                    padding: 0 !important;
+                    width: auto !important;
+                    height: auto !important;
+                    font-family: Arial, sans-serif !important;
+                    font-size: 12px !important;
+                    line-height: 1.3 !important;
+                    color: #000 !important;
+                    background: white !important;
+                }
+                * {
+                    -webkit-print-color-adjust: exact !important;
+                    color-adjust: exact !important;
+                    page-break-before: avoid !important;
+                    page-break-after: avoid !important;
+                    page-break-inside: avoid !important;
+                }
+                .no-break {
+                    page-break-inside: avoid !important;
+                    break-inside: avoid !important;
+                }
+                .force-break {
+                    page-break-after: always !important;
+                }
             }
-            h1, h2, h3, h4, p { margin: 0; padding: 0; }
-            .center { text-align: center; }
-            .bold { font-weight: bold; }
-            .box { border: 1px solid black; padding: 8px; margin: 8px 0; }
-            .item { border: 1px solid black; padding: 6px; margin: 6px 0; }
-            table { width: 100%; border-collapse: collapse; }
-            td { padding: 2px 0; vertical-align: top; }
+            
+            html, body {
+                margin: 0;
+                padding: 12px;
+                width: auto;
+                height: auto;
+                font-family: Arial, sans-serif;
+                font-size: 12px;
+                line-height: 1.3;
+                color: #000;
+                background: white;
+            }
         </style>
     </head>
     <body onload="window.print()">
 
-        <!-- Header -->
-        <div class="center box" style="border: none; border-bottom: 2px solid black;">
+        <!-- Header Section -->
+        <div style="text-align: center; border-bottom: 3px solid #000; padding-bottom: 8px; margin-bottom: 12px;" class="no-break">
             ${branchInfo.logoUrl ? `
-            <div style="margin-bottom: 6px;">
-                <img src="${branchInfo.logoUrl}" alt="Logo" style="max-width: 60px; max-height: 60px;"/>
+            <div style="margin-bottom: 8px;">
+                <img src="${branchInfo.logoUrl}" alt="Logo" style="max-width: 80px; max-height: 80px; display: block; margin: 0 auto;"/>
             </div>
             ` : ''}
-            <h1 style="font-size: 18px;">KITCHEN ORDER</h1>
-            <h2 style="font-size: 14px;">${branchInfo.restaurantName}</h2>
+            <h1 style="font-size: 20px; font-weight: bold; margin: 0 0 4px 0; letter-spacing: 2px;">KITCHEN ORDER</h1>
+            <h2 style="font-size: 16px; font-weight: normal; margin: 0; color: #333;">${branchInfo.restaurantName}</h2>
         </div>
 
-        <!-- Order Info -->
-        <div class="box center">
-            <div class="bold">${formattedTime} - ${formattedDate}</div>
+        <!-- Order Information -->
+        <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f8f8f8; padding: 8px 12px; border: 2px solid #000; margin-bottom: 16px; font-weight: bold;" class="no-break">
+            <div style="font-size: 14px;">
+                <div style="margin-bottom: 2px;">📅 ${formattedDate}</div>
+                <div>🕒 ${formattedTime}</div>
+            </div>
             ${order.orderType ? `
-            <div class="bold" style="margin-top: 4px;">
-                ${order.orderType}${order.tableNumber ? ` - Table ${order.tableNumber}` : ''}
+            <div style="text-align: right; font-size: 14px;">
+                <div style="background-color: #000; color: white; padding: 4px 8px; border-radius: 4px; display: inline-block;">
+                    ${order.orderType}${order.tableNumber ? ` - Table ${order.tableNumber}` : ''}
+                </div>
             </div>
             ` : ''}
         </div>
 
-        <!-- Items -->
-        <h3 class="center" style="margin: 10px 0; border-bottom: 2px solid black; padding-bottom: 4px;">ITEMS TO PREPARE</h3>
-        ${orderItems.map(item => `
-        <div class="item">
-            <table>
-                <tr>
-                    <td class="bold" style="font-size: 14px; max-width: 150px; word-wrap: break-word;">${item.item.name}</td>
-                    <td class="center bold" style="font-size: 16px; border: 1px solid black; padding: 2px 6px;">×${item.quantity}</td>
-                </tr>
-            </table>
-            ${item.customizations ? `
-            <div style="margin-top: 4px; border-top: 1px dashed black; padding-top: 4px;">
-                <div class="bold" style="font-size: 11px;">Customizations:</div>
-                ${Object.entries(item.customizations).map(([key, value]) => `
-                <div style="font-size: 11px;"><strong>${key}:</strong> ${value}</div>
-                `).join('')}
+        <!-- Items Header -->
+        <div style="text-align: center; background-color: #000; color: white; padding: 8px; margin-bottom: 12px; font-weight: bold; font-size: 16px; letter-spacing: 1px;" class="no-break">
+            🍽️ ITEMS TO PREPARE
+        </div>
+
+        <!-- Items List -->
+        <div style="margin-bottom: 16px;">
+            ${orderItems.map((item, index) => `
+            <div style="border: 2px solid #ddd; margin-bottom: 10px; border-radius: 6px; overflow: hidden; background-color: #fff;" class="no-break">
+                <!-- Item Header -->
+                <div style="background-color: #f0f0f0; padding: 8px 12px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
+                    <div style="font-weight: bold; font-size: 14px; color: #000; max-width: 70%; word-wrap: break-word;">
+                        ${index + 1}. ${item.item.name}
+                    </div>
+                    <div style="background-color: #000; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 16px; min-width: 50px; text-align: center;">
+                        ×${item.quantity}
+                    </div>
+                </div>
+                
+                <!-- Customizations -->
+                ${item.customizations && Object.keys(item.customizations).length > 0 ? `
+                <div style="padding: 10px 12px; background-color: #fffbf0; border-top: 1px dashed #ccc;">
+                    <div style="font-weight: bold; font-size: 12px; color: #666; margin-bottom: 6px; text-transform: uppercase;">
+                        ⚙️ Customizations:
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 4px;">
+                        ${Object.entries(item.customizations).map(([key, value]) => `
+                        <div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 4px; padding: 4px 8px; font-size: 11px;">
+                            <span style="font-weight: bold; color: #333;">${key}:</span> 
+                            <span style="color: #000;">${value}</span>
+                        </div>
+                        `).join('')}
+                    </div>
+                </div>
+                ` : ''}
+                
+                <!-- Item Notes Section (if needed in future) -->
+                <div style="padding: 6px 12px; background-color: #f9f9f9; border-top: 1px solid #eee; font-size: 10px; color: #666; text-align: center;">
+                    Item #${index + 1} | Category: ${item.item.category || 'General'}
+                </div>
             </div>
-            ` : ''}
-        </div>
-        `).join('')}
-
-        <!-- Summary -->
-        <div class="center box bold" style="margin-top: 10px; border-top: 2px solid black;">
-            Total Items: ${orderItems.reduce((sum, item) => sum + item.quantity, 0)}
+            `).join('')}
         </div>
 
-        <!-- Instructions -->
-        <div class="box center" style="border: 1px dashed black;">
-            <h4 style="font-size: 12px; margin-bottom: 2px;">KITCHEN INSTRUCTIONS</h4>
-            <p style="font-size: 11px;">Prepare all items listed above</p>
-            <p style="font-size: 11px; font-weight: bold;">
-                Order Type: ${order.orderType || 'Dine-in'}${order.tableNumber ? ` - Table ${order.tableNumber}` : ''}
-            </p>
-        </div>
-
-        <!-- Footer -->
-        <div class="center" style="margin-top: 12px; border-top: 1px solid black; padding-top: 6px;">
-            <p class="bold" style="font-size: 12px;">Kitchen Copy</p>
+        <!-- Print Timestamp -->
+        <div style="margin-top: 12px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #ddd; padding-top: 8px;" class="no-break">
+            Printed: ${new Date().toLocaleString('en-GB')} | Gahez Kitchen System
         </div>
 
     </body>

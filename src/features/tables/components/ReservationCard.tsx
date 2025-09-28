@@ -19,7 +19,6 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
   const dragRef = useRef<HTMLDivElement>(null);
   const { updateReservationInQueue } = useTableContext();
 
-  // Drag event handlers for moving reservation to another table
   const handleDragStart = (e: React.DragEvent) => {
     e.dataTransfer.setData('application/ordrmate-reservation', JSON.stringify({
       reservationId: reservation.reservationId,
@@ -96,6 +95,19 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
     }
   }
 
+  async function handlePrintOrderItems(){
+    if(reservationOrder && reservationOrder.orderId && orderCustomizations){
+      // Create a copy of order items with customizations assigned
+      const orderItemsWithCustomizations = reservationOrder.orderItems.map(orderItem => ({
+        ...orderItem,
+        customizations: orderCustomizations.items[`${orderItem.itemId},${reservationOrder.orderId}`] || {}
+      }));
+      
+      console.log("Printing order items with customizations:", orderItemsWithCustomizations);
+      printOrderItems(orderItemsWithCustomizations, reservationOrder);
+    }
+  }
+
   const getStatusIcon = (status: string) => {
     switch (status.toLowerCase()) {
       case 'seated':
@@ -107,7 +119,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       case 'cancelled':
         return 'mdi:close-circle-outline';
       case 'completed':
-        return 'mdi:flag-checkered';
+        return 'flag-checkered';
       default:
         return 'mdi:information-outline';
     }
@@ -236,7 +248,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
                 {/* Customizations */}
                 {orderCustomizations && (
-                  orderCustomizations.items[orderItem.itemId] && (
+                  orderCustomizations.items[`${orderItem.itemId},${orderItem.orderId}`] && (
                   <div style={{
                     marginLeft: 8,
                     background: '#f4f0fa',
@@ -247,7 +259,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
                     fontWeight: 500,
                     display: 'inline-block',
                   }}>
-                    {Object.entries(orderCustomizations.items[orderItem.itemId]).map(([key, value]) => (
+                    {Object.entries(orderCustomizations.items[`${orderItem.itemId},${orderItem.orderId}`]).map(([key, value]) => (
                       <span key={key} style={{ marginRight: 8 }}>
                         <strong>{key}:</strong> {String(value)}
                       </span>
@@ -271,11 +283,21 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       )
       }
 
+      {/* Print Order Items Button - Available when order exists */}
+      {(reservationOrder?.orderId && reservationOrder.orderItems.length > 0) && (
+        <div className="bg-purple-500 text-white p-3 cursor-pointer hover:bg-purple-700 transition border-b border-purple-400">
+          <button className="w-full flex justify-center items-center" onClick={handlePrintOrderItems}>
+            <Icon icon="mdi:printer" style={{ fontSize: 15 }} />
+            <span className="ml-2">Print Order Items</span>
+          </button>
+        </div>
+      )}
+
       {/* Pay Order Button */}
       {(reservation.reservationId && reservationOrder?.isPaid === false) && (
-        <div className="bg-blue-500 text-white p-3 rounded-b-lg cursor-pointer hover:bg-blue-700 transition">
+        <div className="bg-blue-500 text-white p-3 cursor-pointer hover:bg-blue-700 transition border-b border-blue-400">
           <button className="w-full flex justify-center items-center" onClick={handlePayOrder}>
-            <Icon icon="mdi:currency-usd" style={{ fontSize: 15, marginLeft: 5 }} />
+            <Icon icon="mdi:currency-usd" style={{ fontSize: 15 }} />
             <span className="ml-2">Mark as Paid</span>
           </button>
         </div>
