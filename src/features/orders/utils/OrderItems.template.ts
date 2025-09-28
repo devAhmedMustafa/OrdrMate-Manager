@@ -73,13 +73,13 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
 
         <!-- Order Information -->
         <div style="display: flex; justify-content: space-between; align-items: center; background-color: #f8f8f8; padding: 8px 12px; border: 2px solid #000; margin-bottom: 16px; font-weight: bold;" class="no-break">
-            <div style="font-size: 14px;">
+            <div style="font-size: 16px;">
                 <div style="margin-bottom: 2px;">📅 ${formattedDate}</div>
                 <div>🕒 ${formattedTime}</div>
             </div>
             ${order.orderType ? `
-            <div style="text-align: right; font-size: 14px;">
-                <div style="background-color: #000; color: white; padding: 4px 8px; border-radius: 4px; display: inline-block;">
+            <div style="text-align: right; font-size: 18px;">
+                <div style=" color: black; padding: 4px 8px; border-radius: 4px; display: inline-block;">
                     ${order.orderType}${order.tableNumber ? ` - Table ${order.tableNumber}` : ''}
                 </div>
             </div>
@@ -87,8 +87,8 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
         </div>
 
         <!-- Items Header -->
-        <div style="text-align: center; background-color: #000; color: white; padding: 8px; margin-bottom: 12px; font-weight: bold; font-size: 16px; letter-spacing: 1px;" class="no-break">
-            🍽️ ITEMS TO PREPARE
+        <div style="text-align: center; color: black; padding: 8px; margin-bottom: 12px; font-weight: bold; font-size: 14px; letter-spacing: 1px;" class="no-break">
+            ITEMS TO PREPARE
         </div>
 
         <!-- Items List -->
@@ -97,10 +97,10 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
             <div style="border: 2px solid #ddd; margin-bottom: 10px; border-radius: 6px; overflow: hidden; background-color: #fff;" class="no-break">
                 <!-- Item Header -->
                 <div style="background-color: #f0f0f0; padding: 8px 12px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="font-weight: bold; font-size: 14px; color: #000; max-width: 70%; word-wrap: break-word;">
+                    <div style="font-weight: bold; font-size: 16px; color: #000; max-width: 70%; word-wrap: break-word;">
                         ${index + 1}. ${item.item.name} -> ${item.item.category || 'General'}
                     </div>
-                    <div style="background-color: #000; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 16px; min-width: 50px; text-align: center;">
+                    <div style=" color: black; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 16px; min-width: 50px; text-align: center;">
                         ×${item.quantity}
                     </div>
                 </div>
@@ -109,7 +109,7 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
                 ${item.customizations && Object.keys(item.customizations).length > 0 ? `
                 <div style="padding: 10px 12px; background-color: #fffbf0; border-top: 1px dashed #ccc;">
                     <div style="font-weight: bold; font-size: 12px; color: #666; margin-bottom: 6px; text-transform: uppercase;">
-                        ⚙️ Customizations:
+                        Customizations:
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 4px;">
                         ${Object.entries(item.customizations).map(([key, value]) => `
@@ -123,7 +123,7 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
                 ` : ''}
                 
                 <!-- Item Notes Section -->
-                <div style="padding: 6px 12px; background-color: #f9f9f9; border-top: 1px solid #eee; font-size: 10px; color: #666; text-align: center;">
+                <div style="padding: 6px 12px; background-color: #f9f9f9; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center;">
                     Item #${index + 1} | Category: ${item.item.category || 'General'}
                 </div>
             </div>
@@ -131,7 +131,7 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
         </div>
 
         <!-- Print Timestamp -->
-        <div style="margin-top: 12px; text-align: center; font-size: 10px; color: #999; border-top: 1px solid #ddd; padding-top: 8px;" class="no-break">
+        <div style="margin-top: 12px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #ddd; padding-top: 8px;" class="no-break">
             Printed: ${new Date().toLocaleString('en-GB')} | Gahez Kitchen System
         </div>
 
