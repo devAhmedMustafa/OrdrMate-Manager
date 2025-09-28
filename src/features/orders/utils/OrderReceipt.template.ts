@@ -92,12 +92,12 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
             <div style="border: 1px solid black; padding: 10px; margin-bottom: 15px;">
                 <table style="width: 100%; border-collapse: collapse;">
                     <tr>
-                        <td style="text-align: left; padding: 2px 5px; font-size: 14px; width: 50%;">${order.orderId.substring(0, 8).toUpperCase()}</td>
-                        <td style="text-align: right; padding: 2px 5px; font-size: 14px; width: 50%;">${cleanCustomerName(order.customer || 'Walk-in')}</td>
+                        <td style="text-align: left; padding: 2px 5px; font-size: 12px; width: 50%;">${order.orderId.substring(0, 8).toUpperCase()}</td>
+                        <td style="text-align: right; padding: 2px 5px; font-size: 12px; width: 50%;">${cleanCustomerName(order.customer || 'Walk-in')}</td>
                     </tr>
                     <tr>
-                        <td style="text-align: left; padding: 2px 5px; font-size: 14px; width: 50%;">${formattedDateTime}</td>
-                        <td style="text-align: right; padding: 2px 5px; font-size: 14px; width: 50%;">
+                        <td style="text-align: left; padding: 2px 5px; font-size: 12px; width: 50%;">${formattedDateTime}</td>
+                        <td style="text-align: right; padding: 2px 5px; font-size: 12px; width: 50%;">
                             ${order.orderType ? `${order.orderType}${order.tableNumber ? ` - Table ${order.tableNumber}` : ''}` : ''}
                         </td>
                     </tr>
@@ -106,26 +106,26 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
 
             <!-- Order Items -->
             <div style="margin-bottom: 15px;">
-                <h3 style="color: black; border-bottom: 1px solid black; padding-bottom: 8px; margin-bottom: 12px;">ORDER ITEMS</h3>
+                <h4 style="color: black; border-bottom: 1px solid black; padding-bottom: 8px; margin-bottom: 12px; font-size: 12px">ORDER ITEMS</h4>
                 <table style="width: 100%; border-collapse: collapse; border: 1px solid black;">
                     <thead>
                         <tr style="border-bottom: 2px solid black;">
-                            <th style="text-align: left; padding: 8px; font-size: 14px; color: black; border-right: 1px solid black;">Item</th>
-                            <th style="text-align: center; padding: 8px; font-size: 14px; color: black; border-right: 1px solid black;">Qty</th>
-                            <th style="text-align: right; padding: 8px; font-size: 14px; color: black; border-right: 1px solid black;">Price</th>
-                            <th style="text-align: right; padding: 8px; font-size: 14px; color: black;">Total</th>
+                            <th style="text-align: left; padding: 8px; font-size: 12px; color: black; border-right: 1px solid black;">Item</th>
+                            <th style="text-align: center; padding: 8px; font-size: 12px; color: black; border-right: 1px solid black;">Qty</th>
+                            <th style="text-align: right; padding: 8px; font-size: 12px; color: black; border-right: 1px solid black;">Price</th>
+                            <th style="text-align: right; padding: 8px; font-size: 12px; color: black;">Total</th>
                         </tr>
                     </thead>
                     <tbody>
                         ${order.orderItems.map(item => `
                         <tr style="border-bottom: 1px solid black;">
-                            <td style="padding: 10px 8px; font-size: 14px; border-right: 1px solid black; word-wrap: break-word; overflow-wrap: break-word; max-width: 150px;">
+                            <td style="padding: 8px; font-size: 12px; border-right: 1px solid black; word-wrap: break-word; overflow-wrap: break-word; max-width: 150px;">
                                 <strong>${item.item.name}</strong>
-                                <br><small style="color: #666; font-size: 12px;">${item.item.category}</small>
+                                <br><small style="color: #666; font-size: 10px;">${item.item.category}</small>
                             </td>
-                            <td style="text-align: center; padding: 10px 8px; font-size: 14px; border-right: 1px solid black;">${item.quantity}</td>
-                            <td style="text-align: right; padding: 10px 8px; font-size: 14px; border-right: 1px solid black;">L.E.${item.item.price.toFixed(2)}</td>
-                            <td style="text-align: right; padding: 10px 8px; font-size: 14px; font-weight: bold;">L.E.${(item.item.price * item.quantity).toFixed(2)}</td>
+                            <td style="text-align: center; padding: 8px; font-size: 12px; border-right: 1px solid black;">${item.quantity}</td>
+                            <td style="text-align: right; padding: 8px; font-size: 12px; border-right: 1px solid black;">L.E.${item.item.price.toFixed(2)}</td>
+                            <td style="text-align: right; padding: 8px; font-size: 12px; font-weight: bold;">L.E.${(item.item.price * item.quantity).toFixed(2)}</td>
                         </tr>
                         `).join('')}
                     </tbody>

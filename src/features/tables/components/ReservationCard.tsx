@@ -240,7 +240,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
               <li key={idx} style={{ display: 'flex', alignItems: 'center', gap: 8, background: '#fff', borderRadius: 6, boxShadow: '0 1px 2px rgba(106,76,147,0.03)', padding: '6px 10px' }}>
 
                 <span style={{ fontWeight: 500, color: '#7B1FA2', fontSize: 13 }}>
-                  {orderItem.item.name}
+                  {orderItem.item.name} @ {orderItem.item.category}
                 </span>
                 <span style={{ color: '#888', fontSize: 13, marginLeft: 'auto', fontWeight: 500 }}>
                   x{orderItem.quantity}
