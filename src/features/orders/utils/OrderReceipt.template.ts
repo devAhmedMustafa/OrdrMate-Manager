@@ -147,6 +147,12 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
                         <td style="text-align: left; padding: 8px 0 4px 0; font-size: 18px; font-weight: bold; color: black;">TOTAL:</td>
                         <td style="text-align: right; padding: 8px 0 4px 0; font-size: 18px; font-weight: bold; color: black;">L.E.${order.totalAmount.toFixed(2)}</td>
                     </tr>
+                    ${order.paymentProvider ? `
+                    <tr>
+                        <td style="text-align: left; padding: 4px 0; font-size: 14px; font-weight: bold; color: black;">Payment Method:</td>
+                        <td style="text-align: right; padding: 4px 0; font-size: 14px; color: black; text-transform: capitalize;">${order.paymentProvider}</td>
+                    </tr>
+                    ` : ''}
                 </table>
             </div>
 

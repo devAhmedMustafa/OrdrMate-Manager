@@ -94,6 +94,10 @@ class TableService {
     return response.data.orderItems;
   }
 
+  async changeReservationPayment(reservationId: string, paymentProvider: string): Promise<void> {
+    await api.put(`/UpdateOrder/payment-provider/reservation/${reservationId}`, { paymentProvider });
+  }
+
 }
 
 export const tableService = new TableService(); 
