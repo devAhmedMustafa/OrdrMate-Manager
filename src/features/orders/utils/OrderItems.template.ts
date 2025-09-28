@@ -97,10 +97,10 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
             <div style="border: 2px solid #ddd; margin-bottom: 10px; border-radius: 6px; overflow: hidden; background-color: #fff;" class="no-break">
                 <!-- Item Header -->
                 <div style="background-color: #f0f0f0; padding: 8px 12px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
-                    <div style="font-weight: bold; font-size: 16px; color: #000; max-width: 70%; word-wrap: break-word;">
+                    <div style="font-weight: bold; font-size: 21px; color: #000; max-width: 70%; word-wrap: break-word;">
                         ${index + 1}. ${item.item.name} -> ${item.item.category || 'General'}
                     </div>
-                    <div style=" color: black; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 16px; min-width: 50px; text-align: center;">
+                    <div style=" color: black; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 18px; min-width: 50px; text-align: center;">
                         ×${item.quantity}
                     </div>
                 </div>
@@ -108,12 +108,12 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
                 <!-- Customizations -->
                 ${item.customizations && Object.keys(item.customizations).length > 0 ? `
                 <div style="padding: 10px 12px; background-color: #fffbf0; border-top: 1px dashed #ccc;">
-                    <div style="font-weight: bold; font-size: 12px; color: #666; margin-bottom: 6px; text-transform: uppercase;">
+                    <div style="font-weight: bold; font-size: 14px; color: #666; margin-bottom: 6px; text-transform: uppercase;">
                         Customizations:
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 4px;">
                         ${Object.entries(item.customizations).map(([key, value]) => `
-                        <div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 4px; padding: 4px 8px; font-size: 11px;">
+                        <div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 4px; padding: 4px 8px; font-size: 18px;">
                             <span style="font-weight: bold; color: #333;">${key}:</span> 
                             <span style="color: #000;">${value}</span>
                         </div>
@@ -123,7 +123,7 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
                 ` : ''}
                 
                 <!-- Item Notes Section -->
-                <div style="padding: 6px 12px; background-color: #f9f9f9; border-top: 1px solid #eee; font-size: 12px; color: #666; text-align: center;">
+                <div style="padding: 6px 12px; background-color: #f9f9f9; border-top: 1px solid #eee; font-size: 14px; color: #666; text-align: center;">
                     Item #${index + 1} | Category: ${item.item.category || 'General'}
                 </div>
             </div>
@@ -131,8 +131,8 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
         </div>
 
         <!-- Print Timestamp -->
-        <div style="margin-top: 12px; text-align: center; font-size: 12px; color: #999; border-top: 1px solid #ddd; padding-top: 8px;" class="no-break">
-            Printed: ${new Date().toLocaleString('en-GB')} | Gahez Kitchen System
+        <div style="margin-top: 12px; text-align: center; font-size: 14px; color: #999; border-top: 1px solid #ddd; padding-top: 8px;" class="no-break">
+            Printed: ${new Date().toLocaleString('en-US')} | Gahez Kitchen System
         </div>
 
     </body>
