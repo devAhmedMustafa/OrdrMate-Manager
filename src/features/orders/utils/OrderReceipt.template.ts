@@ -51,9 +51,6 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
                     page-break-after: avoid;
                     page-break-inside: avoid;
                 }
-                [style*="display: flex"] {
-                    display: block !important;
-                }
                 img {
                     max-width: 100% !important;
                     max-height: 100% !important;
@@ -77,9 +74,9 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
         ">
             <!-- Header -->
             <div style="text-align: center; border-bottom: 2px solid black; padding-bottom: 15px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: center; align-items: center; gap: 20px; margin-bottom: 10px;">
-                    <img src="/OrdrMate.png" alt="OrdrMate Logo" style="width: 60px; height: 60px; object-fit: contain;"/>
-                    ${branchInfo.logoUrl ? `<img src="${branchInfo.logoUrl}" alt="Restaurant Logo" style="width: 60px; height: 60px; object-fit: contain;"/>` : ''}
+                <div style="text-align: center; margin-bottom: 10px;">
+                    <img src="/OrdrMate.png" alt="OrdrMate Logo" style="width: 60px; height: 60px; object-fit: contain; margin: 0 10px;"/>
+                    ${branchInfo.logoUrl ? `<img src="${branchInfo.logoUrl}" alt="Restaurant Logo" style="width: 60px; height: 60px; object-fit: contain; margin: 0 10px;"/>` : ''}
                 </div>
                 <h1 style="margin: 0; color: black; font-size: 24px;">RECEIPT</h1>
             </div>
@@ -87,22 +84,24 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
             <!-- Restaurant Info -->
             <div style="text-align: center; margin-bottom: 15px;">
                 <h2 style="margin: 5px 0; color: black; font-size: 20px;">${branchInfo.restaurantName}</h2>
-                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: black; margin-top: 5px;">
-                    ${branchInfo.address ? `<span style="text-align: left; flex: 1;">${branchInfo.address}</span>` : '<span style="flex: 1;"></span>'}
-                    ${branchInfo.phone ? `<span style="text-align: right; flex: 1;">${branchInfo.phone}</span>` : '<span style="flex: 1;"></span>'}
-                </div>
+                ${branchInfo.address ? `<div style="font-size: 12px; color: black; margin: 3px 0;">${branchInfo.address}</div>` : ''}
+                ${branchInfo.phone ? `<div style="font-size: 12px; color: black; margin: 3px 0;">${branchInfo.phone}</div>` : ''}
             </div>
 
             <!-- Order Info -->
             <div style="border: 1px solid black; padding: 10px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 14px; width: 100%;">
-                    <span style="text-align: left; flex: 1; padding-right: 10px;">${order.orderId.substring(0, 8).toUpperCase()}</span>
-                    <span style="text-align: right; flex: 1; padding-left: 10px;">${cleanCustomerName(order.customer || 'Walk-in')}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 14px; width: 100%;">
-                    <span style="text-align: left; flex: 1; padding-right: 10px;">${formattedDateTime}</span>
-                    ${order.orderType ? `<span style="text-align: right; flex: 1; padding-left: 10px;">${order.orderType}${order.tableNumber ? ` - Table ${order.tableNumber}` : ''}</span>` : '<span style="text-align: right; flex: 1; padding-left: 10px;"></span>'}
-                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: left; padding: 2px 5px; font-size: 14px; width: 50%;">${order.orderId.substring(0, 8).toUpperCase()}</td>
+                        <td style="text-align: right; padding: 2px 5px; font-size: 14px; width: 50%;">${cleanCustomerName(order.customer || 'Walk-in')}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left; padding: 2px 5px; font-size: 14px; width: 50%;">${formattedDateTime}</td>
+                        <td style="text-align: right; padding: 2px 5px; font-size: 14px; width: 50%;">
+                            ${order.orderType ? `${order.orderType}${order.tableNumber ? ` - Table ${order.tableNumber}` : ''}` : ''}
+                        </td>
+                    </tr>
+                </table>
             </div>
 
             <!-- Order Items -->
@@ -135,31 +134,33 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
 
             <!-- Totals -->
             <div style="border-top: 2px solid black; padding-top: 12px; margin-bottom: 20px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
-                    <span>Subtotal:</span>
-                    <span>L.E.${subtotal.toFixed(2)}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
-                    <span>Service Charge (%${branchInfo.taxRate * 100}):</span>
-                    <span>L.E.${(subtotal * branchInfo.taxRate).toFixed(2)}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: black; padding-top: 8px; border-top: 1px solid black;">
-                    <span>TOTAL:</span>
-                    <span>L.E.${order.totalAmount.toFixed(2)}</span>
-                </div>
+                <table style="width: 100%; border-collapse: collapse;">
+                    <tr>
+                        <td style="text-align: left; padding: 4px 0; font-size: 14px;">Subtotal:</td>
+                        <td style="text-align: right; padding: 4px 0; font-size: 14px;">L.E.${subtotal.toFixed(2)}</td>
+                    </tr>
+                    <tr>
+                        <td style="text-align: left; padding: 4px 0; font-size: 14px;">Service Charge (%${branchInfo.taxRate * 100}):</td>
+                        <td style="text-align: right; padding: 4px 0; font-size: 14px;">L.E.${(subtotal * branchInfo.taxRate).toFixed(2)}</td>
+                    </tr>
+                    <tr style="border-top: 1px solid black;">
+                        <td style="text-align: left; padding: 8px 0 4px 0; font-size: 18px; font-weight: bold; color: black;">TOTAL:</td>
+                        <td style="text-align: right; padding: 8px 0 4px 0; font-size: 18px; font-weight: bold; color: black;">L.E.${order.totalAmount.toFixed(2)}</td>
+                    </tr>
+                </table>
             </div>
 
             <!-- Footer -->
-            <div style="margin-top: 22px; padding-top: 12px; border-top: 1px solid black; position: relative;">
+            <div style="margin-top: 22px; padding-top: 12px; border-top: 1px solid black;">
                 <div style="text-align: center;">
                     <p style="margin: 5px 0; font-size: 16px; color: black; font-weight: bold;">Thank you for your order!</p>
                     <p style="margin: 5px 0; font-size: 12px; color: black;">Please keep this receipt for your records</p>
                     <p style="margin: 15px 0 5px 0; font-size: 12px; color: black;">Powered by <strong>Gahez</strong></p>
                 </div>
                 ${qrCodeUrl ? `
-                <div style="text-align: center; margin: auto">
-                <img src="${qrCodeUrl}" alt="QR Code for Menu" style="width: 90px; height: 90px;"/>
-                    <p style="margin: 0 0 3px 0; font-size: 9px; color: black;">Scan to order</p>
+                <div style="text-align: center; margin: 10px auto;">
+                    <img src="${qrCodeUrl}" alt="QR Code for Menu" style="width: 90px; height: 90px; display: block; margin: 0 auto;"/>
+                    <p style="margin: 3px 0 0 0; font-size: 9px; color: black;">Scan to order</p>
                 </div>
                 ` : ''}
             </div>
