@@ -350,8 +350,8 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
       {/* Push to Kitchen Button */}
       {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
-        <div className="bg-amber-400 text-white p-3 rounded-b-lg cursor-pointer hover:bg-amber-600 transition">
-          <button className="w-full" onClick={handlePushToKitchen}>
+        <div className="bg-amber-400 text-white rounded-b-lg cursor-pointer hover:bg-amber-600 transition">
+          <button className="w-full p-3" onClick={handlePushToKitchen}>
             <Icon icon="mdi:kitchen" style={{ fontSize: 15, marginLeft: 5 }} />
           </button>
         </div>
