@@ -65,7 +65,7 @@ export default function OnDeliveryOrders(){
     const interval = setInterval(() => {
       fetchOrders();
       // fetchTakeawayOrders();
-    }, 30000);
+    }, 15 * 60 * 60 * 1000);
     return () => clearInterval(interval);
   }, [branchId, token]);
 
@@ -110,7 +110,7 @@ export default function OnDeliveryOrders(){
     try {
       await orderService.deliverOrder(orderId);
       // Refresh orders after confirmation
-      await fetchOrders();
+      setAllOrders(prev => prev.filter(order => order.orderId !== orderId));
     } catch (error) {
       console.error('Error confirming order:', error);
     }

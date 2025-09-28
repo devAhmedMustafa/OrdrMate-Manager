@@ -1,4 +1,4 @@
-import { Order, OrderStatus } from '../types';
+import { Order } from '../types';
 import styles from './OrderCard.module.css';
 
 interface OrderCardProps {
@@ -8,15 +8,17 @@ interface OrderCardProps {
 }
 
 export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
-  const getStatusColor = (status: OrderStatus): string => {
+  const getStatusColor = (status: string): string => {
     switch (status) {
-      case OrderStatus.Pending:
+      case "Pending":
         return '#FFA726';
-      case OrderStatus.InProgress:
+      case "Queued":
+        return '#3a1cbe';
+      case "InProgress":
         return '#42A5F5';
-      case OrderStatus.Ready:
+      case "Ready":
         return '#66BB6A';
-      case OrderStatus.Delivered:
+      case "Delivered":
         return '#66BB6A';
       default:
         return '#9E9E9E';
@@ -42,7 +44,7 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
         </div>
         <div 
           className={styles.status}
-          style={{ backgroundColor: getStatusColor(order.orderStatus as unknown as OrderStatus) }}
+          style={{ backgroundColor: getStatusColor(order.orderStatus) }}
         >
           {order.orderStatus}
         </div>

@@ -271,6 +271,5 @@
   font-weight: 700;
   color: var(--color-primary-dark);
   background: linear-gradient(to right, var(--color-primary-dark), #9520b2);
-  -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 } 
