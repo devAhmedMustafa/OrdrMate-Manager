@@ -30,8 +30,6 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
     }
   };
 
-  const isPending = order.orderStatus === 'Pending';
-
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.header}>
@@ -85,7 +83,7 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
           </div>
         </div>
         
-        {isPending && onConfirmOrder && (
+        {onConfirmOrder && (
           <button 
             className={styles.confirmButton}
             onClick={handleConfirmOrder}
