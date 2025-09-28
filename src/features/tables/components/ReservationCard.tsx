@@ -41,7 +41,16 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
   const [reservationOrder, setReservationOrder] = useState<ReservationOrder | null>(null);
   const [orderCustomizations, setOrderCustomizations] = useState<OrderCustomization | null>(null);
+  const [showPaymentProviderModal, setShowPaymentProviderModal] = useState(false);
+  const [selectedPaymentProvider, setSelectedPaymentProvider] = useState('cash');
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const {branchId} = useAuth();
+
+  // Payment provider options
+  const PAYMENT_PROVIDERS = [
+    { id: 'cash', name: 'Cash', icon: 'mdi:cash', color: '#4CAF50' },
+    { id: 'instapay', name: 'InstaPay', icon: 'mdi:credit-card-fast', color: '#2196F3' }
+  ];
 
   useEffect(()=>{
     
@@ -65,6 +74,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
     };
 
     fetchOrderCustomizations();
+    setSelectedPaymentProvider(reservationOrder?.paymentProvider || 'cash');
   }, [reservationOrder]);
 
   async function handleSetOrderReady(){
@@ -78,12 +88,38 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
     }
   }
 
-  async function handlePayOrder(){
+  function handlePayOrder(){
     if(reservationOrder && reservationOrder.orderId){
-      const order = await tableService.payOrders(reservation.reservationId);
-      printOrderInvoice(order);
-      setReservationOrder({...reservationOrder, isPaid: true});
+      setShowPaymentProviderModal(true);
     }
+  }
+
+  async function handleConfirmPayment(){
+    if(reservationOrder && reservationOrder.orderId){
+      setIsProcessingPayment(true);
+      try {
+        // First change the payment provider
+        await tableService.changeReservationPayment(reservation.reservationId, selectedPaymentProvider);
+        
+        // Then mark as paid
+        const order = await tableService.payOrders(reservation.reservationId);
+        printOrderInvoice(order);
+        setReservationOrder({...reservationOrder, isPaid: true});
+        
+        // Close the modal
+        setShowPaymentProviderModal(false);
+      } catch (error) {
+        console.error('Error processing payment:', error);
+        alert('Failed to process payment. Please try again.');
+      } finally {
+        setIsProcessingPayment(false);
+      }
+    }
+  }
+
+  function handleCancelPayment(){
+    setShowPaymentProviderModal(false);
+    setSelectedPaymentProvider('cash'); // Reset to default
   }
 
   async function handlePushToKitchen(){
@@ -318,6 +354,138 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
           <button className="w-full" onClick={handlePushToKitchen}>
             <Icon icon="mdi:kitchen" style={{ fontSize: 15, marginLeft: 5 }} />
           </button>
+        </div>
+      )}
+
+      {/* Payment Provider Selection Modal */}
+      {showPaymentProviderModal && (
+        <div style={{
+          position: 'fixed',
+          top: 0,
+          left: 0,
+          width: '100%',
+          height: '100%',
+          backgroundColor: 'rgba(0, 0, 0, 0.5)',
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+          zIndex: 1000
+        }}>
+          <div style={{
+            background: 'white',
+            borderRadius: '12px',
+            padding: '24px',
+            minWidth: '320px',
+            maxWidth: '400px',
+            boxShadow: '0 10px 25px rgba(0, 0, 0, 0.2)'
+          }}>
+            <div style={{
+              display: 'flex',
+              alignItems: 'center',
+              gap: '12px',
+              marginBottom: '20px'
+            }}>
+              <Icon icon="mdi:credit-card-outline" style={{ fontSize: '24px', color: '#7B1FA2' }} />
+              <h3 style={{ margin: 0, color: '#333', fontSize: '18px', fontWeight: '600' }}>
+                Select Payment Method
+              </h3>
+            </div>
+
+            <div style={{ marginBottom: '24px' }}>
+              {PAYMENT_PROVIDERS.map(provider => (
+                <div
+                  key={provider.id}
+                  onClick={() => setSelectedPaymentProvider(provider.id)}
+                  style={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    gap: '12px',
+                    padding: '12px 16px',
+                    border: `2px solid ${selectedPaymentProvider === provider.id ? provider.color : '#e0e0e0'}`,
+                    borderRadius: '8px',
+                    marginBottom: '8px',
+                    cursor: 'pointer',
+                    backgroundColor: selectedPaymentProvider === provider.id ? `${provider.color}10` : 'white',
+                    transition: 'all 0.2s ease'
+                  }}
+                >
+                  <Icon 
+                    icon={provider.icon} 
+                    style={{ fontSize: '20px', color: provider.color }} 
+                  />
+                  <span style={{ 
+                    fontWeight: selectedPaymentProvider === provider.id ? '600' : '500',
+                    color: '#333',
+                    fontSize: '14px'
+                  }}>
+                    {provider.name}
+                  </span>
+                  {selectedPaymentProvider === provider.id && (
+                    <Icon 
+                      icon="mdi:check-circle" 
+                      style={{ fontSize: '18px', color: provider.color, marginLeft: 'auto' }} 
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+
+            <div style={{ display: 'flex', gap: '12px' }}>
+              <button
+                onClick={handleCancelPayment}
+                disabled={isProcessingPayment}
+                style={{
+                  flex: 1,
+                  padding: '12px 16px',
+                  border: '2px solid #e0e0e0',
+                  borderRadius: '8px',
+                  background: 'white',
+                  color: '#666',
+                  fontSize: '14px',
+                  fontWeight: '500',
+                  cursor: isProcessingPayment ? 'not-allowed' : 'pointer',
+                  opacity: isProcessingPayment ? 0.5 : 1
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmPayment}
+                disabled={isProcessingPayment}
+                style={{
+                  flex: 2,
+                  padding: '12px 16px',
+                  border: 'none',
+                  borderRadius: '8px',
+                  background: PAYMENT_PROVIDERS.find(p => p.id === selectedPaymentProvider)?.color || '#7B1FA2',
+                  color: 'white',
+                  fontSize: '14px',
+                  fontWeight: '600',
+                  cursor: isProcessingPayment ? 'not-allowed' : 'pointer',
+                  opacity: isProcessingPayment ? 0.5 : 1,
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  gap: '8px'
+                }}
+              >
+                {isProcessingPayment ? (
+                  <>
+                    <Icon icon="mdi:loading" style={{ fontSize: '16px', animation: 'spin 1s linear infinite' }} />
+                    Processing...
+                  </>
+                ) : (
+                  <>
+                    <Icon 
+                      icon={PAYMENT_PROVIDERS.find(p => p.id === selectedPaymentProvider)?.icon || 'mdi:cash'} 
+                      style={{ fontSize: '16px' }} 
+                    />
+                    Mark as Paid
+                  </>
+                )}
+              </button>
+            </div>
+          </div>
         </div>
       )}
     </div>
