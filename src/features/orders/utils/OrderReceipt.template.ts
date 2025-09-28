@@ -15,17 +15,24 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
 
     // Calculate totals
     const subtotal = order.orderItems.reduce((sum, item) => sum + (item.item.price * item.quantity), 0);
-    const tax = subtotal * 0.14; // 14% tax (adjust as needed)
-    const total = order.totalAmount || subtotal + tax;
 
-    // Format date
+    // Clean customer name (remove domain from email)
+    const cleanCustomerName = (customer: string): string => {
+        if (!customer || customer === 'Walk-in') return 'Walk-in';
+        // If it's an email, extract only the username part
+        if (customer.includes('@')) {
+            return customer.split('@')[0];
+        }
+        return customer;
+    };
+
+    // Format date and time in one line
     const orderDate = new Date(order.orderDate || '');
-    const formattedDate = orderDate.toLocaleDateString('en-US', {
+    const formattedDateTime = orderDate.toLocaleDateString('en-US', {
         year: 'numeric',
-        month: 'long',
+        month: 'short',
         day: 'numeric'
-    });
-    const formattedTime = orderDate.toLocaleTimeString('en-US', {
+    }) + ' ' + orderDate.toLocaleTimeString('en-US', {
         hour: '2-digit',
         minute: '2-digit'
     });
@@ -61,7 +68,7 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
             }
         </style>
         <div style="
-            max-width: 400px; 
+            max-width: 600px; 
             margin: 0 auto; 
             font-family: 'Arial', sans-serif; 
             color: black;
@@ -78,36 +85,24 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
             </div>
 
             <!-- Restaurant Info -->
-            <div style="text-align: center; margin-bottom: 18px;">
+            <div style="text-align: center; margin-bottom: 15px;">
                 <h2 style="margin: 5px 0; color: black; font-size: 20px;">${branchInfo.restaurantName}</h2>
-                ${branchInfo.address ? `<p style="margin: 3px 0; color: black; font-size: 14px;">Address: ${branchInfo.address}</p>` : ''}
-                ${branchInfo.phone ? `<p style="margin: 3px 0; color: black; font-size: 14px;">Phone: ${branchInfo.phone}</p>` : ''}
+                <div style="display: flex; justify-content: space-between; align-items: center; font-size: 12px; color: black; margin-top: 5px;">
+                    ${branchInfo.address ? `<span style="text-align: left; flex: 1;">${branchInfo.address}</span>` : '<span style="flex: 1;"></span>'}
+                    ${branchInfo.phone ? `<span style="text-align: right; flex: 1;">${branchInfo.phone}</span>` : '<span style="flex: 1;"></span>'}
+                </div>
             </div>
 
             <!-- Order Info -->
-            <div style="border: 1px solid black; padding: 15px; margin-bottom: 15px;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span style="font-weight: bold;">Order #:</span>
-                    <span>${order.orderId.substring(0, 8).toUpperCase()}</span>
+            <div style="border: 1px solid black; padding: 10px; margin-bottom: 15px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 14px; width: 100%;">
+                    <span style="text-align: left; flex: 1; padding-right: 10px;">${order.orderId.substring(0, 8).toUpperCase()}</span>
+                    <span style="text-align: right; flex: 1; padding-left: 10px;">${cleanCustomerName(order.customer || 'Walk-in')}</span>
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px; align-items: flex-start;">
-                    <span style="font-weight: bold; min-width: 80px;">Customer:</span>
-                    <span style="text-align: right; word-wrap: break-word; overflow-wrap: break-word; max-width: 200px; flex: 1; margin-left: 10px;">${order.customer || 'Walk-in'}</span>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px; font-size: 14px; width: 100%;">
+                    <span style="text-align: left; flex: 1; padding-right: 10px;">${formattedDateTime}</span>
+                    ${order.orderType ? `<span style="text-align: right; flex: 1; padding-left: 10px;">${order.orderType}${order.tableNumber ? ` - Table ${order.tableNumber}` : ''}</span>` : '<span style="text-align: right; flex: 1; padding-left: 10px;"></span>'}
                 </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span style="font-weight: bold;">Date:</span>
-                    <span>${formattedDate}</span>
-                </div>
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span style="font-weight: bold;">Time:</span>
-                    <span>${formattedTime}</span>
-                </div>
-                ${order.orderType ? `
-                <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                    <span style="font-weight: bold;">Type:</span>
-                    <span>${order.orderType}${order.tableNumber ? ` - Table ${order.tableNumber}` : ''}</span>
-                </div>
-                ` : ''}
             </div>
 
             <!-- Order Items -->
@@ -127,6 +122,7 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
                         <tr style="border-bottom: 1px solid black;">
                             <td style="padding: 10px 8px; font-size: 14px; border-right: 1px solid black; word-wrap: break-word; overflow-wrap: break-word; max-width: 150px;">
                                 <strong>${item.item.name}</strong>
+                                <br><small style="color: #666; font-size: 12px;">${item.item.category}</small>
                             </td>
                             <td style="text-align: center; padding: 10px 8px; font-size: 14px; border-right: 1px solid black;">${item.quantity}</td>
                             <td style="text-align: right; padding: 10px 8px; font-size: 14px; border-right: 1px solid black;">L.E.${item.item.price.toFixed(2)}</td>
@@ -144,12 +140,12 @@ const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Prom
                     <span>L.E.${subtotal.toFixed(2)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; margin-bottom: 8px; font-size: 14px;">
-                    <span>Tax (14%):</span>
-                    <span>L.E.${tax.toFixed(2)}</span>
+                    <span>Service Charge (%${branchInfo.taxRate}):</span>
+                    <span>L.E.${branchInfo.taxRate.toFixed(2)}</span>
                 </div>
                 <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight: bold; color: black; padding-top: 8px; border-top: 1px solid black;">
                     <span>TOTAL:</span>
-                    <span>L.E.${total.toFixed(2)}</span>
+                    <span>L.E.${order.totalAmount.toFixed(2)}</span>
                 </div>
             </div>
 
