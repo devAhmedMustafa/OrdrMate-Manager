@@ -32,6 +32,18 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
     }
   };
 
+  const getPaymentStatusColor = (isPaid: boolean): string => {
+    return isPaid ? '#4CAF50' : '#F44336';
+  };
+
+  const getPaymentStatusText = (isPaid: boolean): string => {
+    return isPaid ? 'Paid' : 'Unpaid';
+  };
+
+  const getPaymentIcon = (isPaid: boolean): string => {
+    return isPaid ? 'mdi:check-circle' : 'mdi:clock-outline';
+  };
+
   return (
     <div className={styles.card} onClick={onClick}>
       <div className={styles.header}>
@@ -55,6 +67,26 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
             style={{ backgroundColor: getStatusColor(order.orderStatus) }}
           >
             {order.orderStatus}
+          </div>
+          {/* Payment Status Badge */}
+          <div 
+            className={styles.paymentStatus}
+            style={{ 
+              backgroundColor: getPaymentStatusColor(order.isPaid || false),
+              color: 'white',
+              padding: '4px 8px',
+              borderRadius: '12px',
+              fontSize: '12px',
+              fontWeight: 'bold',
+              display: 'flex',
+              alignItems: 'center',
+              gap: '4px',
+              marginLeft: '8px'
+            }}
+            title={`Payment Status: ${getPaymentStatusText(order.isPaid || false)}`}
+          >
+            <Icon icon={getPaymentIcon(order.isPaid || false)} style={{ fontSize: '14px' }} />
+            {getPaymentStatusText(order.isPaid || false)}
           </div>
         </div>
       </div>
@@ -86,6 +118,19 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
               </span>
             </div>
           )}
+          {/* Payment Status in Footer */}
+          <div className={styles.detail}>
+            <span className={styles.label}>Payment:</span>
+            <span 
+              className={styles.value}
+              style={{ 
+                color: getPaymentStatusColor(order.isPaid || false),
+                fontWeight: 'bold'
+              }}
+            >
+              {getPaymentStatusText(order.isPaid || false)}
+            </span>
+          </div>
           <div className={styles.detail}>
             <span className={styles.label}>Total:</span>
             <span className={styles.total}>
@@ -96,4 +141,4 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
       </div>
     </div>
   );
-} 
+}
