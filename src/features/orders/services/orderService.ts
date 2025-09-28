@@ -1,7 +1,7 @@
 import api from '../../../utils/api';
 import PlaceOrderRequestDto from '../../manual-order/PlaceOrderRequest.dto';
 import Order from '../models/Order';
-import { OrderStatus, UnpaidOrder } from '../types';
+import { OrderStatus } from '../types';
 
 export interface CheckPreparedResponse {
   dequedItemId: string;
@@ -63,7 +63,7 @@ class OrderService {
     return queues;
   }
 
-  async getUnpaidOrders(branchId: string): Promise<UnpaidOrder[]> {
+  async getUnpaidOrders(branchId: string): Promise<Order[]> {
     const response = await api.get(`/Order/unpaid/${branchId}`);
     return response.data;
   }
@@ -121,6 +121,9 @@ class OrderService {
     await api.put(`/UpdateOrder/set-ready/${orderId}`);
   }
 
+  async changeOrderPaymentProvider(orderId: string, provider: string): Promise<void> {
+    await api.put(`/UpdateOrder/payment-provider/${orderId}`, { paymentProvider: provider });
+  }
 
 }
 

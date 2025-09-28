@@ -6,6 +6,8 @@ export default interface Order {
     branchId: string;
     orderItems: OrderItem[];
     orderStatus: string;
+    paymentProvider: string;
+    paymentMethod: string;
     orderType: string;
     orderDate: string;
     totalAmount: number;

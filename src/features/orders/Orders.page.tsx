@@ -2,13 +2,13 @@ import { useEffect, useState, useMemo } from 'react';
 // import { KitchenQueue } from './components/KitchenQueue';
 import { OrderCard } from './components/OrderCard';
 import { UnpaidOrders } from './components/UnpaidOrders';
-import { UnpaidOrder } from './types';
 import styles from './Orders.module.css';
 import useAuth from '../auth/useAuth.hook';
 import { orderService } from './services/orderService';
 import { websocketService } from '../dashboard/services/websocketService';
 import TakeawayOrders from './components/TakeawayOrders';
 import Order from './models/Order';
+import { printOrderInvoice } from './utils/printOrder';
 // import OrderItem from './models/OrderItem';
 
 type Tab = 'orders' | 'unpaid' | 'takeaway' | string;
@@ -24,7 +24,7 @@ interface OrderFilters {
 function Orders() {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
   // const [kitchenQueues, setKitchenQueues] = useState<Record<string, Order[]>>({});
-  const [unpaidOrders, setUnpaidOrders] = useState<UnpaidOrder[]>([]);
+  const [unpaidOrders, setUnpaidOrders] = useState<Order[]>([]);
   const [allOrders, setAllOrders] = useState<Order[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('orders');
   const [previousTab, setPreviousTab] = useState<Tab>('orders');
@@ -243,6 +243,7 @@ function Orders() {
       await orderService.markAsPaid(orderId);
       // Remove the paid order from the list
       setUnpaidOrders(prev => prev.filter(order => order.orderId !== orderId));
+      printOrderInvoice(allOrders.find(o => o.orderId === orderId) as Order);
     } catch (error) {
       console.error('Error marking order as paid:', error);
     }

@@ -118,6 +118,14 @@ export function OrderCard({ order, onClick }: OrderCardProps) {
               </span>
             </div>
           )}
+
+          {/* Payment Provider: */}
+          <div className={styles.detail}>
+            <span className={styles.label}>Payment Provider:</span>
+            
+            <span className={styles.value}>{order.paymentProvider || 'N/A'}</span>
+          </div>
+
           {/* Payment Status in Footer */}
           <div className={styles.detail}>
             <span className={styles.label}>Payment:</span>
