@@ -98,7 +98,7 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
                 <!-- Item Header -->
                 <div style="background-color: #f0f0f0; padding: 8px 12px; border-bottom: 1px solid #ddd; display: flex; justify-content: space-between; align-items: center;">
                     <div style="font-weight: bold; font-size: 14px; color: #000; max-width: 70%; word-wrap: break-word;">
-                        ${index + 1}. ${item.item.name}
+                        ${index + 1}. ${item.item.name} -> ${item.item.category || 'General'}
                     </div>
                     <div style="background-color: #000; color: white; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 16px; min-width: 50px; text-align: center;">
                         ×${item.quantity}
@@ -122,7 +122,7 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
                 </div>
                 ` : ''}
                 
-                <!-- Item Notes Section (if needed in future) -->
+                <!-- Item Notes Section -->
                 <div style="padding: 6px 12px; background-color: #f9f9f9; border-top: 1px solid #eee; font-size: 10px; color: #666; text-align: center;">
                     Item #${index + 1} | Category: ${item.item.category || 'General'}
                 </div>
