@@ -100,7 +100,7 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
                     <div style="font-weight: bold; font-size: 35px; color: #000; max-width: 70%; word-wrap: break-word;">
                         ${index + 1}. ${item.item.name} -> ${item.item.category || 'General'}
                     </div>
-                    <div style=" color: black; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 25px; min-width: 50px; text-align: center;">
+                    <div style=" color: black; padding: 4px 12px; border-radius: 20px; font-weight: bold; font-size: 30px; min-width: 50px; text-align: center;">
                         ×${item.quantity}
                     </div>
                 </div>
@@ -113,7 +113,7 @@ const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchI
                     </div>
                     <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 4px;">
                         ${Object.entries(item.customizations).map(([key, value]) => `
-                        <div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 4px; padding: 4px 8px; font-size: 30px;">
+                        <div style="background-color: white; border: 1px solid #e0e0e0; border-radius: 4px; padding: 4px 8px; font-size: 34px;">
                             <span style="font-weight: bold; color: #333;">${key}:</span> 
                             <span style="color: #000;">${value}</span>
                         </div>
