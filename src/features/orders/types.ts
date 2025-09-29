@@ -31,6 +31,8 @@ export interface Order {
   totalAmount: number;
   isPaid: boolean;
   customer: string;
+  paymentMethod: string;
+  customerPhone?: string | null;
   orderNumber?: number | null;
 }
 

@@ -69,6 +69,14 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
               <span className={styles.value}>{order.customer}</span>
             </div>
           )}
+
+          {order.customerPhone && (
+            <div className={styles.detail}>
+              <span className={styles.label}>Phone:</span>
+              <span className={styles.value}>{order.customerPhone}</span>
+            </div>
+          )}
+
           {order.orderDate && (
             <div className={styles.detail}>
               <span className={styles.label}>Date:</span>
@@ -83,6 +91,13 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
               ${order.totalAmount?.toFixed(2) || order.orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}
             </span>
           </div>
+
+          {order.paymentMethod && (
+            <div className={styles.detail}>
+              <span className={styles.label}>Payment:</span>
+              <span className={styles.value}>{order.paymentMethod}</span>
+            </div>
+          )}
         </div>
         
         {onConfirmOrder && (
