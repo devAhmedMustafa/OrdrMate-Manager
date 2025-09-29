@@ -14,8 +14,6 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
         return '#FFA726';
       case "Queued":
         return '#3a1cbe';
-      case "InProgress":
-        return '#42A5F5';
       case "Ready":
         return '#66BB6A';
       case "Delivered":
@@ -58,6 +56,26 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
               <span className={styles.quantity}>{item.quantity}x</span>
             </div>
           ))}
+        </div>
+      )}
+
+      {/* Delivery Details Section */}
+      {order.orderType === 'Delivery' && order.deliveryDetails && (
+        <div className={styles.deliverySection}>
+          <div className={styles.deliveryHeader}>
+            <span className={styles.deliveryIcon}>🚚</span>
+            <span className={styles.deliveryTitle}>Delivery Address</span>
+          </div>
+          <div className={styles.deliveryAddress}>
+            {order.deliveryDetails.address}
+          </div>
+          {order.deliveryDetails.latitude && order.deliveryDetails.longitude && (
+            <div className={styles.deliveryCoords}>
+              <span className={styles.coordsText}>
+                📍 {order.deliveryDetails.latitude.toFixed(6)}, {order.deliveryDetails.longitude.toFixed(6)}
+              </span>
+            </div>
+          )}
         </div>
       )}
 
