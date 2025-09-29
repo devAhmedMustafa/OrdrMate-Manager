@@ -1,11 +1,11 @@
 .container {
   min-height: 100vh;
-  background: #f8f9fa;
+  background: var(--color-background);
 }
 
 .header {
   background: white;
-  border-bottom: 1px solid #e0e0e0;
+  border-bottom: 1px solid #e5e7eb;
   padding: 24px 32px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
@@ -20,19 +20,19 @@
 
 .headerIcon {
   font-size: 2.5rem;
-  color: #7B1FA2;
+  color: var(--color-primary);
 }
 
 .header h1 {
   margin: 0;
   font-size: 2rem;
-  color: #1a1a1a;
+  color: var(--color-primary-dark);
   font-weight: 700;
 }
 
 .header p {
   margin: 4px 0 0 0;
-  color: #666;
+  color: #6b7280;
   font-size: 1rem;
 }
 
@@ -47,20 +47,20 @@
 
 .sidebar {
   background: white;
-  border-right: 1px solid #e0e0e0;
+  border-right: 1px solid #e5e7eb;
   padding: 24px 0;
 }
 
 .sidebarHeader {
   padding: 0 24px 16px 24px;
-  border-bottom: 1px solid #f0f0f0;
+  border-bottom: 1px solid #e5e7eb;
   margin-bottom: 16px;
 }
 
 .sidebarHeader h2 {
   margin: 0;
   font-size: 1.2rem;
-  color: #333;
+  color: var(--color-primary-dark);
   font-weight: 600;
 }
 
@@ -78,7 +78,7 @@
   padding: 16px 24px;
   border: none;
   background: none;
-  color: #666;
+  color: #6b7280;
   font-size: 0.95rem;
   font-weight: 500;
   text-align: left;
@@ -88,14 +88,14 @@
 }
 
 .tab:hover {
-  background: #f8f9fa;
-  color: #333;
+  background: #f9fafb;
+  color: #374151;
 }
 
 .activeTab {
-  background: rgba(123, 31, 162, 0.08) !important;
-  color: #7B1FA2 !important;
-  border-left-color: #7B1FA2;
+  background: rgba(14, 116, 144, 0.08) !important;
+  color: var(--color-primary) !important;
+  border-left-color: var(--color-primary);
   font-weight: 600;
 }
 
@@ -105,7 +105,7 @@
 }
 
 .tabContent {
-  background: #f8f9fa;
+  background: var(--color-background);
   padding: 0;
   overflow-y: auto;
 }
@@ -121,25 +121,25 @@
   margin: 24px;
   border-radius: 12px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e0e0e0;
+  border: 1px solid #e5e7eb;
 }
 
 .placeholder h3 {
   margin: 24px 0 12px 0;
   font-size: 1.5rem;
-  color: #333;
+  color: var(--color-primary-dark);
   font-weight: 600;
 }
 
 .placeholder p {
   margin: 0;
-  color: #666;
+  color: #6b7280;
   font-size: 1rem;
   line-height: 1.5;
 }
 
 .placeholder svg {
-  color: #7B1FA2;
+  color: var(--color-primary);
   opacity: 0.6;
 }
 
@@ -168,7 +168,7 @@
   
   .sidebar {
     border-right: none;
-    border-bottom: 1px solid #e0e0e0;
+    border-bottom: 1px solid #e5e7eb;
     padding: 16px 0;
   }
   
@@ -191,7 +191,7 @@
   
   .activeTab {
     border-left: none;
-    border-bottom-color: #7B1FA2;
+    border-bottom-color: var(--color-primary);
   }
   
   .sidebarHeader {
