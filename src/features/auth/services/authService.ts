@@ -8,7 +8,7 @@ export interface LoginCredentials {
 export interface LoginResponse {
   token: string;
   role: string;
-  pharmacyId?: string;
+  storeId?: string;
   branchId?: string;
 }
 
@@ -21,7 +21,7 @@ export const authService = {
   logout: () => {
     localStorage.removeItem('token');
     localStorage.removeItem('role');
-    localStorage.removeItem('pharmacyId');
+    localStorage.removeItem('storeId');
     localStorage.removeItem('branchId');
   }
 }; 

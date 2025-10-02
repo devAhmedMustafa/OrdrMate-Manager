@@ -10,7 +10,7 @@ interface MenuItemWithPresignedUrl extends MenuItem {
 }
 
 export default function MenuPage() {
-  const { pharmacyId, token } = useAuth();
+  const { storeId, token } = useAuth();
   const navigate = useNavigate();
   const [items, setItems] = useState<MenuItemWithPresignedUrl[]>([]);
   const [loading, setLoading] = useState(true);
@@ -19,10 +19,10 @@ export default function MenuPage() {
 
   useEffect(() => {
     const fetchItems = async () => {
-      if (!pharmacyId || !token) return;
+      if (!storeId || !token) return;
 
       try {
-        const items = await itemService.getPharmacyItems(pharmacyId);
+        const items = await itemService.getStoreItems(storeId);
         
         // Get presigned URLs for all items
         const itemsWithUrls = await Promise.all(
@@ -43,7 +43,7 @@ export default function MenuPage() {
     };
 
     fetchItems();
-  }, [pharmacyId, token]);
+  }, [storeId, token]);
 
   const categories = useMemo(() => {
     const uniqueCategories = new Set(items.map(item => item.category));

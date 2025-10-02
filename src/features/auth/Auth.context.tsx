@@ -2,11 +2,11 @@ import React, { createContext, useState } from "react";
 
 interface AuthContextType {
     isAuthenticated: boolean;
-    login: (token: string, role: string, pharmacyId: string, branchId?: string) => void;
+    login: (token: string, role: string, storeId: string, branchId?: string) => void;
     logout: () => void;
     token: string | null;
     role: string | null;
-    pharmacyId: string | null;
+    storeId: string | null;
     branchId: string | null;
 }
 
@@ -15,19 +15,19 @@ export const AuthContext = createContext<AuthContextType | null>(null);
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     const [token, setToken] = useState<string | null>(() => localStorage.getItem('token'));
     const [role, setRole] = useState<string | null>(() => localStorage.getItem('role'));
-    const [pharmacyId, setPharmacyId] = useState<string | null>(() => localStorage.getItem('pharmacyId'));
+    const [storeId, setStoreId] = useState<string | null>(() => localStorage.getItem('storeId'));
     const [branchId, setBranchId] = useState<string | null>(() => localStorage.getItem('branchId'));
 
-    const login = (newToken: string, role: string, pharmacyId: string, branchId?: string) => {
+    const login = (newToken: string, role: string, storeId: string, branchId?: string) => {
         localStorage.setItem('token', newToken);
         localStorage.setItem('role', role);
-        localStorage.setItem('pharmacyId', pharmacyId);
+        localStorage.setItem('storeId', storeId); // Keep API key name for backend compatibility
         if (branchId) {
             localStorage.setItem('branchId', branchId);
         }
         setToken(newToken);
         setRole(role);
-        setPharmacyId(pharmacyId);
+        setStoreId(storeId);
         if (branchId) {
             setBranchId(branchId);
         }
@@ -36,18 +36,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const logout = () => {
         localStorage.removeItem('token');
         localStorage.removeItem('role');
-        localStorage.removeItem('pharmacyId');
+        localStorage.removeItem('storeId');
         localStorage.removeItem('branchId');
         setToken(null);
         setRole(null);
-        setPharmacyId(null);
+        setStoreId(null);
         setBranchId(null);
     }
 
     const isAuthenticated = Boolean(token);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, login, logout, token, role, pharmacyId, branchId }}>
+        <AuthContext.Provider value={{ isAuthenticated, login, logout, token, role, storeId, branchId }}>
             {children}
         </AuthContext.Provider>
     )

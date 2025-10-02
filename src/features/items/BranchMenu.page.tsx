@@ -16,7 +16,7 @@ interface MenuItemWithAvailability extends MenuItemWithPresignedUrl {
 }
 
 export default function BranchMenuPage() {
-  const { pharmacyId, token, branchId } = useAuth();
+  const { storeId, token, branchId } = useAuth();
   const [items, setItems] = useState<MenuItemWithAvailability[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');
@@ -34,7 +34,7 @@ export default function BranchMenuPage() {
 
       try {
         const [menuItems, availabilityData] = await Promise.all([
-          itemService.getPharmacyItems(pharmacyId!),
+          itemService.getStoreItems(storeId!),
           itemService.getItemAvailability(branchId)
         ]);
 
@@ -63,7 +63,7 @@ export default function BranchMenuPage() {
     };
 
     fetchItems();
-  }, [pharmacyId, branchId, token]);
+  }, [storeId, branchId, token]);
 
   async function updateQuantity(itemId: string, newStock: number) {
     if (!branchId) return;

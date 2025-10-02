@@ -13,14 +13,14 @@
     max-width: 64rem;
     background-color: white;
     border-radius: 16px;
-    box-shadow: 0 10px 25px rgba(58, 231, 237, 0.05);
+    box-shadow: 0 10px 25px rgba(237, 219, 58, 0.05);
     padding: 2.5rem;
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .formContainer:hover {
     transform: translateY(-2px);
-    box-shadow: 0 15px 30px rgba(124, 58, 237, 0.08);
+    box-shadow: 0 15px 30px rgba(237, 144, 58, 0.08);
 }
 
 .title {
@@ -74,7 +74,7 @@
     font-size: 1rem;
     color: var(--color-primary-dark);
     transition: all 0.2s ease;
-    background-color: #f5fffd;
+    background-color: #fffdf5;
 }
 
 .input:hover {
@@ -86,7 +86,7 @@
     outline: none;
     border-color: var(--color-primary-dark);
     background-color: #fff;
-    box-shadow: 0 0 0 4px rgba(51, 197, 234, 0.1);
+    box-shadow: 0 0 0 4px rgba(234, 216, 51, 0.1);
 }
 
 .textarea {
@@ -111,7 +111,7 @@
     outline: none;
     border-color: var(--color-primary-dark);
     background-color: #fff;
-    box-shadow: 0 0 0 4px rgba(51, 234, 204, 0.1);
+    box-shadow: 0 0 0 4px rgba(234, 207, 51, 0.1);
 }
 
 .error {
@@ -147,12 +147,12 @@
 .submitButton:hover {
     background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-accent-light) 100%);
     transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(51, 197, 234, 0.2);
+    box-shadow: 0 4px 12px rgba(152, 51, 234, 0.2);
 }
 
 .submitButton:focus {
     outline: none;
-    box-shadow: 0 0 0 4px rgba(51, 234, 194, 0.2);
+    box-shadow: 0 0 0 4px rgba(130, 51, 234, 0.2);
 }
 
 .submitButton:disabled {
@@ -194,7 +194,7 @@
     margin-top: 1rem;
     border-radius: 12px;
     object-fit: cover;
-    box-shadow: 0 4px 12px rgba(58, 237, 213, 0.05);
+    box-shadow: 0 4px 12px rgba(142, 58, 237, 0.05);
     border: 2px solid var(--color-background);
     transition: all 0.2s ease;
 }

@@ -15,7 +15,7 @@
 
 .headerIcon {
   font-size: 2.5rem;
-  color: #7B1FA2;
+  color: #905f37;
 }
 
 .header h2 {
@@ -104,7 +104,7 @@
 
 .input:focus {
   outline: none;
-  border-color: #7B1FA2;
+  border-color: #905f37;
   box-shadow: 0 0 0 3px rgba(123, 31, 162, 0.1);
 }
 
@@ -134,7 +134,7 @@
 }
 
 .dayLabel:hover {
-  border-color: #7B1FA2;
+  border-color: #905f37;
   background: rgba(123, 31, 162, 0.05);
 }
 
@@ -142,7 +142,7 @@
   margin: 0;
   width: 18px;
   height: 18px;
-  accent-color: #7B1FA2;
+  accent-color: #905f37;
 }
 
 .dayName {
@@ -152,7 +152,7 @@
 }
 
 .dayName.active {
-  color: #7B1FA2;
+  color: #905f37;
   font-weight: 600;
 }
 
@@ -212,12 +212,12 @@
 }
 
 .saveButton {
-  background: #7B1FA2;
+  background: #905f37;
   color: white;
 }
 
 .saveButton:hover:not(:disabled) {
-  background: #9C27B0;
+  background: #d2a81e;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(123, 31, 162, 0.2);
 }

@@ -1,10 +1,10 @@
 import { useEffect, useState } from 'react';
 import useAuth from '../../auth/useAuth.hook';
 import styles from './RestaurantHeader.module.css';
-import { restaurantService, Restaurant } from '../services/restaurantService';
+import { restaurantService, Restaurant } from '../services/storeService';
 
 export function RestaurantHeader() {
-  const { pharmacyId: restaurantId, token } = useAuth();
+  const { storeId: restaurantId, token } = useAuth();
   const [restaurant, setRestaurant] = useState<Restaurant | null>(null);
   const [error, setError] = useState<string>('');
 

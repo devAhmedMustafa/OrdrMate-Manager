@@ -8,7 +8,7 @@ import { uploadService } from './services/uploadService';
 export default function ItemDetailPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { token, pharmacyId: restaurantId } = useAuth();
+    const { token, storeId: restaurantId } = useAuth();
   const [item, setItem] = useState<MenuItem | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string>('');

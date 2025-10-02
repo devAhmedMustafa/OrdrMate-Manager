@@ -7,7 +7,7 @@ import { itemService, MenuItem } from "./services/itemService";
 import { uploadService } from "./services/uploadService";
 
 type AddItemFormData = Omit<MenuItem, 'id'> & {
-    pharmacyId: string;
+    storeId: string;
 };
 
 interface FileWithUrl extends File {
@@ -15,7 +15,7 @@ interface FileWithUrl extends File {
 }
 
 export default function AddItemPage() {
-    const { token, role, pharmacyId } = useAuth(); 
+    const { token, role, storeId } = useAuth(); 
     const navigate = useNavigate();
     const [error, setError] = useState("");
     const [loading, setLoading] = useState(false);
@@ -51,7 +51,7 @@ export default function AddItemPage() {
 
     async function handleSubmit(e: React.FormEvent<HTMLFormElement>) {
         e.preventDefault();
-        if (!token || !pharmacyId) return;
+        if (!token || !storeId) return;
         
         setError("");
         setLoading(true);
@@ -63,7 +63,7 @@ export default function AddItemPage() {
             price: Number((form.elements.namedItem('price') as HTMLInputElement).value),
             category: (form.elements.namedItem('category') as HTMLInputElement).value,
             subCategory: (form.elements.namedItem('subCategory') as HTMLInputElement).value,
-            pharmacyId,
+            storeId: storeId,
             imageUrl: selectedFile?.fileUrl || '',
             priority: 0,
             tags: "",
@@ -95,7 +95,7 @@ export default function AddItemPage() {
     return (
         <div className={styles.container}>
             <div className={styles.formContainer}>
-                <h1 className={styles.title}>Add New Item</h1>
+                <h1 className={styles.title}>Add New Clothing Item</h1>
                 
                 <form onSubmit={handleSubmit} className={styles.form}>
                     <div className={styles.formGroup}>

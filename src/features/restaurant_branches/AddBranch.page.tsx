@@ -7,13 +7,18 @@ import { branchService, CreateBranchData } from './services/branchService';
 
 export default function AddBranchPage() {
   const navigate = useNavigate();
-  const { pharmacyId: restaurantId, token } = useAuth();
+  const { storeId, token } = useAuth();
+  
+  if (!storeId) {
+    throw new Error('Store ID is required to add a branch');
+  }
+
   const [formData, setFormData] = useState<CreateBranchData>({
-    lantitude: 0,
+    latitude: 0,
     longitude: 0,
     branchAddress: '',
     branchPhoneNumber: '',
-    restaurantId: ''
+    storeId: storeId!
   });
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
@@ -22,7 +27,7 @@ export default function AddBranchPage() {
     const { name, value } = e.target;
     setFormData(prev => ({
       ...prev,
-      [name]: name === 'lantitude' || name === 'longitude' ? parseFloat(value) : value
+      [name]: name === 'latitude' || name === 'longitude' ? parseFloat(value) : value
     }));
   };
 
@@ -31,15 +36,15 @@ export default function AddBranchPage() {
     setError('');
     setSuccess(false);
 
-    if (!restaurantId || !token) {
-      setError('Restaurant ID or token is missing');
+    if (!storeId || !token) {
+      setError('Store ID or token is missing');
       return;
     }
 
     try {
       await branchService.createBranch({
         ...formData,
-        restaurantId
+        storeId
       });
 
       setSuccess(true);
@@ -62,12 +67,12 @@ export default function AddBranchPage() {
         <form onSubmit={handleSubmit} className={styles.form}>
           <div className={styles.formRow}>
             <div className={styles.formGroup}>
-              <label htmlFor="lantitude">Latitude</label>
+              <label htmlFor="latitude">Latitude</label>
               <input
-                id="lantitude"
-                name="lantitude"
+                id="latitude"
+                name="latitude"
                 type="number"
-                value={formData.lantitude}
+                value={formData.latitude}
                 onChange={handleChange}
                 required
               />

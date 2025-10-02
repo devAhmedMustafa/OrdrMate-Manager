@@ -156,7 +156,7 @@
 }
 
 .payButton:hover {
-  background: #9C27B0;
+  background: #d2a81e;
   transform: translateY(-2px);
   box-shadow: 0 4px 12px rgba(123, 31, 162, 0.2);
 }

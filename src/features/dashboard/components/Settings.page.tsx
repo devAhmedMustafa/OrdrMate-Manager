@@ -4,13 +4,13 @@ import AddBranchPage from '../../restaurant_branches/AddBranch.page';
 import styles from './Settings.module.css';
 import { uploadService } from '../../items/services/uploadService';
 import useAuth from '../../auth/useAuth.hook';
-import { restaurantService, RestaurantProfile } from '../services/restaurantService';
+import { restaurantService, RestaurantProfile } from '../services/storeService';
 
 type SettingsTab = 'branches' | 'profile' | 'notifications';
 
 export default function SettingsPage() {
   const [activeTab, setActiveTab] = useState<SettingsTab>('branches');
-  const { pharmacyId: restaurantId } = useAuth();
+    const { storeId: restaurantId } = useAuth();
   const [profileData, setProfileData] = useState<RestaurantProfile>({
     description: '',
     logoUrl: '',

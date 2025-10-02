@@ -21,9 +21,9 @@ export interface ItemAvailability {
 }
 
 export const itemService = {
-  // Get all items for a pharmacy
-  getPharmacyItems: async (pharmacyId: string): Promise<MenuItem[]> => {
-    const response = await api.get(`/Item/pharmacy/${pharmacyId}`);
+  // Get all items for a store
+  getStoreItems: async (storeId: string): Promise<MenuItem[]> => {
+    const response = await api.get(`/Item/store/${storeId}`);
     return response.data;
   },
 

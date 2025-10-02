@@ -33,7 +33,7 @@ export default function LoginPage() {
       const response = await authService.login(credentials);
       
       // Use auth context to store credentials
-      login(response.token, response.role, response.pharmacyId || '', response.branchId);
+      login(response.token, response.role, response.storeId || '', response.branchId);
 
       // Redirect based on role
       switch (response.role) {
@@ -61,8 +61,8 @@ export default function LoginPage() {
       <div className={styles.loginCard}>
         <div className={styles.header}>
           <img src={logo} alt="Ordr Mate Logo" className={styles.logo} />
-          <h1 className={styles.appName}>GCM</h1>
-          <p className={styles.appSubtitle}>Green City Manager</p>
+          <h1 className={styles.appName}>CSM</h1>
+          <p className={styles.appSubtitle}>Clothing Store Manager</p>
         </div>
 
         <form onSubmit={handleSubmit} className={styles.form}>

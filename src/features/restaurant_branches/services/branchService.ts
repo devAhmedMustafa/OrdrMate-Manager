@@ -10,11 +10,11 @@ export interface Branch {
 }
 
 export interface CreateBranchData {
-  lantitude: number;
+  latitude: number;
   longitude: number;
   branchAddress: string;
   branchPhoneNumber: string;
-  restaurantId: string;
+  storeId: string;
 }
 
 export const branchService = {
@@ -24,7 +24,7 @@ export const branchService = {
   },
 
   createBranch: async (data: CreateBranchData): Promise<Branch> => {
-    const response = await api.post('/Branch', data);
+    const response = await api.post('/Branch/request/create', data);
     return response.data;
   },
 
