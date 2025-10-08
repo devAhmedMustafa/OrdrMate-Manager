@@ -14,8 +14,6 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
         return '#FFA726';
       case "Queued":
         return '#3a1cbe';
-      case "InProgress":
-        return '#42A5F5';
       case "Ready":
         return '#66BB6A';
       case "Delivered":
@@ -61,6 +59,26 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
         </div>
       )}
 
+      {/* Delivery Details Section */}
+      {order.orderType === 'Delivery' && order.deliveryDetails && (
+        <div className={styles.deliverySection}>
+          <div className={styles.deliveryHeader}>
+            <span className={styles.deliveryIcon}>🚚</span>
+            <span className={styles.deliveryTitle}>Delivery Address</span>
+          </div>
+          <div className={styles.deliveryAddress}>
+            {order.deliveryDetails.address}
+          </div>
+          {order.deliveryDetails.latitude && order.deliveryDetails.longitude && (
+            <div className={styles.deliveryCoords}>
+              <span className={styles.coordsText}>
+                📍 {order.deliveryDetails.latitude.toFixed(6)}, {order.deliveryDetails.longitude.toFixed(6)}
+              </span>
+            </div>
+          )}
+        </div>
+      )}
+
       <div className={styles.footer}>
         <div className={styles.orderDetails}>
           {order.customer && (
@@ -69,6 +87,14 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
               <span className={styles.value}>{order.customer}</span>
             </div>
           )}
+
+          {order.customerPhone && (
+            <div className={styles.detail}>
+              <span className={styles.label}>Phone:</span>
+              <span className={styles.value}>{order.customerPhone}</span>
+            </div>
+          )}
+
           {order.orderDate && (
             <div className={styles.detail}>
               <span className={styles.label}>Date:</span>
@@ -83,6 +109,13 @@ export function OrderCard({ order, onClick, onConfirmOrder }: OrderCardProps) {
               ${order.totalAmount?.toFixed(2) || order.orderItems.reduce((sum, item) => sum + (item.price * item.quantity), 0).toFixed(2)}
             </span>
           </div>
+
+          {order.paymentMethod && (
+            <div className={styles.detail}>
+              <span className={styles.label}>Payment:</span>
+              <span className={styles.value}>{order.paymentMethod}</span>
+            </div>
+          )}
         </div>
         
         {onConfirmOrder && (

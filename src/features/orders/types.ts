@@ -31,7 +31,16 @@ export interface Order {
   totalAmount: number;
   isPaid: boolean;
   customer: string;
+  paymentMethod: string;
+  customerPhone?: string | null;
   orderNumber?: number | null;
+  deliveryDetails?: DeliveryDetails | null;
+}
+
+export interface DeliveryDetails {
+  address: string;
+  latitude: number;
+  longitude: number;
 }
 
 export interface UnpaidOrder {
