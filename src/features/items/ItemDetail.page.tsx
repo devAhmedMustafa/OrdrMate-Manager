@@ -14,7 +14,6 @@ export default function ItemDetailPage() {
   const [error, setError] = useState<string>('');
   const [isEditing, setIsEditing] = useState(false);
   const [editedItem, setEditedItem] = useState<MenuItem | null>(null);
-  const [imageUrl, setImageUrl] = useState<string>('');
 
   useEffect(() => {
     const fetchData = async () => {
@@ -26,12 +25,8 @@ export default function ItemDetailPage() {
         ]);
         
         setItem(itemData);
+        setEditedItem(itemData);
 
-        // Get presigned URL for the image
-        if (itemData.imageUrl) {
-          const presignedUrl = await uploadService.getViewPresignedUrl(itemData.imageUrl);
-          setImageUrl(presignedUrl);
-        }
       } catch (err) {
         setError('Failed to load data');
         console.error('Error fetching data:', err);
@@ -150,7 +145,7 @@ export default function ItemDetailPage() {
 
       <div className={styles.content}>
         <div className={styles.imageContainer}>
-          <img src={imageUrl} alt={item.name} className={styles.image} />
+          <img src={item.imageUrl} alt={item.name} className={styles.image} />
         </div>
 
         {isEditing ? (

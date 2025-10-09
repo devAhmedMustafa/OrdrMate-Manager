@@ -170,7 +170,7 @@ export default function BranchMenuPage() {
                       updateQuantity(item.id, newStock);
                     }}
                     style={{
-                      width: '40px',
+                      width: 'auto',
                       border: '1px solid #ddd',
                       borderRadius: '4px',
                       padding: '2px 4px',
