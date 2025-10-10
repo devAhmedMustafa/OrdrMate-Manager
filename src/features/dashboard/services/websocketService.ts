@@ -38,7 +38,7 @@ class WebSocketService extends EventEmitter {
     const protocol = window.location.protocol === 'https:' ? 'wss:' : 'ws:';
     console.log("Protocol for WebSocket:", protocol);
     // Host is the same as the API host
-    const host = import.meta.env.VITE_ENV === 'development' ? 'localhost' : 'ordrmate.starplusgames.com';
+    const host = import.meta.env.VITE_API_URL.replace(/^https?:\/\//, '').replace(/\/api\/?$/, '');
     const port = import.meta.env.VITE_ENV === 'development' ? '5126' : '443';
     return `${protocol}//${host}:${port}/api/Branch/live/${branchId}`;
   }

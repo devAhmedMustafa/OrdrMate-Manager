@@ -14,7 +14,6 @@ const API_CONFIG = {
 
 // Determine current environment
 const isDevelopment = import.meta.env.VITE_ENV === ENV.DEV;
-const currentEnv = isDevelopment ? ENV.DEV : ENV.PROD;
 
 // Create axios instance with default config
 const api: AxiosInstance = axios.create({
@@ -74,7 +73,6 @@ api.interceptors.response.use(
 // Log current environment in development
 if (isDevelopment) {
   console.log('API running in development mode');
-  console.log('Base URL:', API_CONFIG.BASE_URL[currentEnv]);
 }
 
 export default api; 
