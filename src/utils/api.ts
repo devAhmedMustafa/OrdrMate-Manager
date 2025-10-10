@@ -8,10 +8,7 @@ const ENV = {
 
 // API Configuration
 const API_CONFIG = {
-  BASE_URL: {
-    [ENV.DEV]: 'http://localhost:5126/api',
-    [ENV.PROD]: 'https://ordrmate.starplusgames.com/api'
-  },
+  BASE_URL: import.meta.env.VITE_API_URL || 'https://api.example.com',
   TIMEOUT: 10000,
 };
 
@@ -21,7 +18,7 @@ const currentEnv = isDevelopment ? ENV.DEV : ENV.PROD;
 
 // Create axios instance with default config
 const api: AxiosInstance = axios.create({
-  baseURL: API_CONFIG.BASE_URL[currentEnv],
+  baseURL: API_CONFIG.BASE_URL,
   timeout: API_CONFIG.TIMEOUT,
   headers: {
     'Content-Type': 'application/json',
