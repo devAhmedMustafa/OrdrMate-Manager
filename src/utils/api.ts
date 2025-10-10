@@ -73,6 +73,7 @@ api.interceptors.response.use(
 // Log current environment in development
 if (isDevelopment) {
   console.log('API running in development mode');
+  console.log(`Base URL: ${API_CONFIG.BASE_URL}`);
 }
 
 export default api; 
