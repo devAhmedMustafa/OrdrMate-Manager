@@ -45,7 +45,7 @@ export default function DashboardHome() {
               <span>Total Earnings</span>
             </div>
             <div className={styles.balanceAmount}>
-              ${balance?.totalEarnings.toFixed(2) || '0.00'}
+              ${balance?.totalEarnings || '0.00'}
             </div>
           </div>
           <div className={styles.balanceCard}>
@@ -54,7 +54,7 @@ export default function DashboardHome() {
               <span>Today's Earnings</span>
             </div>
             <div className={styles.balanceAmount}>
-              ${balance?.todayEarnings.toFixed(2) || '0.00'}
+              ${balance?.todayEarnings || '0.00'}
             </div>
           </div>
         </div>
