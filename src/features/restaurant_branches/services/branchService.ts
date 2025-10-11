@@ -19,16 +19,12 @@ export interface CreateBranchData {
 
 export const branchService = {
   getRestaurantBranches: async (restaurantId: string): Promise<Branch[]> => {
-    const response = await api.get(`/Branch/restaurant/${restaurantId}`);
+    const response = await api.get(`/Branch/Pharmacy/${restaurantId}`);
     return response.data;
   },
 
   createBranch: async (data: CreateBranchData): Promise<Branch> => {
-    const response = await api.post('/Branch', data);
+    const response = await api.post('/Branch/request/create', data);
     return response.data;
   },
-
-  deleteBranch: async (branchId: string): Promise<void> => {
-    await api.delete(`/Branch/${branchId}`);
-  }
 }; 
