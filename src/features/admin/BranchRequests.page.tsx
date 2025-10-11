@@ -133,8 +133,8 @@ export default function BranchRequestsPage() {
               </div>
               
               <div className={styles.infoGroup}>
-                <label>Restaurant Name</label>
-                <p className={styles.id}>{request.restaurantName}</p>
+                <label>Pharmacy Name</label>
+                <p className={styles.id}>{request.pharmacyName}</p>
               </div>
             </div>
 
