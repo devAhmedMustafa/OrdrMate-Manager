@@ -3,7 +3,7 @@ import api from '../../../utils/api';
 export interface Branch {
   id: string;
   pharmacyId: string;
-  lantitude: number;
+  latitude: number;
   longitude: number;
   branchAddress: string;
   branchPhoneNumber: string;
