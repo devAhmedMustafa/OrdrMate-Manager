@@ -18,10 +18,6 @@ export interface CreateBranchData {
 }
 
 export const branchService = {
-  getRestaurantBranches: async (restaurantId: string): Promise<Branch[]> => {
-    const response = await api.get(`/Branch/Pharmacy/${restaurantId}`);
-    return response.data;
-  },
 
   createBranch: async (data: CreateBranchData): Promise<Branch> => {
     const response = await api.post('/Branch/request/create', data);
