@@ -13,7 +13,7 @@ export default function AddBranchPage() {
     longitude: 0,
     branchAddress: '',
     branchPhoneNumber: '',
-    restaurantId: ''
+    pharmacyId: ''
   });
   const [error, setError] = useState<string>('');
   const [success, setSuccess] = useState<boolean>(false);
@@ -39,7 +39,7 @@ export default function AddBranchPage() {
     try {
       await branchService.createBranch({
         ...formData,
-        restaurantId
+        pharmacyId: restaurantId
       });
 
       setSuccess(true);

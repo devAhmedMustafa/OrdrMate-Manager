@@ -2,7 +2,7 @@ import api from '../../../utils/api';
 
 export interface Branch {
   id: string;
-  restaurantId: string;
+  pharmacyId: string;
   lantitude: number;
   longitude: number;
   branchAddress: string;
@@ -14,7 +14,7 @@ export interface CreateBranchData {
   longitude: number;
   branchAddress: string;
   branchPhoneNumber: string;
-  restaurantId: string;
+  pharmacyId: string;
 }
 
 export const branchService = {

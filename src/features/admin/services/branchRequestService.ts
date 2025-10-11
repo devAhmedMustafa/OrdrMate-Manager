@@ -6,7 +6,7 @@ export interface BranchRequest {
   longitude: number;
   branchAddress: string;
   branchPhoneNumber: string;
-  restaurantName: string;
+  pharmacyName: string;
 }
 
 export interface BranchCredentials {
