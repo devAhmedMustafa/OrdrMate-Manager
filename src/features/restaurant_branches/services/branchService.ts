@@ -10,7 +10,7 @@ export interface Branch {
 }
 
 export interface CreateBranchData {
-  lantitude: number;
+  latitude: number;
   longitude: number;
   branchAddress: string;
   branchPhoneNumber: string;

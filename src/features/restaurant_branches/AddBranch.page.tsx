@@ -7,9 +7,9 @@ import { branchService, CreateBranchData } from './services/branchService';
 
 export default function AddBranchPage() {
   const navigate = useNavigate();
-  const { pharmacyId: restaurantId, token } = useAuth();
+  const { pharmacyId, token } = useAuth();
   const [formData, setFormData] = useState<CreateBranchData>({
-    lantitude: 0,
+    latitude: 0,
     longitude: 0,
     branchAddress: '',
     branchPhoneNumber: '',
@@ -31,15 +31,15 @@ export default function AddBranchPage() {
     setError('');
     setSuccess(false);
 
-    if (!restaurantId || !token) {
-      setError('Restaurant ID or token is missing');
+    if (!pharmacyId || !token) {
+      setError('Pharmacy ID or token is missing');
       return;
     }
 
     try {
       await branchService.createBranch({
         ...formData,
-        pharmacyId: restaurantId
+        pharmacyId
       });
 
       setSuccess(true);
@@ -65,9 +65,9 @@ export default function AddBranchPage() {
               <label htmlFor="lantitude">Latitude</label>
               <input
                 id="lantitude"
-                name="lantitude"
+                name="latitude"
                 type="number"
-                value={formData.lantitude}
+                value={formData.latitude}
                 onChange={handleChange}
                 required
               />
