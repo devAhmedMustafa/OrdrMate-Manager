@@ -26,6 +26,7 @@ export default function ItemDetailPage() {
         ]);
         
         setItem(itemData);
+        setEditedItem(itemData);
 
         // Get presigned URL for the image
         if (itemData.imageUrl) {
