@@ -205,6 +205,12 @@
     border-color: var(--color-primary-light);
 }
 
+.compressing {
+    color: #666;
+    font-style: italic;
+    margin-top: 8px;
+}
+
 .customizationsSection {
     margin: 2rem 0;
     padding: 0;

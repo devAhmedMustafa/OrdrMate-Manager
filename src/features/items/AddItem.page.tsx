@@ -14,6 +14,14 @@ interface FileWithUrl extends File {
     fileUrl?: string;
 }
 
+// Compression configuration
+const COMPRESSION_OPTIONS = {
+    maxSizeMB: 1, // Maximum file size in MBs
+    maxWidthOrHeight: 1200, // Maximum width or heights
+    useWebWorker: true, // Use web worker for better performance
+    fileType: "image/jpeg", // Output format
+};
+
 export default function AddItemPage() {
     const { token, role, pharmacyId } = useAuth(); 
     const navigate = useNavigate();
@@ -22,30 +30,63 @@ export default function AddItemPage() {
     const [selectedFile, setSelectedFile] = useState<FileWithUrl | null>(null);
     const [imageUrl, setImageUrl] = useState<string>("");
     const [uploadProgress, setUploadProgress] = useState(0);
+    const [compressing, setCompressing] = useState(false);
 
     if (role !== ManagerRole.TopLevel) {
         navigate("/");
         return null;
     }
 
+    async function compressImage(file: File): Promise<File> {
+        try {
+            // Dynamically import the compression library
+            const imageCompression = await import('browser-image-compression');
+            const compressedFile = await imageCompression.default(file, COMPRESSION_OPTIONS);
+            
+            console.log(`Original file size: ${(file.size / 1024 / 1024).toFixed(2)} MB`);
+            console.log(`Compressed file size: ${(compressedFile.size / 1024 / 1024).toFixed(2)} MB`);
+            
+            return compressedFile;
+        } catch (error) {
+            console.error("Image compression failed:", error);
+            throw new Error("Failed to compress image");
+        }
+    }
+
     async function handleFileSelect(e: React.ChangeEvent<HTMLInputElement>) {
         const file = e.target.files?.[0];
         if (!file || !token) return;
 
-        setSelectedFile(file);
         setError("");
         setUploadProgress(0);
+        setCompressing(true);
 
         try {
-            // Get presigned URL and upload file
-            const { uploadUrl, fileUrl } = await uploadService.getPresignedUrl(file.name, file.type);
-            await uploadService.uploadFile(uploadUrl, file);
+            // Validate file type
+            if (!file.type.startsWith('image/')) {
+                throw new Error("Please select a valid image file");
+            }
+
+            // Compress the image before upload
+            const compressedFile = await compressImage(file);
+            setSelectedFile(compressedFile);
+
+            // Get presigned URL and upload compressed file
+            const { uploadUrl, fileUrl } = await uploadService.getPresignedUrl(
+                compressedFile.name, 
+                compressedFile.type
+            );
+            
+            await uploadService.uploadFile(uploadUrl, compressedFile);
 
             // Store the fileUrl for form submission
             setSelectedFile(prev => prev ? { ...prev, fileUrl } as any : null);
+            
         } catch (err: any) {
-            setError(err.response?.data?.message || "Failed to upload image");
+            setError(err.message || err.response?.data?.message || "Failed to process image");
             setSelectedFile(null);
+        } finally {
+            setCompressing(false);
         }
     }
 
@@ -174,7 +215,13 @@ export default function AddItemPage() {
                             accept="image/*"
                             onChange={handleFileSelect}
                             className={styles.input}
+                            disabled={compressing}
                         />
+                        {compressing && (
+                            <div className={styles.compressing}>
+                                Compressing image...
+                            </div>
+                        )}
                         {uploadProgress > 0 && uploadProgress < 100 && (
                             <div className={styles.progressBar}>
                                 <div 
@@ -199,7 +246,7 @@ export default function AddItemPage() {
 
                     <button
                         type="submit"
-                        disabled={loading}
+                        disabled={loading || compressing}
                         className={styles.submitButton}
                     >
                         {loading ? "Adding..." : "Add Item"}
@@ -208,4 +255,4 @@ export default function AddItemPage() {
             </div>
         </div>
     );
-} 
+}
