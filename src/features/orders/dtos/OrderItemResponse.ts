@@ -1,6 +1,6 @@
 import { MenuItem } from "../../items/services/itemService";
 
-export default interface OrderItem {
+export default interface OrderItemResponse {
     itemId: string;
     orderId: string;
     item: MenuItem;

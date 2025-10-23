@@ -1,6 +1,6 @@
 import api from '../../../utils/api';
 import PlaceOrderRequestDto from '../../manual-order/PlaceOrderRequest.dto';
-import Order from '../models/Order';
+import OrderResponse from '../dtos/OrderResponse';
 import { OrderStatus } from '../types';
 
 export interface CheckPreparedResponse {
@@ -9,12 +9,12 @@ export interface CheckPreparedResponse {
 }
 
 class OrderService {
-  async getItemQueues(branchId: string): Promise<Record<string, Order[]>> {
+  async getItemQueues(branchId: string): Promise<Record<string, OrderResponse[]>> {
     const response = await api.get(`/Order/item_queues/${branchId}`);
     const items: any[] = response.data;
     
     // Group items by kitchen name
-    const queues: Record<string, Order[]> = {};
+    const queues: Record<string, OrderResponse[]> = {};
     
     items.forEach(item => {
       if (!item.kitchenName) return;
@@ -63,7 +63,7 @@ class OrderService {
     return queues;
   }
 
-  async getUnpaidOrders(branchId: string): Promise<Order[]> {
+  async getUnpaidOrders(branchId: string): Promise<OrderResponse[]> {
     const response = await api.get(`/Order/unpaid/${branchId}`);
     return response.data;
   }
@@ -99,7 +99,7 @@ class OrderService {
     return response.data;
   }
 
-  async getAllOrders(branchId: string): Promise<Order[]> {
+  async getAllOrders(branchId: string): Promise<OrderResponse[]> {
     const response = await api.get(`/Order/list/${branchId}`);
     return response.data;
   }

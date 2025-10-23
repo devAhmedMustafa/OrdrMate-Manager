@@ -1,7 +1,7 @@
-import Order from '../models/Order';
-import OrderItem from '../models/OrderItem';
+import OrderResponse from '../dtos/OrderResponse';
+import OrderItemResponse from '../dtos/OrderItemResponse';
 
-const orderItemsTemplate = async (orderItems: OrderItem[], order: Order, branchInfo: any): Promise<string> => {
+const orderItemsTemplate = async (orderItems: OrderItemResponse[], order: OrderResponse, branchInfo: any): Promise<string> => {
     const now = new Date();
     const formattedDate = now.toLocaleDateString('en-GB');
     const formattedTime = now.toLocaleTimeString('en-GB', { hour12: false });

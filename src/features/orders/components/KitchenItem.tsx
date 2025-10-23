@@ -2,10 +2,10 @@ import styles from './KitchenItem.module.css';
 import { useEffect, useState } from 'react';
 import useAuth from '../../auth/useAuth.hook';
 import { uploadService } from '../../items/services/uploadService';
-import OrderItem from '../models/OrderItem';
+import OrderItemResponse from '../dtos/OrderItemResponse';
 
 interface KitchenItemProps {
-  item: OrderItem;
+  item: OrderItemResponse;
   isCurrent?: boolean;
 }
 

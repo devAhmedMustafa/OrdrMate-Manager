@@ -1,10 +1,10 @@
 import { branchService } from "../../restaurant_branches/services/branchService";
-import Order from "../models/Order";
-import OrderItem from "../models/OrderItem";
+import OrderResponse from "../dtos/OrderResponse";
+import OrderItemResponse from "../dtos/OrderItemResponse";
 import orderTemplate from "./OrderReceipt.template";
 import orderItemsTemplate from "./OrderItems.template";
 
-export async function printOrderInvoice(order: Order) {
+export async function printOrderInvoice(order: OrderResponse) {
 
     const branchInfo = await branchService.getBranchInfo(order.branchId);
     const printable = await orderTemplate(order, branchInfo);
@@ -27,7 +27,7 @@ export async function printOrderInvoice(order: Order) {
     w.close();
 }
 
-export async function printOrderItems(orderItems: OrderItem[], order: Order) {
+export async function printOrderItems(orderItems: OrderItemResponse[], order: OrderResponse) {
     const branchInfo = await branchService.getBranchInfo(order.branchId);
     const printable = await orderItemsTemplate(orderItems, order, branchInfo);
     

@@ -20,6 +20,7 @@
     "@tailwindcss/vite": "^4.1.4",
     "@types/qrcode": "^1.5.5",
     "axios": "^1.8.4",
+    "dexie": "^4.2.1",
     "framer-motion": "^12.16.0",
     "qrcode": "^1.5.4",
     "qz-tray": "^2.2.5",

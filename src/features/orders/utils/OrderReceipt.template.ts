@@ -1,8 +1,8 @@
 import { BranchInfoResponse } from "../../restaurant_branches/services/branchService";
-import Order from "../models/Order";
+import OrderResponse from "../dtos/OrderResponse";
 // import { generateQRCode } from "../../../utils/qr-generator";
 
-const orderTemplate = async (order: Order, branchInfo: BranchInfoResponse): Promise<string> => {
+const orderTemplate = async (order: OrderResponse, branchInfo: BranchInfoResponse): Promise<string> => {
     // Generate QR code for the customer app
     // const customerAppUrl = `${import.meta.env.VITE_CUSTOMER_APP_URL}/branch/${order.branchId}`;
     // let qrCodeUrl = '';

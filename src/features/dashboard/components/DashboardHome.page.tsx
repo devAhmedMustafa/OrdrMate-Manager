@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import Order from '../../orders/models/Order';
+import OrderResponse from '../../orders/dtos/OrderResponse';
 import { TableReservation } from '../../tables/services/tableService';
 import { orderService } from '../../orders/services/orderService';
 import { tableService } from '../../tables/services/tableService';
@@ -13,7 +13,7 @@ import Table from '../../tables/models/Table';
 import ShiftEarningsResponse from '../dtos/ShiftEarningsResponse.dto';
 
 export default function DashboardHome() {
-  const [kitchenQueues, setKitchenQueues] = useState<Record<string, Order[]>>({});
+  const [kitchenQueues, setKitchenQueues] = useState<Record<string, OrderResponse[]>>({});
   const [tableQueues, setTableQueues] = useState<Record<number, TableReservation[]>>({});
   const [tables, setTables] = useState<Table[]>([]);
   const [imageUrls, setImageUrls] = useState<Record<string, string>>({});

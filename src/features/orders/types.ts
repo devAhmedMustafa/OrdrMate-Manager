@@ -1,5 +1,5 @@
-import Order from "./models/Order";
-import OrderItem from "./models/OrderItem";
+import OrderResponse from "./dtos/OrderResponse";
+import OrderItemResponse from "./dtos/OrderItemResponse";
 
 export enum OrderStatus {
   Pending = 0,
@@ -43,8 +43,8 @@ export interface OrderStatusUpdate {
 
 export interface KitchenQueue {
   KitchenName: string;
-  Orders: Order[];
-  NextItem?: OrderItem;
+  Orders: OrderResponse[];
+  NextItem?: OrderItemResponse;
 }
 
 export interface UnpaidOrder {
@@ -61,8 +61,8 @@ export interface UnpaidOrder {
 
 export type WebSocketMessage = {
   Type: 'InitialData' | 'NewItem' | 'OrderPlaced' | 'NextItem' | 'OrderReady';
-  items?: OrderItem[];
-  Item?: OrderItem;
+  items?: OrderItemResponse[];
+  Item?: OrderItemResponse;
   OrderId?: string;
   IsBeingPrepared?: boolean;
 } 

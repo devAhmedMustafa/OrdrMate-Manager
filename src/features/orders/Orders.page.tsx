@@ -7,7 +7,7 @@ import useAuth from '../auth/useAuth.hook';
 import { orderService } from './services/orderService';
 import { websocketService } from '../dashboard/services/websocketService';
 import TakeawayOrders from './components/TakeawayOrders';
-import Order from './models/Order';
+import OrderResponse from './dtos/OrderResponse';
 import { printOrderInvoice } from './utils/printOrder';
 // import OrderItem from './models/OrderItem';
 
@@ -24,8 +24,8 @@ interface OrderFilters {
 function Orders() {
   const [connectionStatus, setConnectionStatus] = useState<'connecting' | 'connected' | 'disconnected' | 'error'>('connecting');
   // const [kitchenQueues, setKitchenQueues] = useState<Record<string, Order[]>>({});
-  const [unpaidOrders, setUnpaidOrders] = useState<Order[]>([]);
-  const [allOrders, setAllOrders] = useState<Order[]>([]);
+  const [unpaidOrders, setUnpaidOrders] = useState<OrderResponse[]>([]);
+  const [allOrders, setAllOrders] = useState<OrderResponse[]>([]);
   const [activeTab, setActiveTab] = useState<Tab>('orders');
   const [previousTab, setPreviousTab] = useState<Tab>('orders');
   const [isTransitioning, setIsTransitioning] = useState(false);
@@ -243,7 +243,7 @@ function Orders() {
       await orderService.markAsPaid(orderId);
       // Remove the paid order from the list
       setUnpaidOrders(prev => prev.filter(order => order.orderId !== orderId));
-      printOrderInvoice(allOrders.find(o => o.orderId === orderId) as Order);
+      printOrderInvoice(allOrders.find(o => o.orderId === orderId) as OrderResponse);
     } catch (error) {
       console.error('Error marking order as paid:', error);
     }

@@ -1,6 +1,6 @@
 import api from '../../../utils/api';
-import Order from '../../orders/models/Order';
-import OrderItem from '../../orders/models/OrderItem';
+import OrderResponse from '../../orders/dtos/OrderResponse';
+import OrderItemResponse from '../../orders/dtos/OrderItemResponse';
 import CreateTableRequest from '../dtos/CreateTableRequest.dto';
 import TableResponse from '../dtos/TableResponse.dto';
 
@@ -22,7 +22,7 @@ export interface TableReservation {
   orderStatus: OrderStatus;
 }
 
-export interface ReservationOrder extends Order {}
+export interface ReservationOrder extends OrderResponse {}
 
 class TableService {
   async getTables(branchId: string): Promise<TableResponse[]> {
@@ -84,13 +84,13 @@ class TableService {
     await api.put(`/Table/order/set-ready/${reservationId}`);
   }
 
-  async payOrders(reservationId: string): Promise<Order> {
+  async payOrders(reservationId: string): Promise<OrderResponse> {
     const response = await api.put(`/Table/order/pay/${reservationId}`);
     return response.data;
   }
 
-  async pushToKitchen(reservationId: string): Promise<OrderItem[]> {
-    const response = await api.put<{orderItems: OrderItem[]}>(`/TableReservation/push-to-kitchen/${reservationId}`);
+  async pushToKitchen(reservationId: string): Promise<OrderItemResponse[]> {
+    const response = await api.put<{orderItems: OrderItemResponse[]}>(`/TableReservation/push-to-kitchen/${reservationId}`);
     return response.data.orderItems;
   }
 

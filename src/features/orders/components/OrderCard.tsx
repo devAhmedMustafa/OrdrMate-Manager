@@ -1,10 +1,10 @@
-import Order from '../models/Order';
+import OrderResponse from '../dtos/OrderResponse';
 import styles from './OrderCard.module.css';
 import { printOrderInvoice } from '../utils/printOrder';
 import { Icon } from '@iconify/react';
 
 interface OrderCardProps {
-  order: Order;
+  order: OrderResponse;
   onClick?: () => void;
 }
 

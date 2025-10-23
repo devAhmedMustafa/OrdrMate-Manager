@@ -1,10 +1,10 @@
-import OrderItem from "./OrderItem";
+import OrderItemResponse from "./OrderItemResponse";
 
-export default interface Order {
+export default interface OrderResponse {
 
     orderId: string;
     branchId: string;
-    orderItems: OrderItem[];
+    orderItems: OrderItemResponse[];
     orderStatus: string;
     paymentProvider: string;
     paymentMethod: string;

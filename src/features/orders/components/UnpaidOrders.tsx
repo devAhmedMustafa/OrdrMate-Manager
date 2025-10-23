@@ -1,11 +1,11 @@
-import Order from '../models/Order';
+import OrderResponse from '../dtos/OrderResponse';
 import styles from './UnpaidOrders.module.css';
 import { useState } from 'react';
 import { Icon } from '@iconify/react';
 import { orderService } from '../services/orderService';
 
 interface UnpaidOrdersProps {
-  orders: Order[];
+  orders: OrderResponse[];
   onMarkAsPaid: (orderId: string, paymentProvider?: string) => void;
   onOrderUpdate?: () => void; // Callback to refresh orders after payment provider change
 }
@@ -23,7 +23,7 @@ export function UnpaidOrders({ orders, onMarkAsPaid, onOrderUpdate }: UnpaidOrde
   const [isUpdatingPaymentProvider, setIsUpdatingPaymentProvider] = useState<{ [orderId: string]: boolean }>({});
 
   // Helper function to get the best available order identifier
-  const getOrderDisplayNumber = (order: Order) => {
+  const getOrderDisplayNumber = (order: OrderResponse) => {
     // Priority order: orderNumber -> tableNumber -> shortened orderId
     
     // 1. First try to use the actual order number
@@ -100,7 +100,7 @@ export function UnpaidOrders({ orders, onMarkAsPaid, onOrderUpdate }: UnpaidOrde
     }
   };
 
-  const getSelectedProvider = (order: Order) => {
+  const getSelectedProvider = (order: OrderResponse) => {
     // Priority: local state -> order data -> default to cash
     const providerId = selectedPaymentProvider[order.orderId] || order.paymentProvider || 'cash';
     return PAYMENT_PROVIDERS.find(p => p.id === providerId) || PAYMENT_PROVIDERS[0];

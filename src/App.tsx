@@ -23,7 +23,7 @@ import DashboardHome from './features/dashboard/components/DashboardHome.page'
 import AttendanceCodePage from './features/branch/AttendanceCode.page'
 import AnalyticsPage from './features/analytics/Analytics.page'
 import { useEffect } from 'react'
-import OnlineEvent from './events/OnlineEvent'
+import OnlineEvent from './features/offline-support/OnlineEvent'
 
 function AppContent() {
 

@@ -4,7 +4,7 @@ import styles from './KitchenQueue.module.css';
 import useAuth from '../../auth/useAuth.hook';
 import { useState, useEffect } from 'react';
 import { orderService } from '../services/orderService';
-import Order from '../models/Order';
+import OrderResponse from '../dtos/OrderResponse';
 
 interface KitchenQueueProps {
   queue: KitchenQueueType;
@@ -15,7 +15,7 @@ interface KitchenQueueProps {
 export function KitchenQueue({ queue, kitchenUnitId, onItemMarkedAsDone }: KitchenQueueProps) {
   const { branchId, token } = useAuth();
   const [isAnimating, setIsAnimating] = useState(false);
-  const [localItems, setLocalItems] = useState<Order['orderItems']>([]);
+  const [localItems, setLocalItems] = useState<OrderResponse['orderItems']>([]);
   
   // Get all items for this kitchen unit
   const allItems = queue.Orders.reduce((items: any[], order) => {
