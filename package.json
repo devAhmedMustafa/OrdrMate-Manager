@@ -7,6 +7,7 @@
     "dev": "vite",
     "build": "tsc -b && vite build",
     "lint": "eslint .",
+    "tauri": "tauri",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -29,6 +30,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.22.0",
+    "@tauri-apps/cli": "^2.9.1",
     "@types/node": "^22.15.29",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
@@ -39,6 +41,7 @@
     "globals": "^16.0.0",
     "typescript": "~5.7.2",
     "typescript-eslint": "^8.26.1",
-    "vite": "^6.3.5"
+    "vite": "^6.3.5",
+    "vite-plugin-pwa": "^1.1.0"
   }
 }

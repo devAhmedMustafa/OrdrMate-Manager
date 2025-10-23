@@ -22,8 +22,17 @@ import Orders from './features/orders/Orders.page'
 import DashboardHome from './features/dashboard/components/DashboardHome.page'
 import AttendanceCodePage from './features/branch/AttendanceCode.page'
 import AnalyticsPage from './features/analytics/Analytics.page'
+import { useEffect } from 'react'
+import OnlineEvent from './events/OnlineEvent'
 
 function AppContent() {
+
+  useEffect(()=> {
+    OnlineEvent.getInstance().subscribe((isOnline: boolean) => {
+      console.log(`App is now ${isOnline ? 'online' : 'offline'}`);
+    });
+  }, [])
+
   return (
     <main>
       <BrowserRouter>
