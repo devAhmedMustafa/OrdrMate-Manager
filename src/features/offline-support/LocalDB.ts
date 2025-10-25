@@ -1,9 +1,15 @@
-import Dexie from 'dexie';
+import Dexie, { Table } from 'dexie';
+import Order from '../orders/models/Order';
 
-export const db = new Dexie('OfflineDB');
+class LocalDB extends Dexie {
+    orders!: Table<Order, string>;
 
-db.version(1).stores({
-    items: '++id, synced',
-    orders: '++id, synced',
-    orderItems: '++id, orderId, synced',
-})
+    constructor() {
+        super('LocalDB');
+        this.version(1).stores({
+            orders: 'id, branchId, customerId, orderTime, orderDate, status, totalAmount, orderType, isPaid, readyTime, tableReservationId, takeawayId',
+        });
+    }
+}
+
+export const db = new LocalDB();
