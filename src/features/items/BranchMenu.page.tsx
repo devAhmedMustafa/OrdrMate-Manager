@@ -3,12 +3,13 @@ import useAuth from '../auth/useAuth.hook';
 import styles from './Menu.module.css';
 import useVirtualCart from '../manual-order/useVirtualCart';
 import CartItem from '../manual-order/CartItem';
-import { itemService, MenuItem } from './services/itemService';
+import { itemService } from './services/itemService';
 import { uploadService } from './services/uploadService';
 import { customizationService, CustomizationCategory } from '../customizations/services/customizationService';
 import ItemCustomizationModal from './components/ItemCustomizationModal';
+import { ItemDto } from './dtos/ItemDto';
 
-interface MenuItemWithPresignedUrl extends MenuItem {
+interface MenuItemWithPresignedUrl extends ItemDto {
   presignedUrl: string;
   customizations?: CustomizationCategory[];
 }
@@ -50,21 +51,13 @@ export default function BranchMenuPage() {
       if (!branchId || !token) return;
 
       try {
-        const items = await itemService.getRestaurantItems(restaurantId!);
-        const availableItems = await itemService.getBranchAvailableItems(branchId);
+        const items = await itemService.getAllItems(restaurantId!);
 
-        items.forEach((item: any) => {
-          const availableItem = availableItems.find((i) => i.id === item.id);
-          if (availableItem) {
-            item.isAvailable = availableItem.isAvailable;
-          } else {
-            item.isAvailable = false;
-          }
-        });
+        console.log(`Fetched ${items.length} items`);
 
         // Get presigned URLs and customizations for all items
         const itemsWithUrls = await Promise.all(
-          items.map(async (item: MenuItem) => {
+          items.map(async (item: ItemDto) => {
             const [presignedUrl, customizations] = await Promise.all([
               uploadService.getViewPresignedUrl(item.imageUrl),
               customizationService.getItemCustomizations(item.id).then((customizations) => {
@@ -94,7 +87,7 @@ export default function BranchMenuPage() {
   async function toggleAvailability(itemId: string) {
     if (!branchId) return;
     try {
-      await itemService.toggleItemAvailability(itemId, branchId);
+      // await itemService.toggleItemAvailability(itemId, branchId);
       setItems(prevItems => prevItems.map(item => 
         item.id === itemId ? { ...item, isAvailable: !item.isAvailable } : item
       ));

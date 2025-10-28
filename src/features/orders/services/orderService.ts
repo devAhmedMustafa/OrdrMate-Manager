@@ -1,67 +1,11 @@
 import api from '../../../utils/api';
 import PlaceOrderRequestDto from '../../manual-order/PlaceOrderRequest.dto';
 import OrderResponse from '../dtos/OrderResponse';
+import OrderResponseMapper from '../mappers/orderResponseMapper';
 import { OrderStatus } from '../types';
-
-export interface CheckPreparedResponse {
-  dequedItemId: string;
-  nextItemId: string;
-}
+import { orderLocalRepo } from './orderLocalRepo';
 
 class OrderService {
-  async getItemQueues(branchId: string): Promise<Record<string, OrderResponse[]>> {
-    const response = await api.get(`/Order/item_queues/${branchId}`);
-    const items: any[] = response.data;
-    
-    // Group items by kitchen name
-    const queues: Record<string, OrderResponse[]> = {};
-    
-    items.forEach(item => {
-      if (!item.kitchenName) return;
-
-      // Ensure KitchenUnitId is set
-      if (!item.kitchenUnitId) {
-        item.kitchenUnitId = '0';
-      }
-
-      if (!queues[item.kitchenName]) {
-        queues[item.kitchenName] = [];
-      }
-
-      // const existingOrder = queues[item.kitchenName].find(order => order.OrderId === item.orderId);
-      // if (existingOrder) {
-      //   existingOrder.Items.push({
-      //     OrderId: item.orderId,
-      //     OrderDate: item.orderDate,
-      //     ItemName: item.itemName,
-      //     KitchenName: item.kitchenName,
-      //     ItemId: item.itemId,
-      //     KitchenUnitId: item.kitchenUnitId.toString(),
-      //     Price: item.price,
-      //     Quantity: item.quantity,
-      //     ImageUrl: item.imageUrl
-      //   });
-      // } else {
-      //   queues[item.kitchenName].push({
-      //     OrderId: item.orderId,
-      //     Items: [{
-      //       OrderId: item.orderId,
-      //       OrderDate: item.orderDate,
-      //       ItemName: item.itemName,
-      //       KitchenName: item.kitchenName,
-      //       ItemId: item.itemId,
-      //       KitchenUnitId: item.kitchenUnitId.toString(),
-      //       Price: item.price,
-      //       Quantity: item.quantity,
-      //       ImageUrl: item.imageUrl
-      //     }],
-      //     Status: OrderStatus[OrderStatus.Pending]
-      //   });
-      // }
-    });
-
-    return queues;
-  }
 
   async getUnpaidOrders(branchId: string): Promise<OrderResponse[]> {
     const response = await api.get(`/Order/unpaid/${branchId}`);
@@ -85,23 +29,21 @@ class OrderService {
     await api.post(`/Order/check-prepared/${branchId}/${kitchenName}/${kitchenUnitId}`);
   }
 
-  async checkItemAsPrepared(
-    branchId: string,
-    kitchenName: string,
-    kitchenUnitId: string,
-    token: string
-  ): Promise<CheckPreparedResponse> {
-    const response = await api.post(`/Order/check-prepared/${branchId}/${kitchenName}/${kitchenUnitId}`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    return response.data;
-  }
+  async getAllOrders(): Promise<OrderResponse[]> {
+    try {
 
-  async getAllOrders(branchId: string): Promise<OrderResponse[]> {
-    const response = await api.get(`/Order/list/${branchId}`);
-    return response.data;
+      const orders = await orderLocalRepo.getAllOrders();
+      const orderResponses: OrderResponse[] = [];
+      for (const order of orders) {
+        const orderResponse = await OrderResponseMapper.fromOrderModel(order);
+        orderResponses.push(orderResponse);
+      }
+
+      return orderResponses;
+    }
+    catch(err){
+      throw err;
+    }
   }
 
   async getTakeawayOrders(branchId: string): Promise<any[]> {

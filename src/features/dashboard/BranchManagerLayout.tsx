@@ -24,14 +24,14 @@ export function BranchManagerLayout() {
   }, [branchId, token]);
 
   const navItems = [
-    { path: '/branch', label: 'Home', icon: 'iconamoon:home-duotone' },
-    { path: '/branch/orders', label: 'Orders', icon: 'lets-icons:order-duotone' },
-    { path: '/branch/menu', label: 'Menu', icon: 'ic:twotone-menu-book' },
-    { path: '/branch/tables', label: 'Tables', icon: 'mdi:table' },
-    { path: '/branch/kitchen-power', label: 'Kitchen Power', icon: 'mdi:power-socket' },
-    { path: '/branch/settings', label: 'Settings', icon: 'mdi:cog' },
-    { path: '/branch/attendance', label: 'Attendance Code', icon: 'mdi:barcode' },
-    { path: '/branch/analytics', label: 'Analytics', icon: 'mdi:chart-bar' },
+    { path: '/', label: 'Home', icon: 'iconamoon:home-duotone' },
+    { path: '/orders', label: 'Orders', icon: 'lets-icons:order-duotone' },
+    { path: '/menu', label: 'Menu', icon: 'ic:twotone-menu-book' },
+    { path: '/tables', label: 'Tables', icon: 'mdi:table' },
+    { path: '/kitchen-power', label: 'Kitchen Power', icon: 'mdi:power-socket' },
+    { path: '/settings', label: 'Settings', icon: 'mdi:cog' },
+    { path: '/attendance', label: 'Attendance Code', icon: 'mdi:barcode' },
+    { path: '/analytics', label: 'Analytics', icon: 'mdi:chart-bar' },
   ];
 
   return (
