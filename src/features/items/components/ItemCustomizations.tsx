@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
 import { 
-  CustomizationCategory, 
+  CustomizationCategoryResponse, 
   customizationService 
 } from '../../customizations/services/customizationService';
 import AddCategory from '../../customizations/components/AddCategory';
@@ -18,7 +18,7 @@ export default function ItemCustomizations({
   itemId, 
   onAssignmentsChange 
 }: ItemCustomizationsProps) {
-  const [categories, setCategories] = useState<CustomizationCategory[]>([]);
+  const [categories, setCategories] = useState<CustomizationCategoryResponse[]>([]);
   const [assignedCategoryIds, setAssignedCategoryIds] = useState<string[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');

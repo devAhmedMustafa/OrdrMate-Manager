@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { CustomizationCategory, SingleSelectMetadata, MultiSelectMetadata, TextMetadata, NumberMetadata, BooleanMetadata } from '../../customizations/services/customizationService';
+import { CustomizationCategoryResponse, SingleSelectMetadata, MultiSelectMetadata, TextMetadata, NumberMetadata, BooleanMetadata } from '../../customizations/services/customizationService';
 import styles from './ItemCustomizationModal.module.css';
 
 interface ItemCustomizationModalProps {
   itemId: string;
   itemName: string;
   itemPrice: number;
-  customizations: CustomizationCategory[];
+  customizations: CustomizationCategoryResponse[];
   onClose: () => void;
   onAddToCart: (customizations: {[categoryName: string]: any}) => void;
 }
@@ -52,7 +52,7 @@ export default function ItemCustomizationModal({
     return itemPrice + additionalPrice;
   };
 
-  const renderCustomizationInput = (category: CustomizationCategory) => {
+  const renderCustomizationInput = (category: CustomizationCategoryResponse) => {
     const currentValue = selectedCustomizations[category.name!];
 
     switch (category.inputType) {

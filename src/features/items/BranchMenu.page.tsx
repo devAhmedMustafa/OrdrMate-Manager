@@ -5,13 +5,13 @@ import useVirtualCart from '../manual-order/useVirtualCart';
 import CartItem from '../manual-order/CartItem';
 import { itemService } from './services/itemService';
 import { uploadService } from './services/uploadService';
-import { customizationService, CustomizationCategory } from '../customizations/services/customizationService';
+import { customizationService, CustomizationCategoryResponse } from '../customizations/services/customizationService';
 import ItemCustomizationModal from './components/ItemCustomizationModal';
 import { ItemDto } from './dtos/ItemDto';
 
 interface MenuItemWithPresignedUrl extends ItemDto {
   presignedUrl: string;
-  customizations?: CustomizationCategory[];
+  customizations?: CustomizationCategoryResponse[];
 }
 
 export default function BranchMenuPage() {

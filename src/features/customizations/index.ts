@@ -2,7 +2,7 @@ export { default as CustomizationsPage } from './Customizations.page';
 export { default as AddCategory } from './components/AddCategory';
 export { customizationService } from './services/customizationService';
 export type { 
-  CustomizationCategory, 
+  CustomizationCategoryResponse as CustomizationCategory, 
   CustomizationChoice, 
   CustomizationMetadata,
   CreateCustomizationCategoryRequest,

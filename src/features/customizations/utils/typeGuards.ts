@@ -5,35 +5,35 @@ import {
   // TextMetadata, 
   // NumberMetadata, 
   // BooleanMetadata, 
-  CustomizationCategory
+  CustomizationCategoryResponse
 } from '../services/customizationService';
 
 // Type guard functions for runtime type checking
-export function isSingleSelectMetadata(category: CustomizationCategory) {
+export function isSingleSelectMetadata(category: CustomizationCategoryResponse) {
   return category.inputType === 'SingleSelect';
 }
 
-export function isMultiSelectMetadata(category: CustomizationCategory) {
+export function isMultiSelectMetadata(category: CustomizationCategoryResponse) {
   return category.inputType === 'MultiSelect';
 }
 
-export function isTextMetadata(category: CustomizationCategory) {
+export function isTextMetadata(category: CustomizationCategoryResponse) {
   return category.inputType === 'Text';
 }
 
-export function isNumberMetadata(category: CustomizationCategory) {
+export function isNumberMetadata(category: CustomizationCategoryResponse) {
   return category.inputType === 'Number';
 }
 
-export function isBooleanMetadata(category: CustomizationCategory) {
+export function isBooleanMetadata(category: CustomizationCategoryResponse) {
   return category.inputType === 'Boolean';
 }
 
-export function hasChoices(category: CustomizationCategory) {
+export function hasChoices(category: CustomizationCategoryResponse) {
   return isSingleSelectMetadata(category) || isMultiSelectMetadata(category);
 }
 
-export function getCategoryTypeDisplayName(category: CustomizationCategory): string {
+export function getCategoryTypeDisplayName(category: CustomizationCategoryResponse): string {
   switch (category.inputType) {
     case 'SingleSelect':
       return 'Single Select';
@@ -51,7 +51,7 @@ export function getCategoryTypeDisplayName(category: CustomizationCategory): str
 }
 
 // Helper function to get icon for category type
-export function getCategoryTypeIcon(category: CustomizationCategory): string {
+export function getCategoryTypeIcon(category: CustomizationCategoryResponse): string {
   switch (category.inputType) {
     case 'SingleSelect':
       return 'mdi:radiobox-marked';

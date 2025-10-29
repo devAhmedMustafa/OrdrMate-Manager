@@ -1,19 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Icon } from '@iconify/react';
-import { BooleanMetadata, CustomizationCategory, customizationService, MultiSelectMetadata, NumberMetadata, TextMetadata } from './services/customizationService';
 import AddCategory from './components/AddCategory';
-import { 
-  hasChoices, 
-  isTextMetadata, 
-  isNumberMetadata, 
-  isBooleanMetadata,
-  getCategoryTypeDisplayName 
-} from './utils/typeGuards';
 import styles from './Customizations.module.css';
 import useAuth from '../auth/useAuth.hook';
+import { CustomizationCategoryResponse } from './dtos/CustomizationCategoryResponse';
+import { customizationService } from './services/customizationService';
 
 export default function CustomizationsPage() {
-  const [categories, setCategories] = useState<CustomizationCategory[]>([]);
+  const [categories, setCategories] = useState<CustomizationCategoryResponse[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const [showAddForm, setShowAddForm] = useState(false);
@@ -65,16 +59,6 @@ export default function CustomizationsPage() {
     } finally {
       setDeletingId(null);
     }
-  };
-
-  const formatDate = (dateString: string) => {
-    return new Date(dateString).toLocaleDateString('en-US', {
-      year: 'numeric',
-      month: 'short',
-      day: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit'
-    });
   };
 
   if (showAddForm) {
@@ -156,7 +140,7 @@ export default function CustomizationsPage() {
               </div>
 
               {/* Display content based on category type */}
-              {hasChoices(category) && (
+              {/* {hasChoices(category) && (
                 <div className={styles.choicesSection}>
                   <h4 className={styles.choicesTitle}>Available Choices:</h4>
                   <div className={styles.choicesList}>
@@ -168,9 +152,9 @@ export default function CustomizationsPage() {
                     ))}
                   </div>
                 </div>
-              )}
+              )} */}
 
-              {isTextMetadata(category) && (
+              {/* {isTextMetadata(category) && (
                 <div className={styles.settingsSection}>
                   <h4 className={styles.settingsTitle}>Text Input Settings:</h4>
                   <div className={styles.settingsList}>
@@ -185,9 +169,9 @@ export default function CustomizationsPage() {
                     )}
                   </div>
                 </div>
-              )}
+              )} */}
 
-              {isNumberMetadata(category) && (
+              {/* {isNumberMetadata(category) && (
                 <div className={styles.settingsSection}>
                   <h4 className={styles.settingsTitle}>Number Input Settings:</h4>
                   <div className={styles.settingsList}>
@@ -205,9 +189,9 @@ export default function CustomizationsPage() {
                     )}
                   </div>
                 </div>
-              )}
+              )} */}
 
-              {isBooleanMetadata(category) && (
+              {/* {isBooleanMetadata(category) && (
                 <div className={styles.settingsSection}>
                   <h4 className={styles.settingsTitle}>Boolean Settings:</h4>
                   <div className={styles.settingsList}>
@@ -219,20 +203,8 @@ export default function CustomizationsPage() {
                     )}
                   </div>
                 </div>
-              )}
+              )} */}
 
-              <div className={styles.cardFooter}>
-                <div className={styles.metadata}>
-                  <span className={styles.typeTag}>
-                    {getCategoryTypeDisplayName(category)}
-                  </span>
-                  {category.createdAt && (
-                    <span className={styles.createdDate}>
-                      Created {formatDate(category.createdAt)}
-                    </span>
-                  )}
-                </div>
-              </div>
             </div>
           ))}
         </div>
