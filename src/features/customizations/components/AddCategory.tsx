@@ -9,7 +9,7 @@ import {
   TextMetadata,
   NumberMetadata,
   BooleanMetadata
-} from '../services/customizationService';
+} from '../services/customizationCloudService';
 import styles from './AddCategory.module.css';
 import useAuth from '../../auth/useAuth.hook';
 

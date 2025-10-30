@@ -5,7 +5,7 @@ import ManagerRole from "../auth/ManagerRole";
 import styles from "./AddItem.module.css";
 import { itemService, Kitchen, MenuItem } from "./services/itemService";
 import { uploadService } from "./services/uploadService";
-import { customizationService } from "../customizations/services/customizationService";
+import { customizationService } from "../customizations/services/customizationCloudService";
 import ItemCustomizations from "./components/ItemCustomizations";
 
 type AddItemFormData = Omit<MenuItem, 'id'> & {

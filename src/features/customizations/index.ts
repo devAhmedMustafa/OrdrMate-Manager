@@ -1,6 +1,6 @@
 export { default as CustomizationsPage } from './Customizations.page';
 export { default as AddCategory } from './components/AddCategory';
-export { customizationService } from './services/customizationService';
+export { customizationService } from './services/customizationCloudService';
 export type { 
   CustomizationCategoryResponse as CustomizationCategory, 
   CustomizationChoice, 
@@ -12,7 +12,7 @@ export type {
   TextMetadata,
   NumberMetadata,
   BooleanMetadata
-} from './services/customizationService';
+} from './services/customizationCloudService';
 
 export {
   isSingleSelectMetadata,

@@ -6,7 +6,7 @@ import {
   // NumberMetadata, 
   // BooleanMetadata, 
   CustomizationCategoryResponse
-} from '../services/customizationService';
+} from '../services/customizationCloudService';
 
 // Type guard functions for runtime type checking
 export function isSingleSelectMetadata(category: CustomizationCategoryResponse) {

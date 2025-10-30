@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { CustomizationCategoryResponse, SingleSelectMetadata, MultiSelectMetadata, TextMetadata, NumberMetadata, BooleanMetadata } from '../../customizations/services/customizationService';
+import { CustomizationCategoryResponse, SingleSelectMetadata, MultiSelectMetadata, TextMetadata, NumberMetadata, BooleanMetadata } from '../../customizations/services/customizationCloudService';
 import styles from './ItemCustomizationModal.module.css';
 
 interface ItemCustomizationModalProps {

@@ -5,9 +5,10 @@ import useVirtualCart from '../manual-order/useVirtualCart';
 import CartItem from '../manual-order/CartItem';
 import { itemService } from './services/itemService';
 import { uploadService } from './services/uploadService';
-import { customizationService, CustomizationCategoryResponse } from '../customizations/services/customizationService';
 import ItemCustomizationModal from './components/ItemCustomizationModal';
 import { ItemDto } from './dtos/ItemDto';
+import { CustomizationCategoryResponse } from '../customizations/dtos/CustomizationCategoryResponse';
+import customizationService from '../customizations/services/customizationService';
 
 interface MenuItemWithPresignedUrl extends ItemDto {
   presignedUrl: string;

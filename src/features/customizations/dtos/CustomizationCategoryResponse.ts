@@ -1,7 +1,7 @@
 import { CustomizationMetadata } from "..";
 
 export interface CustomizationCategoryResponse {
-    id?: string;
+    id: string;
     name: string;
     restaurantId: string;
     description: string;

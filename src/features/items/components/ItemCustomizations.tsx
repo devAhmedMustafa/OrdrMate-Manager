@@ -3,7 +3,7 @@ import { Icon } from '@iconify/react';
 import { 
   CustomizationCategoryResponse, 
   customizationService 
-} from '../../customizations/services/customizationService';
+} from '../../customizations/services/customizationCloudService';
 import AddCategory from '../../customizations/components/AddCategory';
 import styles from './ItemCustomizations.module.css';
 

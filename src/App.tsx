@@ -3,13 +3,11 @@ import LoginPage from './features/auth/Login.page'
 import './App.css'
 import { AuthProvider } from './features/auth/Auth.context'
 import ProtectedRoute from './features/auth/ProtectedRoute'
-import AdminRoute from './features/auth/AdminRoute'
 import BranchManagerRoute from './features/auth/BranchManagerRoute'
 import AddItemPage from './features/items/AddItem.page'
 import { BranchManagerLayout } from './features/dashboard/BranchManagerLayout'
 import BranchMenuPage from './features/items/BranchMenu.page'
 import BranchSettingsPage from './features/branch-settings/BranchSettings.page'
-import BranchRequestsPage from './features/admin/BranchRequests.page'
 import { Tables as TablesPage } from './features/tables/Tables.page'
 import KitchenPowerPage from './features/branch/KitchenPower.page'
 import Orders from './features/orders/Orders.page'
@@ -54,11 +52,6 @@ function AppContent() {
             </ProtectedRoute>
           }/>
 
-          <Route path='/admin/branch-requests' element={
-            <AdminRoute>
-              <BranchRequestsPage />
-            </AdminRoute>
-          }/>
         </Routes>
       </HashRouter>
     </main>
