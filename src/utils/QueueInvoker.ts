@@ -1,3 +1,5 @@
+import OnlineEvent from "../features/offline-support/OnlineEvent";
+
 export default class QueueInvoker {
 
     private queue: Array<() => Promise<void>> = [];
@@ -29,9 +31,16 @@ export default class QueueInvoker {
         this.isProcessing = false;
     }
 
-    private constructor() { }
+    private constructor() { 
+        OnlineEvent.getInstance().subscribe((isOnline: boolean) => {
+            if (isOnline) {
+                this.processQueue();
+            }
+        });
+    }
 
     private static instance: QueueInvoker;
+    
     public static getInstance(): QueueInvoker {
         if (!QueueInvoker.instance) {
             QueueInvoker.instance = new QueueInvoker();

@@ -3,7 +3,7 @@ import ORDER_TYPE from "./ORDER_TYPE";
 import { v4 as uuidv4 } from "uuid";
 
 export default class Order {
-    id: string = uuidv4();
+    id: string;
     branchId: string;
     customerId: string;
     orderTime: string;
@@ -17,21 +17,26 @@ export default class Order {
     takeawayId!: string;
 
     constructor(data: {
-            branchId: string; 
-            customerId: string; 
-            orderType: ORDER_TYPE; 
-            totalAmount?: number; 
-            tableReservationId?: string; 
-            takeawayId?: string
+            id?: string;
+            branchId: string;
+            customerId: string;
+            orderType: ORDER_TYPE;
+            status?: OrderStatus;
+            orderDate?: string;
+            totalAmount: number;
+            isPaid?: boolean;
+            tableReservationId?: string;
+            takeawayId?: string;
         }) {
+        this.id = data.id || uuidv4();
         this.branchId = data.branchId!;
         this.customerId = data.customerId!;
-        this.orderTime = new Date(Date.now()).toLocaleTimeString();
-        this.orderDate = new Date(Date.now()).toLocaleDateString();
-        this.status = OrderStatus.Pending;
+        this.orderTime = data.orderDate ? new Date(data.orderDate).toISOString().split('T')[1].split('.')[0] : new Date(Date.now()).toISOString().split('T')[1].split('.')[0];
+        this.orderDate = data.orderDate || new Date(Date.now()).toISOString();
+        this.status = data.status || OrderStatus.Pending;
         this.totalAmount = data.totalAmount || 0;
         this.orderType = data.orderType!;
-        this.isPaid = false;
+        this.isPaid = data.isPaid || false;
         this.tableReservationId = data.tableReservationId!;
         this.takeawayId = data.takeawayId!;
     }

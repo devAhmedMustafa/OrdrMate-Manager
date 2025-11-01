@@ -1,8 +1,8 @@
 export default class OnlineEvent {
 
-    static instance: OnlineEvent = new OnlineEvent();
+    private static instance: OnlineEvent = new OnlineEvent();
     
-    isOnline = navigator.onLine;
+    public isOnline = navigator.onLine;
 
     private subscribers: CallableFunction[] = [];
 

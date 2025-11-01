@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { OrderStatus, ReservationOrder, TableReservation, tableService } from "../services/tableService";
+import { OrderStatus, ReservationOrder, TableReservation, tableCloudService } from "../services/tableCloudService";
 import { Icon } from '@iconify/react';
 import useAuth from "../../auth/useAuth.hook";
 import OrderCustomization from "../../customizations/models/OrderCustomization.Model";
@@ -56,7 +56,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
     
     const fetchReservationOrder = async () => {
       if (reservation.reservationId) {
-        const order = await tableService.getReservationOrder(reservation.reservationId);
+        const order = await tableCloudService.getReservationOrder(reservation.reservationId);
         setReservationOrder(order);
       }
     };
@@ -79,7 +79,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
   async function handleSetOrderReady(){
     if(reservationOrder && reservationOrder.orderId){
-      await tableService.setOrdersAsReady(reservation.reservationId);
+      await tableCloudService.setOrdersAsReady(reservation.reservationId);
       setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
       // Update the reservation in the table queue context
       updateReservationInQueue(reservation.tableNumber, reservation.reservationId, {
@@ -99,10 +99,10 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       setIsProcessingPayment(true);
       try {
         // First change the payment provider
-        await tableService.changeReservationPayment(reservation.reservationId, selectedPaymentProvider);
+        await tableCloudService.changeReservationPayment(reservation.reservationId, selectedPaymentProvider);
         
         // Then mark as paid
-        const order = await tableService.payOrders(reservation.reservationId);
+        const order = await tableCloudService.payOrders(reservation.reservationId);
         printOrderInvoice(order);
         setReservationOrder({...reservationOrder, isPaid: true});
         
@@ -124,7 +124,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
 
   async function handlePushToKitchen(){
     if(reservationOrder && reservationOrder.orderId){
-      const orderItems = await tableService.pushToKitchen(reservation.reservationId);
+      const orderItems = await tableCloudService.pushToKitchen(reservation.reservationId);
       console.log("Pushed to kitchen:", orderItems);
       printOrderItems(orderItems, reservationOrder);
       setReservationOrder({...reservationOrder, orderStatus: OrderStatus.InProgress});
@@ -251,7 +251,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
           <div className="bg-emerald-400 text-white size-7 flex justify-center items-center rounded-full cursor-pointer hover:bg-emerald-600 transition ml-3" title="Confirm Reservation">
 
             <button className="w-fit" onClick={async()=> {
-              await tableService.confirmTableReservation(branchId!, reservation.tableNumber);
+              await tableCloudService.confirmTableReservation(branchId!, reservation.tableNumber);
               updateReservationInQueue(reservation.tableNumber, reservation.reservationId, { reservationStatus: 'Seated' });
             }}>
               <Icon icon="mdi:check" style={{ fontSize: 15 }} />

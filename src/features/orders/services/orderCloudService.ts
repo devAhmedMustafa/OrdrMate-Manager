@@ -1,6 +1,7 @@
 import api from '../../../utils/api';
 import PlaceOrderRequestDto from '../../manual-order/PlaceOrderRequest.dto';
 import OrderResponse from '../dtos/OrderResponse';
+import PushOrderRequest from '../dtos/PushOrderRequest';
 import { OrderStatus } from '../types';
 
 class OrderCloudService {
@@ -43,6 +44,10 @@ class OrderCloudService {
 
   async placeOrder(request: PlaceOrderRequestDto): Promise<void> {
     await api.post('/Order/create-order', request);
+  }
+
+  async pushOrder(order: PushOrderRequest) : Promise<void> {
+    await api.post('/Order/push-order', order);
   }
 
   async setOrderAsReady(orderId: string): Promise<void> {

@@ -1,8 +1,8 @@
 import { useEffect, useState } from 'react';
 import OrderResponse from '../../orders/dtos/OrderResponse';
-import { TableReservation } from '../../tables/services/tableService';
+import { TableReservation } from '../../tables/services/tableCloudService';
 import { orderService } from '../../orders/services/orderService';
-import { tableService } from '../../tables/services/tableService';
+import { tableCloudService } from '../../tables/services/tableCloudService';
 import { uploadService } from '../../items/services/uploadService';
 import { balanceService, Balance } from '../services/balanceService';
 import { ShiftResponse, shiftService, ShiftStatus } from '../services/shiftService';
@@ -53,12 +53,12 @@ export default function DashboardHome() {
 
     const fetchTablesAndQueues = async () => {
       try {
-        const tablesData = await tableService.getTables(branchId);
+        const tablesData = await tableCloudService.getTables(branchId);
         setTables(tablesData);
         const tableQueuesData: Record<number, TableReservation[]> = {};
         for (const table of tablesData) {
           try {
-            const queue = await tableService.getTableQueue(branchId, table.tableNumber);
+            const queue = await tableCloudService.getTableQueue(branchId, table.tableNumber);
             tableQueuesData[table.tableNumber] = queue;
           } catch (error) {
             console.error(`Error fetching queue for table ${table.tableNumber}:`, error);

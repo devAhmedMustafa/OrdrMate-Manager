@@ -1,4 +1,4 @@
-import { OrderStatus } from "../services/tableService";
+import { OrderStatus } from "../services/tableCloudService";
 
 export default interface ReservationNotification {
   Type: 'TableReserved';

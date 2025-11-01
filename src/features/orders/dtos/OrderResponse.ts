@@ -4,6 +4,7 @@ export default interface OrderResponse {
 
     orderId: string;
     branchId: string;
+    customerId: string;
     orderItems: OrderItemResponse[];
     orderStatus: string;
     paymentProvider: string;
