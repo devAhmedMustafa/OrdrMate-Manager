@@ -8,6 +8,14 @@ export default class OrderLocalRepo {
         return await db.table('orders').toArray();
     }
 
+    async getOrderById(orderId: string): Promise<Order | undefined> {
+        return await db.table('orders').get(orderId);
+    }
+
+    async getOrdersByReservationId(reservationId: string): Promise<Order[]> {
+        return await db.table('orders').where('tableReservationId').equals(reservationId).toArray();
+    }
+
     async addOrder(order: Order): Promise<void> {
         await db.table('orders').add(order);
     }

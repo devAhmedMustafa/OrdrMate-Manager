@@ -3,24 +3,7 @@ import OrderResponse from '../../orders/dtos/OrderResponse';
 import OrderItemResponse from '../../orders/dtos/OrderItemResponse';
 import CreateTableRequest from '../dtos/CreateTableRequest.dto';
 import TableResponse from '../dtos/TableResponse.dto';
-
-export enum OrderStatus {
-  Pending = 'Pending',
-  Queued = 'Queued',
-  InProgress = 'InProgress',
-  Ready = 'Ready',
-  Delivered = 'Delivered'
-}
-
-export interface TableReservation {
-  reservationId: string;
-  tableNumber: number;
-  customerName: string;
-  reservationDate: string;
-  reservationStatus: string;
-  orderId: string;
-  orderStatus: OrderStatus;
-}
+import TableReservationResponse from '../dtos/TableReservationResponse';
 
 export interface ReservationOrder extends OrderResponse {}
 
@@ -30,7 +13,7 @@ class TableCloudService {
     return response.data;
   }
 
-  async getTableQueue(branchId: string, tableNumber: number): Promise<TableReservation[]> {
+  async getTableQueue(branchId: string, tableNumber: number): Promise<TableReservationResponse[]> {
     const response = await api.get(`/Table/queue/${branchId}/${tableNumber}`);
     return response.data;
   }

@@ -1,4 +1,5 @@
 import { db } from '../../offline-support/LocalDB';
+import Table from '../models/Table';
 import TableReservation from '../models/TableReservation';
 
 export default class TableLocalRepo {
@@ -8,6 +9,29 @@ export default class TableLocalRepo {
 
     async addTableReservation(reservation: TableReservation): Promise<void> {
         await db.tableReservations.add(reservation);
+    }
+
+    async getTablesByBranch(branchId: string): Promise<Table[]> {
+        return await db.seatTables.where('branchId').equals(branchId).toArray();
+    }
+
+    async updateTablesByBranch(branchId: string, tables: Table[]): Promise<void> {
+        const existingTables = await this.getTablesByBranch(branchId);
+        const existingTableNumbers = existingTables.map(t => t.tableNumber);
+        const newTables = tables.filter(t => !existingTableNumbers.includes(t.tableNumber));
+        const updatedTables = tables.filter(t => existingTableNumbers.includes(t.tableNumber));
+
+        await db.seatTables.bulkPut(updatedTables);
+        await db.seatTables.bulkAdd(newTables);
+        const tablesToRemove = existingTables.filter(t => !tables.some(nt => nt.tableNumber === t.tableNumber));
+        const tableIdsToRemove = tablesToRemove.map(t => t.tableNumber);
+        await db.seatTables.bulkDelete(tableIdsToRemove);
+    }
+
+    async getTableQueue(branchId: string, tableNumber: number): Promise<TableReservation[]> {
+        return await db.tableReservations
+            .where({ branchId: branchId, tableNumber: tableNumber })
+            .sortBy('reservationTime').then(reservations => reservations) || [];
     }
 }
 
