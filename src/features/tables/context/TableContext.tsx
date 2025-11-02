@@ -1,22 +1,25 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { TableReservation, OrderStatus, tableService } from '../services/tableService';
 import useAuth from '../../auth/useAuth.hook';
 import { websocketService } from '../../dashboard/services/websocketService';
-import Table from '../models/Table';
 import ReservationNotification from '../dtos/ReservationNotification';
+import TableReservationResponse from '../dtos/TableReservationResponse';
+import TableResponse from '../dtos/TableResponse.dto';
+import tableService from '../services/tableService';
+import { OrderStatus } from '../../orders/types';
+import OrderStatusMapper from '../../orders/mappers/orderStatusMapper';
 
 // Type for drag state
 type DraggedReservation = {
-  reservation: TableReservation;
+  reservation: TableReservationResponse;
   offsetX: number;
   offsetY: number;
 };
 
 interface TableContextType {
   // State
-  tables: Table[];
+  tables: TableResponse[];
   selectedTable: number | null;
-  tableQueues: Record<number, TableReservation[]>;
+  tableQueues: Record<number, TableReservationResponse[]>;
   draggedReservation: DraggedReservation | null;
   dragPreviewPos: { x: number; y: number };
   dragOverTableNumber: number | null;
@@ -33,7 +36,7 @@ interface TableContextType {
   freezeTable: (tableNumber: number) => Promise<void>;
   unfreezeTable: (tableNumber: number) => Promise<void>;
   createTable: (tableNumber: number, seats: number) => Promise<void>;
-  updateReservationInQueue: (tableNumber: number, reservationId: string, updates: Partial<TableReservation>) => void;
+  updateReservationInQueue: (tableNumber: number, reservationId: string, updates: Partial<TableReservationResponse>) => void;
 }
 
 const TableContext = createContext<TableContextType | undefined>(undefined);
@@ -51,9 +54,9 @@ interface TableProviderProps {
 }
 
 export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
-  const [tables, setTables] = useState<Table[]>([]);
+  const [tables, setTables] = useState<TableResponse[]>([]);
   const [selectedTable, setSelectedTable] = useState<number | null>(null);
-  const [tableQueues, setTableQueues] = useState<Record<number, TableReservation[]>>({});
+  const [tableQueues, setTableQueues] = useState<Record<number, TableReservationResponse[]>>({});
   const [draggedReservation, setDraggedReservation] = useState<DraggedReservation | null>(null);
   const [dragPreviewPos, setDragPreviewPos] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
   const [dragOverTableNumber, setDragOverTableNumber] = useState<number | null>(null);
@@ -119,7 +122,7 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
       if (message.Type === 'TableReserved') {
         const msg = message as ReservationNotification;
 
-        const reservation: TableReservation = {
+        const reservation: TableReservationResponse = {
           reservationId: msg.Reservation.ReservationId,
           tableNumber: msg.Reservation.TableNumber,
           customerName: msg.Reservation.CustomerName,
@@ -153,7 +156,7 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
             if (reservationIndex !== -1) {
               newQueues[parseInt(tableNumber)][reservationIndex] = {
                 ...reservations[reservationIndex],
-                orderStatus: OrderStatus.Ready
+                orderStatus: OrderStatusMapper.fromOrderStatusToString(OrderStatus.Ready)
               };
             }
           });

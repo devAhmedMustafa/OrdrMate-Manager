@@ -7,7 +7,7 @@ import TableReservationMapper from "../mapper/TableReservationMapper";
 import { tableCloudService } from "./tableCloudService";
 import { tableLocalRepo } from "./tableLocalRepo";
 
-export default class TableService {
+class TableService {
     async getTables(branchId: string) : Promise<TableResponse[]> {
         try {
             if (OnlineEvent.getInstance().isOnline) {
@@ -51,6 +51,20 @@ export default class TableService {
             throw err;
         }
     }
+
+    async moveReservation(reservationId: string, toTableNumber: number) : Promise<void> {
+        try {
+            if (OnlineEvent.getInstance().isOnline) {
+                await tableCloudService.moveReservation(reservationId, toTableNumber);
+            }
+
+            await tableLocalRepo.moveReservation(reservationId, toTableNumber);
+        }
+        catch(err) {
+            throw err;
+        }
+    }
 }
 
-export const tableService = new TableService();
+const tableService = new TableService();
+export default tableService;

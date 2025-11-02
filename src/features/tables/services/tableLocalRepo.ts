@@ -1,4 +1,5 @@
 import { db } from '../../offline-support/LocalDB';
+import ReservationStatus from '../enums/ReservationStatus';
 import Table from '../models/Table';
 import TableReservation from '../models/TableReservation';
 
@@ -32,6 +33,37 @@ export default class TableLocalRepo {
         return await db.tableReservations
             .where({ branchId: branchId, tableNumber: tableNumber })
             .sortBy('reservationTime').then(reservations => reservations) || [];
+    }
+
+    async moveReservation(reservationId: string, toTableNumber: number): Promise<void> {
+        const reservation = await this.getTableReservationById(reservationId);
+
+        const oldTableNumber = reservation?.tableNumber;
+
+        if (!reservation) {
+            throw new Error('Reservation not found');
+        }
+
+        const isEmpty = await db.tableReservations
+            .where({ tableNumber: toTableNumber })
+            .count() === 0;
+
+        if (!isEmpty) {
+            // Handle case where target table is not empty
+            return;
+        }
+
+        reservation.tableNumber = toTableNumber;
+        await db.tableReservations.put(reservation);
+
+        const peekReservationToOldTable = await db.tableReservations
+            .where({ tableNumber: oldTableNumber! })
+            .sortBy('reservationTime')
+            .then(reservations => reservations[0]);
+
+        if (peekReservationToOldTable) {
+            await db.tableReservations.update(peekReservationToOldTable.reservationId, { reservationStatus: ReservationStatus.WAITING });
+        }
     }
 }
 

@@ -1,11 +1,5 @@
 import { v4 as uuidv4 } from 'uuid';
-
-enum ReservationStatus {
-    PENDING = 'PENDING',
-    SEATED = 'SEATED',
-    COMPLETED = 'COMPLETED',
-    CANCELLED = 'CANCELLED'
-}
+import ReservationStatus from '../enums/ReservationStatus';
 
 export default class TableReservation {
     reservationId: string;
@@ -23,6 +17,6 @@ export default class TableReservation {
         this.tableNumber = data.tableNumber!;
         this.reservationId = data.id || uuidv4();
         this.reservationTime = data.reservationTime || new Date(Date.now());
-        this.reservationStatus = data.reservationStatus || ReservationStatus.PENDING;
+        this.reservationStatus = data.reservationStatus || ReservationStatus.WAITING;
     }
 }
