@@ -262,11 +262,11 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
     if (!branchId || !token) return;
     
     try {
-      await tableService.createTable({
+      await tableService.createTable(
+        branchId,
         tableNumber,
-        seats,
-        branchId
-      });
+        seats
+      );
       await refreshTables();
     } catch (error) {
       console.error('Error creating table:', error);

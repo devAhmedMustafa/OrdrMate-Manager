@@ -1,9 +1,11 @@
+import QueueInvoker from "../../../utils/QueueInvoker";
 import OnlineEvent from "../../offline-support/OnlineEvent";
 import { orderLocalRepo } from "../../orders/services/orderLocalRepo";
 import TableReservationResponse from "../dtos/TableReservationResponse";
 import TableResponse from "../dtos/TableResponse.dto";
 import TableMapper from "../mapper/TableMapper";
 import TableReservationMapper from "../mapper/TableReservationMapper";
+import Table from "../models/Table";
 import { tableCloudService } from "./tableCloudService";
 import { tableLocalRepo } from "./tableLocalRepo";
 
@@ -12,7 +14,7 @@ class TableService {
         try {
             if (OnlineEvent.getInstance().isOnline) {
                 const data = await tableCloudService.getTables(branchId);
-                await tableLocalRepo.updateTablesByBranch(branchId, data);
+                await tableLocalRepo.updateTablesByBranch(branchId, data.map(TableMapper.fromResponseToModel));
                 return data;
             }
 
@@ -71,6 +73,43 @@ class TableService {
                 await tableCloudService.dequeueTable(branchId, tableNumber);
             }
             // Local dequeue logic can be added here if needed
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    async freezeTable(branchId: string, tableNumber: number): Promise<void> {
+        try {
+            if (OnlineEvent.getInstance().isOnline) {
+                await tableCloudService.freezeTable(branchId, tableNumber);
+            }
+            await tableLocalRepo.freezeTable(branchId, tableNumber);
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    async unfreezeTable(branchId: string, tableNumber: number): Promise<void> {
+        try {
+            if (OnlineEvent.getInstance().isOnline) {
+                await tableCloudService.unfreezeTable(branchId, tableNumber);
+            }
+            await tableLocalRepo.unfreezeTable(branchId, tableNumber);
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    async createTable(branchId: string, tableNumber: number, seats: number): Promise<void> {
+        try {
+            QueueInvoker.getInstance().enqueue(async () => {
+                await tableCloudService.createTable({ branchId, tableNumber, seats });
+            });
+
+            await tableLocalRepo.createTable(new Table({ branchId, tableNumber, seats }));
         }
         catch(err) {
             throw err;

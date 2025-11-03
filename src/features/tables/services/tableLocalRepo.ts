@@ -81,6 +81,36 @@ export default class TableLocalRepo {
         await db.tableReservations.update(reservations[1]?.reservationId, { reservationStatus: ReservationStatus.WAITING });
     }
 
+    async freezeTable(branchId: string, tableNumber: number): Promise<void> {
+        const table = await db.seatTables
+            .where({ branchId: branchId, tableNumber: tableNumber })
+            .first();
+
+        if (!table) {
+            throw new Error('Table not found');
+        }
+
+        table.isFrozen = true;
+        await db.seatTables.put(table);
+    }
+
+    async unfreezeTable(branchId: string, tableNumber: number): Promise<void> {
+        const table = await db.seatTables
+            .where({ branchId: branchId, tableNumber: tableNumber })
+            .first();
+
+        if (!table) {
+            throw new Error('Table not found');
+        }
+
+        table.isFrozen = false;
+        await db.seatTables.put(table);
+    }
+
+    async createTable(table: Table): Promise<void> {
+        await db.seatTables.add(table);
+    }
+
 }
 
 export const tableLocalRepo = new TableLocalRepo();

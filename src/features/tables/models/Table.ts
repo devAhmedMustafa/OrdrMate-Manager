@@ -1,13 +1,13 @@
 export default class Table {
+    branchId: string;
     tableNumber: number;
     seats: number;
-    reservationCount: number;
     isFrozen: boolean;
 
-    constructor(tableNumber: number = 0, seats: number = 0, reservationCount: number = 0, isFrozen: boolean = false) {
-        this.tableNumber = tableNumber;
-        this.seats = seats;
-        this.reservationCount = reservationCount;
-        this.isFrozen = isFrozen;
+    constructor(data : {branchId: string, tableNumber: number, seats: number, isFrozen?: boolean}) {
+        this.branchId = data.branchId;
+        this.tableNumber = data.tableNumber;
+        this.seats = data.seats;
+        this.isFrozen = data.isFrozen ?? false;
     }
 }
