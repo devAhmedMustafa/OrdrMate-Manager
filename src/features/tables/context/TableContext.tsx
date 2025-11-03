@@ -226,7 +226,7 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
     if (!branchId || !token) return;
     
     try {
-      await tableService.dequeueTable(branchId, tableNumber);
+      await tableService.dequeTable(branchId, tableNumber);
       await refreshTableQueue(tableNumber);
     } catch (error) {
       console.error('Error dequeuing table:', error);
@@ -274,7 +274,7 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
     }
   };
 
-  const updateReservationInQueue = (tableNumber: number, reservationId: string, updates: Partial<TableReservation>) => {
+  const updateReservationInQueue = (tableNumber: number, reservationId: string, updates: Partial<TableReservationResponse>) => {
     setTableQueues(prev => ({
       ...prev,
       [tableNumber]: (prev[tableNumber] || []).map(reservation => 

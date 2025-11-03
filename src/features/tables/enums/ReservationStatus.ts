@@ -1,7 +1,8 @@
 enum ReservationStatus {
     WAITING = 'WAITING',
+    QUEUED = 'QUEUED',
     SEATED = 'SEATED',
-    COMPLETED = 'COMPLETED',
+    LEFT = 'LEFT',
     CANCELLED = 'CANCELLED'
 }
 

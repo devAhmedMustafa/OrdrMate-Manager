@@ -31,7 +31,7 @@ export default class TableLocalRepo {
 
     async getTableQueue(branchId: string, tableNumber: number): Promise<TableReservation[]> {
         return await db.tableReservations
-            .where({ branchId: branchId, tableNumber: tableNumber })
+            .where({ branchId: branchId, tableNumber: tableNumber, ReservationStatus: [ReservationStatus.WAITING, ReservationStatus.SEATED, ReservationStatus.QUEUED] })
             .sortBy('reservationTime').then(reservations => reservations) || [];
     }
 
@@ -65,6 +65,22 @@ export default class TableLocalRepo {
             await db.tableReservations.update(peekReservationToOldTable.reservationId, { reservationStatus: ReservationStatus.WAITING });
         }
     }
+
+    async dequeTable(branchId: string, tableNumber: number): Promise<void> {
+        const reservations = await this.getTableQueue(branchId, tableNumber);
+        if (reservations.length === 0) {
+            return;
+        }
+
+        await db.tableReservations.update(reservations[0].reservationId, { reservationStatus: ReservationStatus.LEFT });
+
+        if (reservations.length < 2) {
+            return;
+        }
+        
+        await db.tableReservations.update(reservations[1]?.reservationId, { reservationStatus: ReservationStatus.WAITING });
+    }
+
 }
 
 export const tableLocalRepo = new TableLocalRepo();
