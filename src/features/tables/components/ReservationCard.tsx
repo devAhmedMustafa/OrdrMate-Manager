@@ -1,5 +1,5 @@
 import { useEffect, useState, useRef } from "react";
-import { OrderStatus, ReservationOrder, TableReservation, tableCloudService } from "../services/tableCloudService";
+import { ReservationOrder, tableCloudService } from "../services/tableCloudService";
 import { Icon } from '@iconify/react';
 import useAuth from "../../auth/useAuth.hook";
 import OrderCustomization from "../../customizations/models/OrderCustomization.Model";
@@ -7,10 +7,13 @@ import { customizationService } from "../../customizations";
 import styles from '../Tables.module.css';
 import { useTableContext } from '../context/TableContext';
 import { printOrderInvoice, printOrderItems } from "../../orders/utils/printOrder";
+import TableReservationResponse from "../dtos/TableReservationResponse";
+import { OrderStatus } from "../../orders/types";
+import OrderStatusMapper from "../../orders/mappers/orderStatusMapper";
 
 interface ReservationCardProps {
   index: number;
-  reservation: TableReservation;
+  reservation: TableReservationResponse;
   onDragStart?: (e: React.DragEvent) => void;
   onDragEnd?: () => void;
 }
@@ -80,10 +83,10 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
   async function handleSetOrderReady(){
     if(reservationOrder && reservationOrder.orderId){
       await tableCloudService.setOrdersAsReady(reservation.reservationId);
-      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.Ready});
-      // Update the reservation in the table queue context
+      const stringStatus = OrderStatusMapper.fromOrderStatusToString(OrderStatus.Ready);
+      setReservationOrder({...reservationOrder, orderStatus: stringStatus});
       updateReservationInQueue(reservation.tableNumber, reservation.reservationId, {
-        orderStatus: OrderStatus.Ready
+        orderStatus: stringStatus
       });
     }
   }
@@ -127,7 +130,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       const orderItems = await tableCloudService.pushToKitchen(reservation.reservationId);
       console.log("Pushed to kitchen:", orderItems);
       printOrderItems(orderItems, reservationOrder);
-      setReservationOrder({...reservationOrder, orderStatus: OrderStatus.InProgress});
+      setReservationOrder({...reservationOrder, orderStatus: OrderStatusMapper.fromOrderStatusToString(OrderStatus.InProgress)});
     }
   }
 
@@ -340,7 +343,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       )}
 
       {/* Confirm Button */}
-      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.InProgress) && (
+      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatusMapper.fromOrderStatusToString(OrderStatus.Ready)) && (
         <div className="bg-emerald-400 text-white p-3 rounded-b-lg cursor-pointer hover:bg-emerald-600 transition">
           <button className="w-full" onClick={handleSetOrderReady}>
             <Icon icon="mdi:check" style={{ fontSize: 15, marginLeft: 5 }} />
@@ -349,7 +352,7 @@ export default function ReservationCard({index, reservation, onDragStart, onDrag
       )}
 
       {/* Push to Kitchen Button */}
-      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatus.Queued) && (
+      {(reservationOrder?.orderId && reservationOrder.orderStatus == OrderStatusMapper.fromOrderStatusToString(OrderStatus.Queued)) && (
         <div className="bg-amber-400 text-white rounded-b-lg cursor-pointer hover:bg-amber-600 transition">
           <button className="w-full p-3" onClick={handlePushToKitchen}>
             <Icon icon="mdi:kitchen" style={{ fontSize: 15, marginLeft: 5 }} />
