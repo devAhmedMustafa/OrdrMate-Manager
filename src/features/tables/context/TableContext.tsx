@@ -226,7 +226,7 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
     if (!branchId || !token) return;
     
     try {
-      await tableService.dequeTable(branchId, tableNumber);
+      await tableService.dequeueTable(branchId, tableNumber);
       await refreshTableQueue(tableNumber);
     } catch (error) {
       console.error('Error dequeuing table:', error);

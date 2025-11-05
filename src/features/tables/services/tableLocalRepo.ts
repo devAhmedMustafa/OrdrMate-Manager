@@ -66,7 +66,7 @@ export default class TableLocalRepo {
         }
     }
 
-    async dequeTable(branchId: string, tableNumber: number): Promise<void> {
+    async dequeueTable(branchId: string, tableNumber: number): Promise<void> {
         const reservations = await this.getTableQueue(branchId, tableNumber);
         if (reservations.length === 0) {
             return;

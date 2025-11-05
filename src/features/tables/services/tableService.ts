@@ -67,12 +67,13 @@ class TableService {
         }
     }
 
-    async dequeTable(branchId: string, tableNumber: number) : Promise<void> {
+    async dequeueTable(branchId: string, tableNumber: number) : Promise<void> {
         try {
             if (OnlineEvent.getInstance().isOnline) {
                 await tableCloudService.dequeueTable(branchId, tableNumber);
             }
-            // Local dequeue logic can be added here if needed
+
+            await tableLocalRepo.dequeueTable(branchId, tableNumber);
         }
         catch(err) {
             throw err;
