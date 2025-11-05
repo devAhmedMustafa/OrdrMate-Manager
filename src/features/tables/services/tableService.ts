@@ -1,8 +1,13 @@
 import QueueInvoker from "../../../utils/QueueInvoker";
 import OnlineEvent from "../../offline-support/OnlineEvent";
+import OrderResponse from "../../orders/dtos/OrderResponse";
+import OrderMapper from "../../orders/mappers/orderMapper";
 import { orderLocalRepo } from "../../orders/services/orderLocalRepo";
+import { OrderStatus } from "../../orders/types";
+import paymentLocalRepo from "../../payments/services/paymentLocalRepo";
 import TableReservationResponse from "../dtos/TableReservationResponse";
 import TableResponse from "../dtos/TableResponse.dto";
+import ReservationOrderMapper from "../mapper/ReservationOrderMapper";
 import TableMapper from "../mapper/TableMapper";
 import TableReservationMapper from "../mapper/TableReservationMapper";
 import Table from "../models/Table";
@@ -116,6 +121,128 @@ class TableService {
             throw err;
         }
     }
+
+    async getReservationOrder(reservationId: string) : Promise<OrderResponse | null> {
+        try {
+            if (OnlineEvent.getInstance().isOnline) {
+                return await tableCloudService.getReservationOrder(reservationId);
+            }
+            
+            const orders = await orderLocalRepo.getOrdersByReservationId(reservationId);
+            if (orders.length === 0) {
+                return null;
+            }
+
+            const reservationOrders: OrderResponse[] = [];
+            for (const order of orders) {
+                const orderResponse = await OrderMapper.fromModelToResponse(order);
+                reservationOrders.push(orderResponse);
+            }
+
+            return ReservationOrderMapper.mapOrdersToReservationOrder(reservationOrders);
+
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    async setOrdersAsReady(reservationId: string): Promise<void> {
+        try {
+            QueueInvoker.getInstance().enqueue(async () => {
+                await tableCloudService.setOrdersAsReady(reservationId);
+            });
+
+            const orders = await orderLocalRepo.getOrdersByReservationId(reservationId);
+            for (const order of orders) {
+                order.status = OrderStatus.Ready;
+                await orderLocalRepo.updateOrder(order);
+            }
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    async changeReservationPayment(reservationId: string, paymentProvider: string): Promise<void> {
+        try {
+            if (OnlineEvent.getInstance().isOnline) {
+                await tableCloudService.changeReservationPayment(reservationId, paymentProvider);
+            }
+
+            const orders = await orderLocalRepo.getOrdersByReservationId(reservationId);
+            const payments = await Promise.all(orders.map(order => paymentLocalRepo.getPaymentByOrderId(order.id)));
+            for (const payment of payments) {
+                if (payment) {
+                    payment.provider = paymentProvider;
+                    await paymentLocalRepo.updatePayment(payment);
+                }
+            }
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    async confirmTableReservation(reservationId: string, tableNumber: number): Promise<void> {
+        try {
+            if (OnlineEvent.getInstance().isOnline) {
+                await tableCloudService.confirmTableReservation(reservationId, tableNumber);
+            }
+
+            const tableReservation = await tableLocalRepo.getTableReservationById(reservationId);
+            if (tableReservation) {
+                tableReservation.tableNumber = tableNumber;
+                await tableLocalRepo.updateTableReservation(tableReservation);
+            }
+
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    async payOrders(reservationId: string): Promise<OrderResponse> {
+        try {
+            if (OnlineEvent.getInstance().isOnline) {
+                return await tableCloudService.payOrders(reservationId);
+            }
+
+            QueueInvoker.getInstance().enqueue(async () => {
+                await tableCloudService.payOrders(reservationId);
+            });
+
+            const orders = await orderLocalRepo.getOrdersByReservationId(reservationId);
+            if (orders.length === 0) {
+                throw new Error('No orders found for reservation');
+            }
+
+            for (const order of orders) {
+                order.isPaid = true;
+                await orderLocalRepo.updateOrder(order);
+            }
+
+            const payments = await Promise.all(orders.map(order => paymentLocalRepo.getPaymentByOrderId(order.id)));
+            for (const payment of payments) {
+                if (payment) {
+                    payment.paidAt = new Date(Date.now());
+                    await paymentLocalRepo.updatePayment(payment);
+                }
+            }
+
+            const orderResponses: OrderResponse[] = [];
+            for (const order of orders) {
+                const orderResponse = await OrderMapper.fromModelToResponse(order);
+                orderResponses.push(orderResponse);
+            }
+
+            return ReservationOrderMapper.mapOrdersToReservationOrder(orderResponses);
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
 }
 
 const tableService = new TableService();

@@ -111,6 +111,14 @@ export default class TableLocalRepo {
         await db.seatTables.add(table);
     }
 
+    async updateTable(table: Table): Promise<void> {
+        await db.seatTables.put(table);
+    }
+
+    async updateTableReservation(reservation: TableReservation): Promise<void> {
+        await db.tableReservations.put(reservation);
+    }
+
 }
 
 export const tableLocalRepo = new TableLocalRepo();
