@@ -26,6 +26,8 @@ export default class OrderStatusMapper {
                 return "InProgress";
             case OrderStatus.Queued:
                 return "Queued";
+            case OrderStatus.Ready:
+                return "Ready";
             case OrderStatus.Delivered:
                 return "Delivered";
             case OrderStatus.Cancelled:

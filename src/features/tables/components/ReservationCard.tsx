@@ -3,13 +3,13 @@ import { ReservationOrder, tableCloudService } from "../services/tableCloudServi
 import { Icon } from '@iconify/react';
 import useAuth from "../../auth/useAuth.hook";
 import OrderCustomization from "../../customizations/models/OrderCustomization.Model";
-import { customizationService } from "../../customizations";
 import styles from '../Tables.module.css';
 import { useTableContext } from '../context/TableContext';
 import { printOrderInvoice, printOrderItems } from "../../orders/utils/printOrder";
 import TableReservationResponse from "../dtos/TableReservationResponse";
 import { OrderStatus } from "../../orders/types";
 import OrderStatusMapper from "../../orders/mappers/orderStatusMapper";
+import customizationService from "../../customizations/services/customizationService";
 
 interface ReservationCardProps {
   index: number;
