@@ -2,9 +2,7 @@ import { HashRouter, Route, Routes } from 'react-router-dom'
 import LoginPage from './features/auth/Login.page'
 import './App.css'
 import { AuthProvider } from './features/auth/Auth.context'
-import ProtectedRoute from './features/auth/ProtectedRoute'
 import BranchManagerRoute from './features/auth/BranchManagerRoute'
-import AddItemPage from './features/items/AddItem.page'
 import { BranchManagerLayout } from './features/dashboard/BranchManagerLayout'
 import BranchMenuPage from './features/items/BranchMenu.page'
 import BranchSettingsPage from './features/branch-settings/BranchSettings.page'
@@ -16,6 +14,7 @@ import AttendanceCodePage from './features/branch/AttendanceCode.page'
 import AnalyticsPage from './features/analytics/Analytics.page'
 import { useEffect } from 'react'
 import OnlineEvent from './features/offline-support/OnlineEvent'
+import ProtectedRoute from './features/auth/ProtectedRoute'
 
 function AppContent() {
 
@@ -33,7 +32,9 @@ function AppContent() {
 
           <Route path='/' element={
             <BranchManagerRoute>
-              <BranchManagerLayout />
+              <ProtectedRoute>
+                <BranchManagerLayout />
+              </ProtectedRoute>
             </BranchManagerRoute>
           }>
             <Route index element={<DashboardHome />} />
@@ -45,12 +46,6 @@ function AppContent() {
             <Route path="settings" element={<BranchSettingsPage />} />
             <Route path="attendance" element={<AttendanceCodePage />} />
           </Route>
-
-          <Route path='/items/add' element={
-            <ProtectedRoute>
-              <AddItemPage/>
-            </ProtectedRoute>
-          }/>
 
         </Routes>
       </HashRouter>
