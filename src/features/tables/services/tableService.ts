@@ -1,5 +1,6 @@
 import QueueInvoker from "../../../utils/QueueInvoker";
 import OnlineEvent from "../../offline-support/OnlineEvent";
+import OrderItemResponse from "../../orders/dtos/OrderItemResponse";
 import OrderResponse from "../../orders/dtos/OrderResponse";
 import OrderMapper from "../../orders/mappers/orderMapper";
 import { orderLocalRepo } from "../../orders/services/orderLocalRepo";
@@ -237,6 +238,36 @@ class TableService {
             }
 
             return ReservationOrderMapper.mapOrdersToReservationOrder(orderResponses);
+        }
+        catch(err) {
+            throw err;
+        }
+    }
+
+    async pushToKitchen(reservationId: string): Promise<OrderItemResponse[]> {
+        try {
+            if (OnlineEvent.getInstance().isOnline) {
+                return await tableCloudService.pushToKitchen(reservationId);
+            }
+
+            QueueInvoker.getInstance().enqueue(async () => {
+                await tableCloudService.pushToKitchen(reservationId);
+            });
+
+            const orders = await orderLocalRepo.getOrdersByReservationId(reservationId);
+            if (orders.length === 0) {
+                throw new Error('No orders found for reservation');
+            }
+
+            const orderItems: OrderItemResponse[] = [];
+            for (const order of orders) {
+                const mappedOrder = await OrderMapper.fromModelToResponse(order);
+                orderItems.push(...mappedOrder.orderItems);
+                order.status = OrderStatus.InProgress;
+                await orderLocalRepo.updateOrder(order);
+            }
+
+            return orderItems;
         }
         catch(err) {
             throw err;
