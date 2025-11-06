@@ -1,5 +1,10 @@
 import OnlineEvent from "../../offline-support/OnlineEvent";
+import { orderLocalRepo } from "../../orders/services/orderLocalRepo";
+import { orderService } from "../../orders/services/orderService";
+import { tableLocalRepo } from "../../tables/services/tableLocalRepo";
+import tableService from "../../tables/services/tableService";
 import { CustomizationCategoryResponse } from "../dtos/CustomizationCategoryResponse";
+import OrderCustomizationResponse from "../dtos/OrderCustomizationResponse.dto";
 import CustomizationCategoryMapper from "../mappers/CustomizationCategoryMapper";
 import { customizationCloudService } from "./customizationCloudService";
 import { customizationLocalDB } from "./customizationLocalDB";
@@ -27,6 +32,33 @@ class CustomizationService {
         else{
             const localData = await customizationLocalDB.getItemCustomizationCategories(itemId);
             return localData.map(CustomizationCategoryMapper.toResponseDto);
+        }
+    }
+
+    async getOrderCustomizationByReservation(reservationId: string): Promise<OrderCustomizationResponse> {
+        try {
+            if (OnlineEvent.getInstance().isOnline) {
+                const data = await customizationCloudService.getOrderCustomizationByReservation(reservationId);
+                return data;
+            }
+            const orders = await orderLocalRepo.getOrdersByReservationId(reservationId);
+
+            if (orders.length === 0) {
+                throw new Error("No orders found for the given reservation ID");
+            }
+
+            const orderCustomizations: OrderCustomizationResponse = {
+                orderId: orders[0].id,
+                items: []
+            };
+
+            for (const order of orders) {
+                const userCustomization = await customizationLocalDB.ge(order.id);
+            }
+        }
+        catch (error) {
+            console.error("Error fetching order customizations:", error);
+            throw error;
         }
     }
 

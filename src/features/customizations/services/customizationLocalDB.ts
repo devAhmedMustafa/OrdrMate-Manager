@@ -17,10 +17,8 @@ export default class CustomizationLocalDB {
     }
 
     async updateItemCustomizations(itemId: string, categories: CustomizationCategory[]): Promise<void> {
-        // Remove existing customizations for the item
         await db.itemCustomization.where("itemId").equals(itemId).delete();
 
-        // Add new item customizations
         for (const category of categories) {
             await db.itemCustomization.add({
                 itemId: itemId,
@@ -28,7 +26,6 @@ export default class CustomizationLocalDB {
             });
         }
     }
-
 }
 
 export const customizationLocalDB = new CustomizationLocalDB();
