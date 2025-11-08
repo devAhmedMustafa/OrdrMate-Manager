@@ -37,7 +37,9 @@ class TableService {
     async getTableQueue(branchId: string, tableNumber: number) : Promise<TableReservationResponse[]> {
         try{
             if (OnlineEvent.getInstance().isOnline) {
-                return await tableCloudService.getTableQueue(branchId, tableNumber);
+                const data = await tableCloudService.getTableQueue(branchId, tableNumber);
+                await tableLocalRepo.updateTableQueue(branchId, tableNumber, data.map(TableReservationMapper.fromResponseToModel));
+                return data;
             }
             else {
                 const localQueue = await tableLocalRepo.getTableQueue(branchId, tableNumber);

@@ -35,6 +35,15 @@ export default class TableLocalRepo {
             .sortBy('reservationTime').then(reservations => reservations) || [];
     }
 
+    async updateTableQueue(branchId: string, tableNumber: number, reservations: TableReservation[]): Promise<void> {
+        const existingReservations = await this.getTableQueue(branchId, tableNumber);
+        const existingReservationIds = existingReservations.map(r => r.reservationId);
+        const newReservations = reservations.filter(r => !existingReservationIds.includes(r.reservationId));
+        const updatedReservations = reservations.filter(r => existingReservationIds.includes(r.reservationId));
+        await db.tableReservations.bulkPut(updatedReservations);
+        await db.tableReservations.bulkAdd(newReservations);
+    }
+
     async moveReservation(reservationId: string, toTableNumber: number): Promise<void> {
         const reservation = await this.getTableReservationById(reservationId);
 
