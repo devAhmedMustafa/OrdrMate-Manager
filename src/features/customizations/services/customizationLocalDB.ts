@@ -1,5 +1,6 @@
 import CustomizationCategory from "../models/CustomizationCategory";
 import {db} from "../../offline-support/LocalDB";
+import UserCustomization from "../models/UserCustomization";
 
 export default class CustomizationLocalDB {
     async getCategories(restaurantId: string): Promise<CustomizationCategory[]> {
@@ -25,6 +26,10 @@ export default class CustomizationLocalDB {
                 categoryId: category.id
             });
         }
+    }
+
+    async getOrderCustomizations(orderId: string): Promise<UserCustomization[]> {
+        return await db.userCustomizations.where("orderId").equals(orderId).toArray();
     }
 }
 

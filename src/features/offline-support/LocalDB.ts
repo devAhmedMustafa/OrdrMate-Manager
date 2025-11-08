@@ -7,6 +7,7 @@ import ItemCustomization from '../customizations/models/ItemCustomization';
 import OrderItem from '../orders/models/OrderItem';
 import CustomizationCategory from '../customizations/models/CustomizationCategory';
 import Payment from '../payments/models/Payment';
+import UserCustomization from '../customizations/models/UserCustomization';
 
 class LocalDB extends Dexie {
     orders!: DBTable<Order, string>;
@@ -17,6 +18,7 @@ class LocalDB extends Dexie {
     itemCustomization!: DBTable<ItemCustomization, string>;
     seatTables!: DBTable<Table, number>;
     payments!: DBTable<Payment, string>;
+    userCustomizations!: DBTable<UserCustomization, {orderId: string, itemId: string}>;
 
     constructor() {
         super('LocalDB');
@@ -28,7 +30,8 @@ class LocalDB extends Dexie {
             tableReservations: 'reservationId, branchId, customerId, reservationTime, tableNumber, endTime, seatedTime, reservationStatus',
             itemCustomization: 'itemId, categoryId',
             seatTables: 'tableNumber, branchId, seats, isFrozen',
-            payments: 'id, orderId, amount, paymentMethod, provider, transactionId, paidAt, externalRef'
+            payments: 'id, orderId, amount, paymentMethod, provider, transactionId, paidAt, externalRef',
+            userCustomizations: '[orderId+itemId], orderId, itemId, customizationData'
         });
     }
 }

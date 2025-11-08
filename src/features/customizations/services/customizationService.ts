@@ -1,8 +1,5 @@
 import OnlineEvent from "../../offline-support/OnlineEvent";
 import { orderLocalRepo } from "../../orders/services/orderLocalRepo";
-import { orderService } from "../../orders/services/orderService";
-import { tableLocalRepo } from "../../tables/services/tableLocalRepo";
-import tableService from "../../tables/services/tableService";
 import { CustomizationCategoryResponse } from "../dtos/CustomizationCategoryResponse";
 import OrderCustomizationResponse from "../dtos/OrderCustomizationResponse.dto";
 import CustomizationCategoryMapper from "../mappers/CustomizationCategoryMapper";
@@ -53,8 +50,17 @@ class CustomizationService {
             };
 
             for (const order of orders) {
-                const userCustomization = await customizationLocalDB.ge(order.id);
+                const userCustomization = await customizationLocalDB.getOrderCustomizations(order.id);
+                for (const customization of userCustomization) {
+                    orderCustomizations.items.push({
+                        itemId: customization.itemId,
+                        orderId: customization.orderId,
+                        customization: customization.customizationsValues
+                    });
+                }
             }
+
+            return orderCustomizations;
         }
         catch (error) {
             console.error("Error fetching order customizations:", error);
