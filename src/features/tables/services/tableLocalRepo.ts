@@ -29,9 +29,17 @@ export default class TableLocalRepo {
         await db.seatTables.bulkDelete(tableIdsToRemove);
     }
 
-    async getTableQueue(branchId: string, tableNumber: number): Promise<TableReservation[]> {
+    async getTableQueue(_: string, tableNumber: number): Promise<TableReservation[]> {
+        const allowedStatuses = [
+            ReservationStatus.SEATED,
+            ReservationStatus.QUEUED,
+            ReservationStatus.WAITING
+        ];
+
         return await db.tableReservations
-            .where({ branchId: branchId, tableNumber: tableNumber, ReservationStatus: [ReservationStatus.WAITING, ReservationStatus.SEATED, ReservationStatus.QUEUED] })
+            .where({
+                tableNumber: tableNumber})
+            .filter(reservation => allowedStatuses.includes(reservation.reservationStatus))
             .sortBy('reservationTime').then(reservations => reservations) || [];
     }
 

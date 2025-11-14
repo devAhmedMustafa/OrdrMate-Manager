@@ -2,7 +2,7 @@ import ReservationStatus from "../enums/ReservationStatus";
 
 export default class ReservationStatusMapper {
     static fromStringToReservationStatus(status: string): ReservationStatus {
-        switch (status) {
+        switch (status.toUpperCase()) {
             case 'WAITING':
                 return ReservationStatus.WAITING;
             case 'SEATED':

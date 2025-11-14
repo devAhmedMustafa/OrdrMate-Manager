@@ -5,6 +5,7 @@ export default interface ReservationNotification {
   Reservation: {
     ReservationId: string;
     TableNumber: number;
+    CustomerId: string;
     CustomerName: string;
     ReservationDate: string;
     ReservationStatus: string;

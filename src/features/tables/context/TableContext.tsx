@@ -124,12 +124,14 @@ export const TableProvider: React.FC<TableProviderProps> = ({ children }) => {
 
         const reservation: TableReservationResponse = {
           reservationId: msg.Reservation.ReservationId,
+          customerId: msg.Reservation.CustomerId || '',
+          branchId: branchId || '',
           tableNumber: msg.Reservation.TableNumber,
           customerName: msg.Reservation.CustomerName,
           reservationDate: msg.Reservation.ReservationDate,
           reservationStatus: msg.Reservation.ReservationStatus,
           orderId: msg.Reservation.OrderId,
-          orderStatus: msg.Reservation.OrderStatus
+          orderStatus: OrderStatusMapper.fromOrderStatusToString(msg.Reservation.OrderStatus),
         };
 
         setTableQueues(prev => ({
