@@ -24,6 +24,7 @@ class CustomizationService {
         if (OnlineEvent.getInstance().isOnline) {
             const data = await customizationCloudService.getItemCustomizations(itemId);
             await customizationLocalDB.updateItemCustomizations(itemId, data.map(CustomizationCategoryMapper.fromResponseDto));
+            await customizationLocalDB.updateCategories(data.map(CustomizationCategoryMapper.fromResponseDto));
             return data;
         }
         else{

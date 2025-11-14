@@ -1,4 +1,4 @@
-import { CustomizationMetadata } from "..";
+import { CustomizationMetadata } from "../enums/CustomizationMetadata";
 
 export interface CustomizationCategoryResponse {
     id: string;

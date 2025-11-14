@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { CustomizationCategoryResponse, SingleSelectMetadata, MultiSelectMetadata, TextMetadata, NumberMetadata, BooleanMetadata } from '../../customizations/services/customizationCloudService';
 import styles from './ItemCustomizationModal.module.css';
+import { CustomizationCategoryResponse } from '../../customizations/dtos/CustomizationCategoryResponse';
+import { SingleSelectMetadata } from '../../customizations/enums/CustomizationMetadata';
 
 interface ItemCustomizationModalProps {
   itemId: string;
@@ -37,16 +38,17 @@ export default function ItemCustomizationModal({
         const metadata = category.metadata as SingleSelectMetadata;
         const choice = metadata.choices.find(c => c.value === selectedValue);
         if (choice?.price) additionalPrice += choice.price;
-      } else if (category.inputType === 'MultiSelect' && Array.isArray(selectedValue)) {
-        const metadata = category.metadata as MultiSelectMetadata;
-        selectedValue.forEach((value: string) => {
-          const choice = metadata.choices.find(c => c.value === value);
-          if (choice?.price) additionalPrice += choice.price;
-        });
-      } else if (category.inputType === 'Boolean' && selectedValue) {
-        const metadata = category.metadata as BooleanMetadata;
-        if (metadata.price) additionalPrice += metadata.price;
-      }
+      } 
+      // else if (category.inputType === 'MultiSelect' && Array.isArray(selectedValue)) {
+      //   const metadata = category.metadata as MultiSelectMetadata;
+      //   selectedValue.forEach((value: string) => {
+      //     const choice = metadata.choices.find(c => c.value === value);
+      //     if (choice?.price) additionalPrice += choice.price;
+      //   });
+      // } else if (category.inputType === 'Boolean' && selectedValue) {
+      //   const metadata = category.metadata as BooleanMetadata;
+      //   if (metadata.price) additionalPrice += metadata.price;
+      // }
     });
     
     return itemPrice + additionalPrice;
@@ -87,128 +89,128 @@ export default function ItemCustomizationModal({
           </div>
         );
 
-      case 'MultiSelect':
-        const multiSelectMetadata = category.metadata as MultiSelectMetadata;
-        const selectedValues = currentValue || [];
-        return (
-          <div key={category.id} className={styles.customizationGroup}>
-            <label className={styles.customizationLabel}>
-              {category.name}
-              {category.description && <span className={styles.description}> - {category.description}</span>}
-              {multiSelectMetadata.minSelections && (
-                <span className={styles.requirement}>
-                  (Select at least {multiSelectMetadata.minSelections})
-                </span>
-              )}
-              {multiSelectMetadata.maxSelections && (
-                <span className={styles.requirement}>
-                  (Max {multiSelectMetadata.maxSelections})
-                </span>
-              )}
-            </label>
-            <div className={styles.checkboxGroup}>
-              {multiSelectMetadata.choices.map((choice) => {
-                const isDisabled = !!(multiSelectMetadata.maxSelections && 
-                  selectedValues.length >= multiSelectMetadata.maxSelections && 
-                  !selectedValues.includes(choice.value));
+      // case 'MultiSelect':
+      //   const multiSelectMetadata = category.metadata as MultiSelectMetadata;
+      //   const selectedValues = currentValue || [];
+      //   return (
+      //     <div key={category.id} className={styles.customizationGroup}>
+      //       <label className={styles.customizationLabel}>
+      //         {category.name}
+      //         {category.description && <span className={styles.description}> - {category.description}</span>}
+      //         {multiSelectMetadata.minSelections && (
+      //           <span className={styles.requirement}>
+      //             (Select at least {multiSelectMetadata.minSelections})
+      //           </span>
+      //         )}
+      //         {multiSelectMetadata.maxSelections && (
+      //           <span className={styles.requirement}>
+      //             (Max {multiSelectMetadata.maxSelections})
+      //           </span>
+      //         )}
+      //       </label>
+      //       <div className={styles.checkboxGroup}>
+      //         {multiSelectMetadata.choices.map((choice) => {
+      //           const isDisabled = !!(multiSelectMetadata.maxSelections && 
+      //             selectedValues.length >= multiSelectMetadata.maxSelections && 
+      //             !selectedValues.includes(choice.value));
                 
-                return (
-                  <label key={choice.value} className={`${styles.checkboxOption} ${isDisabled ? styles.disabled : ''}`}>
-                    <input
-                      type="checkbox"
-                      value={choice.value}
-                      checked={selectedValues.includes(choice.value)}
-                      disabled={isDisabled}
-                      onChange={(e) => {
-                        const newValues = e.target.checked
-                          ? [...selectedValues, choice.value]
-                          : selectedValues.filter((v: string) => v !== choice.value);
-                        handleCustomizationChange(category.name!, newValues);
-                      }}
-                      className={styles.checkboxInput}
-                    />
-                    <span className={styles.checkboxLabel}>
-                      {choice.label || choice.value}
-                      {choice.price && choice.price > 0 && (
-                        <span className={styles.priceTag}>+${choice.price.toFixed(2)}</span>
-                      )}
-                    </span>
-                  </label>
-                );
-              })}
-            </div>
-          </div>
-        );
+      //           return (
+      //             <label key={choice.value} className={`${styles.checkboxOption} ${isDisabled ? styles.disabled : ''}`}>
+      //               <input
+      //                 type="checkbox"
+      //                 value={choice.value}
+      //                 checked={selectedValues.includes(choice.value)}
+      //                 disabled={isDisabled}
+      //                 onChange={(e) => {
+      //                   const newValues = e.target.checked
+      //                     ? [...selectedValues, choice.value]
+      //                     : selectedValues.filter((v: string) => v !== choice.value);
+      //                   handleCustomizationChange(category.name!, newValues);
+      //                 }}
+      //                 className={styles.checkboxInput}
+      //               />
+      //               <span className={styles.checkboxLabel}>
+      //                 {choice.label || choice.value}
+      //                 {choice.price && choice.price > 0 && (
+      //                   <span className={styles.priceTag}>+${choice.price.toFixed(2)}</span>
+      //                 )}
+      //               </span>
+      //             </label>
+      //           );
+      //         })}
+      //       </div>
+      //     </div>
+      //   );
 
-      case 'Text':
-        const textMetadata = category.metadata as TextMetadata;
-        return (
-          <div key={category.id} className={styles.customizationGroup}>
-            <label className={styles.customizationLabel}>
-              {category.name}
-              {category.description && <span className={styles.description}> - {category.description}</span>}
-              {textMetadata.required && <span className={styles.required}>*</span>}
-            </label>
-            <input
-              type="text"
-              placeholder={textMetadata.placeholder || `Enter ${category.name.toLowerCase()}`}
-              value={currentValue || ''}
-              maxLength={textMetadata.maxLength}
-              onChange={(e) => handleCustomizationChange(category.name!, e.target.value)}
-              className={styles.textInput}
-              required={textMetadata.required}
-            />
-            {textMetadata.maxLength && (
-              <div className={styles.charCount}>
-                {(currentValue || '').length} / {textMetadata.maxLength}
-              </div>
-            )}
-          </div>
-        );
+      // case 'Text':
+      //   const textMetadata = category.metadata as TextMetadata;
+      //   return (
+      //     <div key={category.id} className={styles.customizationGroup}>
+      //       <label className={styles.customizationLabel}>
+      //         {category.name}
+      //         {category.description && <span className={styles.description}> - {category.description}</span>}
+      //         {textMetadata.required && <span className={styles.required}>*</span>}
+      //       </label>
+      //       <input
+      //         type="text"
+      //         placeholder={textMetadata.placeholder || `Enter ${category.name.toLowerCase()}`}
+      //         value={currentValue || ''}
+      //         maxLength={textMetadata.maxLength}
+      //         onChange={(e) => handleCustomizationChange(category.name!, e.target.value)}
+      //         className={styles.textInput}
+      //         required={textMetadata.required}
+      //       />
+      //       {textMetadata.maxLength && (
+      //         <div className={styles.charCount}>
+      //           {(currentValue || '').length} / {textMetadata.maxLength}
+      //         </div>
+      //       )}
+      //     </div>
+      //   );
 
-      case 'Number':
-        const numberMetadata = category.metadata as NumberMetadata;
-        return (
-          <div key={category.id} className={styles.customizationGroup}>
-            <label className={styles.customizationLabel}>
-              {category.name}
-              {category.description && <span className={styles.description}> - {category.description}</span>}
-              {numberMetadata.required && <span className={styles.required}>*</span>}
-            </label>
-            <input
-              type="number"
-              value={currentValue || ''}
-              min={numberMetadata.min}
-              max={numberMetadata.max}
-              step={numberMetadata.step}
-              onChange={(e) => handleCustomizationChange(category.name!, e.target.value ? parseFloat(e.target.value) : '')}
-              className={styles.numberInput}
-              required={numberMetadata.required}
-            />
-          </div>
-        );
+      // case 'Number':
+      //   const numberMetadata = category.metadata as NumberMetadata;
+      //   return (
+      //     <div key={category.id} className={styles.customizationGroup}>
+      //       <label className={styles.customizationLabel}>
+      //         {category.name}
+      //         {category.description && <span className={styles.description}> - {category.description}</span>}
+      //         {numberMetadata.required && <span className={styles.required}>*</span>}
+      //       </label>
+      //       <input
+      //         type="number"
+      //         value={currentValue || ''}
+      //         min={numberMetadata.min}
+      //         max={numberMetadata.max}
+      //         step={numberMetadata.step}
+      //         onChange={(e) => handleCustomizationChange(category.name!, e.target.value ? parseFloat(e.target.value) : '')}
+      //         className={styles.numberInput}
+      //         required={numberMetadata.required}
+      //       />
+      //     </div>
+      //   );
 
-      case 'Boolean':
-        const booleanMetadata = category.metadata as BooleanMetadata;
-        return (
-          <div key={category.id} className={styles.customizationGroup}>
-            <label className={styles.checkboxOption}>
-              <input
-                type="checkbox"
-                checked={currentValue || booleanMetadata.defaultValue || false}
-                onChange={(e) => handleCustomizationChange(category.name!, e.target.checked)}
-                className={styles.checkboxInput}
-              />
-              <span className={styles.checkboxLabel}>
-                {category.name}
-                {category.description && <span className={styles.description}> - {category.description}</span>}
-                {booleanMetadata.price && booleanMetadata.price > 0 && (
-                  <span className={styles.priceTag}>+${booleanMetadata.price.toFixed(2)}</span>
-                )}
-              </span>
-            </label>
-          </div>
-        );
+      // case 'Boolean':
+      //   const booleanMetadata = category.metadata as BooleanMetadata;
+      //   return (
+      //     <div key={category.id} className={styles.customizationGroup}>
+      //       <label className={styles.checkboxOption}>
+      //         <input
+      //           type="checkbox"
+      //           checked={currentValue || booleanMetadata.defaultValue || false}
+      //           onChange={(e) => handleCustomizationChange(category.name!, e.target.checked)}
+      //           className={styles.checkboxInput}
+      //         />
+      //         <span className={styles.checkboxLabel}>
+      //           {category.name}
+      //           {category.description && <span className={styles.description}> - {category.description}</span>}
+      //           {booleanMetadata.price && booleanMetadata.price > 0 && (
+      //             <span className={styles.priceTag}>+${booleanMetadata.price.toFixed(2)}</span>
+      //           )}
+      //         </span>
+      //       </label>
+      //     </div>
+      //   );
 
       default:
         return null;
@@ -217,20 +219,20 @@ export default function ItemCustomizationModal({
 
   const isValid = () => {
     // Check if all required fields are filled
-    return customizations.every(category => {
-      const value = selectedCustomizations[category.name!];
+    return customizations.every(_ => {
+      // const value = selectedCustomizations[category.name!];
       
-      if (category.inputType === 'Text') {
-        const metadata = category.metadata as TextMetadata;
-        return !metadata.required || (value && value.trim());
-      } else if (category.inputType === 'Number') {
-        const metadata = category.metadata as NumberMetadata;
-        return !metadata.required || value !== '' && value !== undefined;
-      } else if (category.inputType === 'MultiSelect') {
-        const metadata = category.metadata as MultiSelectMetadata;
-        const selectedValues = value || [];
-        return !metadata.minSelections || selectedValues.length >= metadata.minSelections;
-      }
+      // if (category.inputType === 'Text') {
+      //   const metadata = category.metadata as TextMetadata;
+      //   return !metadata.required || (value && value.trim());
+      // } else if (category.inputType === 'Number') {
+      //   const metadata = category.metadata as NumberMetadata;
+      //   return !metadata.required || value !== '' && value !== undefined;
+      // } else if (category.inputType === 'MultiSelect') {
+      //   const metadata = category.metadata as MultiSelectMetadata;
+      //   const selectedValues = value || [];
+      //   return !metadata.minSelections || selectedValues.length >= metadata.minSelections;
+      // }
       
       return true;
     });

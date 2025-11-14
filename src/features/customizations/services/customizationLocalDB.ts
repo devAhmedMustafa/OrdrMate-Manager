@@ -8,7 +8,15 @@ export default class CustomizationLocalDB {
     }
 
     async updateCategories(categories: CustomizationCategory[]): Promise<void> {
-        await db.customizationCategory.bulkPut(categories);
+        const existingCategories = await db.customizationCategory.toArray();
+        const existingCategoryIds = new Set(existingCategories.map(cat => cat.id));
+        for (const category of categories) {
+            if (existingCategoryIds.has(category.id)) {
+                await db.customizationCategory.put(category);
+            } else {
+                await db.customizationCategory.add(category);
+            }
+        }
     }
 
     async getItemCustomizationCategories(itemId: string): Promise<CustomizationCategory[]> {

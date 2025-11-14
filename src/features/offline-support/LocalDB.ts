@@ -24,7 +24,7 @@ class LocalDB extends Dexie {
         super('LocalDB');
         this.version(1).stores({
             items: 'id, name, description, imageUrl, price, preparationTime, kitchenId, categoryName, priority, tags',
-            customizationCategory: 'id, restaurantId, name, description, inputType, metadata',
+            customizationCategory: 'restaurantId, name, description, inputType, metadata',
             orders: 'id, branchId, customerId, orderTime, orderDate, status, totalAmount, orderType, isPaid, readyTime, tableReservationId, takeawayId',
             orderItems: 'orderId, itemId, quantity, price',
             tableReservations: 'reservationId, branchId, customerId, reservationTime, tableNumber, endTime, seatedTime, reservationStatus',
