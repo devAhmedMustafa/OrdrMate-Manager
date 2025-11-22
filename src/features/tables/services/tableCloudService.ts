@@ -4,6 +4,7 @@ import OrderItemResponse from '../../orders/dtos/OrderItemResponse';
 import CreateTableRequest from '../dtos/CreateTableRequest.dto';
 import TableResponse from '../dtos/TableResponse.dto';
 import TableReservationResponse from '../dtos/TableReservationResponse';
+import TableReservationSyncUpdateRequest from '../dtos/TableReservationSyncUpdateRequest';
 
 export interface ReservationOrder extends OrderResponse {}
 
@@ -79,6 +80,10 @@ class TableCloudService {
 
   async changeReservationPayment(reservationId: string, paymentProvider: string): Promise<void> {
     await api.put(`/UpdateOrder/payment-provider/reservation/${reservationId}`, { paymentProvider });
+  }
+
+  async updateTableReservationSync(request: TableReservationSyncUpdateRequest) : Promise<void> {
+    await api.put(`/TableReservation/DistributionSync/sync/update`, request);
   }
 
 }

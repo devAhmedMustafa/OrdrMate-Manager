@@ -2,16 +2,18 @@ import { OrderStatus } from "../types";
 
 export default class OrderStatusMapper {
     static fromStringToOrderStatus(orderStatusStr: string) : OrderStatus {
-        switch(orderStatusStr) {
-            case "Pending":
+        switch(orderStatusStr.toLowerCase()) {
+            case "pending":
                 return OrderStatus.Pending;
-            case "InProgress":
+            case "inprogress":
                 return OrderStatus.InProgress;
-            case "Queued":
+            case "queued":
                 return OrderStatus.Queued;
-            case "Delivered":
+            case "ready":
+                return OrderStatus.Ready;
+            case "delivered":
                 return OrderStatus.Delivered;
-            case "Cancelled":
+            case "cancelled":
                 return OrderStatus.Cancelled;
             default:
                 throw new Error(`Invalid order status string: ${orderStatusStr}`);

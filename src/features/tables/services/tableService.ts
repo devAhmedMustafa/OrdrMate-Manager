@@ -64,11 +64,12 @@ class TableService {
 
     async moveReservation(reservationId: string, toTableNumber: number) : Promise<void> {
         try {
-            if (OnlineEvent.getInstance().isOnline) {
-                await tableCloudService.moveReservation(reservationId, toTableNumber);
-            }
-
             await tableLocalRepo.moveReservation(reservationId, toTableNumber);
+
+            QueueInvoker.getInstance().enqueue(async () => {
+                await tableCloudService.moveReservation(reservationId, toTableNumber);
+            });
+
         }
         catch(err) {
             throw err;
@@ -77,11 +78,11 @@ class TableService {
 
     async dequeueTable(branchId: string, tableNumber: number) : Promise<void> {
         try {
-            if (OnlineEvent.getInstance().isOnline) {
-                await tableCloudService.dequeueTable(branchId, tableNumber);
-            }
-
             await tableLocalRepo.dequeueTable(branchId, tableNumber);
+
+            QueueInvoker.getInstance().enqueue(async () => {
+                await tableCloudService.dequeueTable(branchId, tableNumber);
+            });
         }
         catch(err) {
             throw err;
@@ -90,9 +91,10 @@ class TableService {
 
     async freezeTable(branchId: string, tableNumber: number): Promise<void> {
         try {
-            if (OnlineEvent.getInstance().isOnline) {
+            QueueInvoker.getInstance().enqueue(async () => {
                 await tableCloudService.freezeTable(branchId, tableNumber);
-            }
+            });
+            
             await tableLocalRepo.freezeTable(branchId, tableNumber);
         }
         catch(err) {
@@ -169,9 +171,9 @@ class TableService {
 
     async changeReservationPayment(reservationId: string, paymentProvider: string): Promise<void> {
         try {
-            if (OnlineEvent.getInstance().isOnline) {
+            QueueInvoker.getInstance().enqueue(async () => {
                 await tableCloudService.changeReservationPayment(reservationId, paymentProvider);
-            }
+            });
 
             const orders = await orderLocalRepo.getOrdersByReservationId(reservationId);
             const payments = await Promise.all(orders.map(order => paymentLocalRepo.getPaymentByOrderId(order.id)));
@@ -189,9 +191,9 @@ class TableService {
 
     async confirmTableReservation(reservationId: string, tableNumber: number): Promise<void> {
         try {
-            if (OnlineEvent.getInstance().isOnline) {
+            QueueInvoker.getInstance().enqueue(async () => {
                 await tableCloudService.confirmTableReservation(reservationId, tableNumber);
-            }
+            });
 
             const tableReservation = await tableLocalRepo.getTableReservationById(reservationId);
             if (tableReservation) {
@@ -207,9 +209,6 @@ class TableService {
 
     async payOrders(reservationId: string): Promise<OrderResponse> {
         try {
-            if (OnlineEvent.getInstance().isOnline) {
-                return await tableCloudService.payOrders(reservationId);
-            }
 
             QueueInvoker.getInstance().enqueue(async () => {
                 await tableCloudService.payOrders(reservationId);
@@ -248,10 +247,6 @@ class TableService {
 
     async pushToKitchen(reservationId: string): Promise<OrderItemResponse[]> {
         try {
-            if (OnlineEvent.getInstance().isOnline) {
-                return await tableCloudService.pushToKitchen(reservationId);
-            }
-
             QueueInvoker.getInstance().enqueue(async () => {
                 await tableCloudService.pushToKitchen(reservationId);
             });
